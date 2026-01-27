@@ -65,7 +65,10 @@ public:
     {
         m_fPowerMax = val;
         clamp(m_fPowerMax, 0.1f, 1.0f);
+        if (m_fPowerMax < m_fPower) 
+            m_fPower = m_fPowerMax;
     };
+
     IC float GetMaxPower() const { return m_fPowerMax; };
 
     void ChangeBleeding(float percent);
@@ -73,6 +76,7 @@ public:
     void ChangeEntityMorale(float value);
 
     virtual CWound* ConditionHit(SHit* pHDS);
+
     //обновления состояния с течением времени
     virtual void UpdateCondition();
     void UpdateWounds();
