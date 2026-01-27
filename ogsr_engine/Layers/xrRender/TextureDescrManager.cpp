@@ -16,7 +16,11 @@ void fix_texture_thm_name(LPSTR fn)
 void CTextureDescrMngr::LoadLTX()
 {
     FS_FileSet flist;
-    FS.file_list(flist, fsgame::game_textures, FS_ListFiles | FS_RootOnly, "*textures*.ltx");
+    if (FS.file_list(flist, fsgame::game_textures, FS_ListFiles | FS_RootOnly, "*textures*.ltx") == 0)
+    {
+        Msg("[%s] No *textures*.ltx files were found!", __FUNCTION__);
+        return;
+    }
     Msg("[%s] count of *textures*.ltx files: [%u]", __FUNCTION__, flist.size());
 
     for (const auto& file : flist)
@@ -177,9 +181,8 @@ void CTextureDescrMngr::Load()
     TT.Start();
 #endif // #ifdef DEBUG
 
-#ifdef USE_TEXTURES_LTX
     LoadLTX();
-#endif
+
     LoadTHM(fsgame::game_textures);
     LoadTHM(fsgame::level);
 

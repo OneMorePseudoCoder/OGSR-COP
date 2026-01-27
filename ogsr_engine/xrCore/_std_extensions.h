@@ -139,6 +139,16 @@ IC u32 xr_strlen(const char* S) { return (u32)strlen(S); }
 
 IC char* xr_strlwr(char* S) { return _strlwr(S); }
 
+IC const char* xr_strlwr(const char* S) 
+{ 
+    const char* out{};
+    for (int i = 0; S[i] != '\0'; i++)
+    {
+        out += std::tolower(static_cast<unsigned char>(S[i]));
+    }
+    return out;
+}
+
 IC int xr_strcmp(const char* S1, const char* S2) { return strcmp(S1, S2); }
 
 XRCORE_API char* xr_strdup(const char* string);

@@ -2,6 +2,8 @@
 
 #include <DirectXTex.h>
 
+constexpr auto& reduce_lod_list_name = "reduce_lod_texture_list";
+
 void fix_texture_name(const char* fn)
 {
     char* _ext = strext(fn);
@@ -11,48 +13,52 @@ void fix_texture_name(const char* fn)
 
 static inline int get_texture_load_lod(const char* fn)
 {
-#ifdef USE_REDUCE_LOD_TEXTURE_LIST
-    xr_strlwr(fn);
-    auto& sect = pSettings->r_section("reduce_lod_texture_list");
-
-    for (const auto& data : sect.Data)
+    if (pSettings->section_exist(reduce_lod_list_name))
     {
-        if (strstr(fn, data.first.c_str()))
+        xr_strlwr(fn);
+        auto& sect = pSettings->r_section(reduce_lod_list_name);
+
+        for (const auto& data : sect.Data)
         {
-            if (psTextureLOD < 1)
+            if (strstr(fn, data.first.c_str()))
             {
-                return 0;
-            }
-            else
-            {
-                if (psTextureLOD < 3)
+                if (psTextureLOD < 1)
                 {
-                    return 1;
+                    return 0;
                 }
                 else
                 {
-                    return 2;
+                    if (psTextureLOD < 3)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 2;
+                    }
                 }
             }
         }
     }
-#endif
-
-    if (psTextureLOD < 2)
-    {
-        return 0;
-    }
     else
     {
-        if (psTextureLOD < 4)
+        if (psTextureLOD < 2)
         {
-            return 1;
+            return 0;
         }
         else
         {
-            return 2;
+            if (psTextureLOD < 4)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
+            }
         }
     }
+    return 0;
 }
 
 static inline u32 calc_texture_size(const int lod, const size_t mip_cnt, const size_t orig_size)
@@ -152,8 +158,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
             IMG.height = (IMG.height + 3u) & ~0x3u;
         }
 
-        const auto hr = CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE, 0, IMG.miscFlags,
-                                        DirectX::CREATETEX_DEFAULT, &pTexture2D);
+        const auto hr = CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE, 0, IMG.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D);
 
         if (SUCCEEDED(hr))
         {
@@ -172,7 +177,8 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
         // Давай заново, с конвертацией текстур. Может помочь.
         dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_NO_16BPP | DirectX::DDS_FLAGS_FORCE_RGB;
         allowFallback = false;
-    } while (true);
+    }
+    while (true);
 
     FS.r_close(File);
 
