@@ -10,17 +10,6 @@
 #include "../control_movement_base.h"
 #include "../../../PHMovementControl.h"
 
-/*
-#ifdef DEBUG
-#	include <dinput.h>
-#	include "../../../actor.h"
-#	include "../../../ai_object_location.h"
-#	include "../../../level_debug.h"
-#	include "cover_point.h"
-#	include "../monster_cover_manager.h"
-#endif
-*/
-
 CSnork::CSnork()
 {
     StateMan = xr_new<CStateManagerSnork>(this);
@@ -133,33 +122,6 @@ void CSnork::reinit()
 void CSnork::UpdateCL()
 {
     inherited::UpdateCL();
-
-    //////////////////////////////////////////////////////////////////////////
-    // CObject *obj = Level().CurrentEntity();
-    // if (!obj) return;
-
-    // find_geometry	();
-    //////////////////////////////////////////////////////////////////////////
-
-    /*
-    #ifdef DEBUG
-        // test
-        CObject *obj = Level().CurrentEntity();
-        if (!obj) return;
-        const CCoverPoint *point = CoverMan->find_cover(obj->Position(), 10.f, 30.f);
-
-        DBG().level_info(this).clear();
-        if (point) {
-            DBG().level_info(this).add_item	(point->position(),COLOR_RED);
-
-            Fvector pos;
-            pos.set(Position());
-            pos.y+=5.f;
-
-            DBG().level_info(this).add_item	(Position(),pos,COLOR_GREEN);
-        }
-    #endif
-    */
 }
 
 #define TRACE_RANGE 30.f
@@ -298,10 +260,13 @@ bool CSnork::check_start_conditions(ControlCom::EControlType type)
 
     if (type == ControlCom::eControlThreaten)
     {
-        return false;
-        // 		if (!start_threaten) return false;
-        // 		start_threaten = false;
-        // 		if (Random.randI(100) < 50) return false;
+        if (!start_threaten)
+            return false;
+
+        start_threaten = false;
+
+        if (Random.randI(100) < 50)
+            return false;
     }
 
     return true;
@@ -312,24 +277,5 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
     if (type == ControlCom::eControlThreaten)
     {
         sound().play(MonsterSound::eMonsterSoundThreaten);
-        // m_sound_start_threaten.play_at_pos(this, get_head_position(this));
     }
 }
-//////////////////////////////////////////////////////////////////////////
-
-/*
-#ifdef DEBUG
-#include "Actor.h"
-#include "ai_object_location.h"
-void CSnork::debug_on_key(int key)
-{
-    CActor *actor = Actor();
-    if (!actor) return;
-
-    switch (key){
-    case DIK_1:
-        m_target_node = actor->ai_location().level_vertex_id();
-    }
-}
-#endif
-*/
