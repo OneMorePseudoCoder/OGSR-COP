@@ -35,7 +35,7 @@ CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id)
     }
 }
 
-CUICharacterInfo::CUICharacterInfo() : m_ownerID(u16(-1)), pUIBio(NULL)
+CUICharacterInfo::CUICharacterInfo() : m_ownerID(u16(-1)), pUIBio(nullptr), m_deadbody_color(color_argb(255, 255, 160, 160)), m_livebody_color(color_argb(255, 255, 255, 255))
 {
     ZeroMemory(m_icons, sizeof(m_icons));
     m_bForceUpdate = false;
@@ -47,9 +47,10 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 {
     inherited::Init(x, y, width, height);
 
-    CUIXmlInit xml_init;
-    CUIStatic* pItem = NULL;
+    CUIXmlInit xml_init{};
+    CUIStatic* pItem{ nullptr };
 
+    // icon
     if (xml_doc->NavigateToNode("icon_static", 0))
     {
         pItem = m_icons[eUIIcon] = xr_new<CUIStatic>();
@@ -68,6 +69,16 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
         pItem->SetElipsis(CUIStatic::eepEnd, 0);
         AttachChild(pItem);
         pItem->SetAutoDelete(true);
+    }
+
+    if (xml_doc->NavigateToNode("icon:deadbody", 0))
+    {
+        m_deadbody_color = CUIXmlInit::GetColor(*xml_doc, "icon:deadbody", 0, m_deadbody_color);
+    }
+
+    if (xml_doc->NavigateToNode("icon:livebody", 0))
+    {
+        m_livebody_color = CUIXmlInit::GetColor(*xml_doc, "icon:livebody", 0, m_livebody_color);
     }
 
     // rank
@@ -226,7 +237,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
     m_icons[eUIIcon]->SetStretchTexture(true);
 
     // Bio
-    if (pUIBio /* && pUIBio->IsEnabled()*/)
+    if (pUIBio)
     {
         pUIBio->Clear();
         if (chInfo.Bio().size())
@@ -314,8 +325,8 @@ void CUICharacterInfo::Update()
     if (hasOwner() && (m_bForceUpdate || (Device.dwFrame % 100 == 0)))
     {
         m_bForceUpdate = false;
-        CSE_ALifeTraderAbstract* T = detail::object_exists_in_alife_registry(m_ownerID) ? ch_info_get_from_id(m_ownerID) : NULL;
-        if (NULL == T)
+        CSE_ALifeTraderAbstract* T = detail::object_exists_in_alife_registry(m_ownerID) ? ch_info_get_from_id(m_ownerID) : nullptr;
+        if (!T)
         {
             m_ownerID = u16(-1);
             return;
@@ -323,12 +334,12 @@ void CUICharacterInfo::Update()
         else
             UpdateRelation();
 
-        /* Не вижу смысла подкрашивать картинку
-        if(m_icons[eUIIcon]){
-            CSE_ALifeCreatureAbstract*		pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(T);
-            if(pCreature && !pCreature->g_Alive())
-                m_icons[eUIIcon]->SetColor	(color_argb(255,255,160,160));
-        }*/
+        if (m_icons[eUIIcon])
+        {
+            CSE_ALifeCreatureAbstract* pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(T);
+            if (pCreature)
+                m_icons[eUIIcon]->SetColor(pCreature->g_Alive() ? m_livebody_color : m_deadbody_color);
+        }
     }
 }
 
@@ -340,7 +351,7 @@ void CUICharacterInfo::ClearInfo()
 
     if (m_icons[eUIIcon])
     {
-        // m_icons[eUIIcon]->SetColor(0xffffffff);
+        m_icons[eUIIcon]->SetColor(0xffffffff);
         m_icons[eUIIcon]->GetUIStaticItem().SetOriginalRect(8 * ICON_GRID_WIDTH, 0, float(CHAR_ICON_WIDTH * ICON_GRID_WIDTH), float(CHAR_ICON_HEIGHT * ICON_GRID_HEIGHT));
     }
 

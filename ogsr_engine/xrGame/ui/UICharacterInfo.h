@@ -26,6 +26,10 @@ protected:
     bool m_bForceUpdate;
     u16 m_ownerID;
 
+    // Icon
+    u32	m_deadbody_color;
+    u32	m_livebody_color;
+
     enum
     {
         eUIIcon = 0,
