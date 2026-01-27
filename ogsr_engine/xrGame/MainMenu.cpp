@@ -318,11 +318,12 @@ void CMainMenu::OnRender()
     if (m_Flags.test(flGameSaveScreenshot))
         return;
 
- //   if (g_pGameLevel)
+    if (g_pGameLevel)
         Render->Calculate();
 
     Render->Render();
- //   if (!OnRenderPPUI_query())
+
+    if (!OnRenderPPUI_query())
     {
         DoRenderDialogs();
         UI()->RenderFont();
@@ -332,7 +333,6 @@ void CMainMenu::OnRender()
 
 void CMainMenu::OnRenderPPUI_main()
 {
-/*
     if (!IsActive())
         return;
 
@@ -348,12 +348,10 @@ void CMainMenu::OnRenderPPUI_main()
     }
 
     UI()->pp_stop();
-*/
 }
 
 void CMainMenu::OnRenderPPUI_PP()
 {
-/*
     if (!IsActive())
         return;
 
@@ -368,7 +366,6 @@ void CMainMenu::OnRenderPPUI_PP()
         (*it)->Draw();
     }
     UI()->pp_stop();
-*/
 }
 
 void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
