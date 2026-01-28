@@ -85,8 +85,6 @@ void CGameObject::Load(LPCSTR section)
     ISpatial* self = smart_cast<ISpatial*>(this);
     if (self)
     {
-        // #pragma todo("to Dima: All objects are visible for AI ???")
-        // self->spatial.type	|=	STYPE_VISIBLEFORAI;
         self->spatial.type &= ~STYPE_REACTTOSOUND;
     }
 }
@@ -123,8 +121,8 @@ void CGameObject::net_Destroy()
     xr_delete(m_ini_file);
 
     m_script_clsid = -1;
-    if (Visual() && smart_cast<IKinematics*>(Visual()))
-        smart_cast<IKinematics*>(Visual())->Callback(0, 0);
+
+    SetKinematicsCallback(false);
 
     inherited::net_Destroy();
     setReady(FALSE);
@@ -136,7 +134,6 @@ void CGameObject::net_Destroy()
         Level().SetControlEntity(0);
     }
 
-    
     // remove calls
     CPHSriptReqGObjComparer cmpr(this);
     Level().ph_commander_scripts().remove_calls(&cmpr);
@@ -152,33 +149,6 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
     switch (type)
     {
     case GE_HIT:{
-        /*
-                    u16				id,weapon_id;
-                    Fvector			dir;
-                    float			power, impulse;
-                    s16				element;
-                    Fvector			position_in_bone_space;
-                    u16				hit_type;
-                    float			ap = 0.0f;
-
-                    P.r_u16			(id);
-                    P.r_u16			(weapon_id);
-                    P.r_dir			(dir);
-                    P.r_float		(power);
-                    P.r_s16			(element);
-                    P.r_vec3		(position_in_bone_space);
-                    P.r_float		(impulse);
-                    P.r_u16			(hit_type);	//hit type
-                    if ((ALife::EHitType)hit_type == ALife::eHitTypeFireWound)
-                    {
-                        P.r_float	(ap);
-                    }
-
-                    CObject*	Hitter = Level().Objects.net_Find(id);
-                    CObject*	Weapon = Level().Objects.net_Find(weapon_id);
-
-                    SHit	HDS = SHit(power, dir, Hitter, element, position_in_bone_space, impulse, (ALife::EHitType)hit_type, ap);
-        */
         SHit HDS;
         HDS.PACKET_TYPE = type;
         HDS.Read_Packet_Cont(P);
@@ -226,7 +196,6 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
         cName_set(E->name_replace());
 
     setID(E->ID);
-    //	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
 
     const CSE_Visual* visual = smart_cast<const CSE_Visual*>(E);
     if (visual)
@@ -723,7 +692,6 @@ void CGameObject::add_visual_callback(visual_callback* callback)
 
     if (m_visual_callback.empty())
         SetKinematicsCallback(true);
-
     m_visual_callback.push_back(callback);
 }
 
