@@ -13,7 +13,6 @@
 #include "game_base_space.h"
 #include "object_broker.h"
 #include "restriction_space.h"
-
 #include "character_info.h"
 
 #ifndef XRGAME_EXPORTS
@@ -31,7 +30,6 @@ bool SortStringsByAlphabetPred(const shared_str& s1, const shared_str& s2)
 
     return (xr_strcmp(s1, s2) < 0);
 };
-
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeGraphPoint
@@ -69,6 +67,7 @@ void CSE_ALifeGraphPoint::STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w_u8(m_tLocations[2]);
     tNetPacket.w_u8(m_tLocations[3]);
 };
+
 void CSE_ALifeGraphPoint::UPDATE_Read(NET_Packet& tNetPacket) {}
 
 void CSE_ALifeGraphPoint::UPDATE_Write(NET_Packet& tNetPacket) {}
@@ -93,6 +92,9 @@ CSE_ALifeObject::CSE_ALifeObject(LPCSTR caSection) : CSE_Abstract(caSection)
     m_alife_simulator = 0;
 #endif
     m_flags.set(flOfflineNoMove, FALSE);
+	
+    if (pSettings->line_exist(caSection, "use_ai_locations"))
+        m_flags.set(flUsedAI_Locations, !!pSettings->r_bool(caSection, "use_ai_locations"));
 }
 
 #ifdef XRGAME_EXPORTS
@@ -137,17 +139,12 @@ void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
         {
             if (m_wVersion < 83)
             {
-                tNetPacket.r_float(); // m_spawn_probability);
+                tNetPacket.r_float();
             }
         }
         else
         {
             tNetPacket.r_u8();
-            /**
-            u8					l_ucTemp;
-            tNetPacket.r_u8		(l_ucTemp);
-            m_spawn_probability	= (float)l_ucTemp;
-            /**/
         }
         if (m_wVersion < 83)
         {
@@ -177,7 +174,7 @@ void CSE_ALifeObject::STATE_Read(NET_Packet& tNetPacket, u16 size)
     if ((m_wVersion > 23) && (m_wVersion < 84))
     {
         shared_str temp;
-        tNetPacket.r_stringZ(temp); // m_spawn_control);
+        tNetPacket.r_stringZ(temp);
     }
 
     if (m_wVersion > 49)
@@ -209,7 +206,6 @@ u32 CSE_ALifeObject::ef_equipment_type() const
     CLSID2TEXT(m_tClassID, temp);
     R_ASSERT3(false, "Invalid alife equipment type request, virtual function is not properly overloaded!", temp);
     return (u32(-1));
-    //	return		(6);
 }
 
 u32 CSE_ALifeObject::ef_main_weapon_type() const
@@ -218,14 +214,10 @@ u32 CSE_ALifeObject::ef_main_weapon_type() const
     CLSID2TEXT(m_tClassID, temp);
     R_ASSERT3(false, "Invalid alife main weapon type request, virtual function is not properly overloaded!", temp);
     return (u32(-1));
-    //	return		(5);
 }
 
 u32 CSE_ALifeObject::ef_weapon_type() const
 {
-    //	string16					temp; CLSID2TEXT(m_tClassID,temp);
-    //	R_ASSERT3	(false,"Invalid alife weapon type request, virtual function is not properly overloaded!",temp);
-    //	return		(u32(-1));
     return (0);
 }
 
