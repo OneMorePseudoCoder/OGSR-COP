@@ -13,7 +13,9 @@
 #define _associative_vector associative_vector<_key_type, _data_type, _compare_predicate_type>
 
 TEMPLATE_SPECIALIZATION
-IC _associative_vector::associative_vector(const key_compare& predicate, const allocator_type& allocator) : value_compare(predicate)
+IC _associative_vector::associative_vector(const key_compare& predicate, const allocator_type& allocator)
+    : //	inherited			(allocator),
+      value_compare(predicate)
 {}
 
 TEMPLATE_SPECIALIZATION
@@ -21,7 +23,9 @@ IC _associative_vector::associative_vector(const key_compare& predicate) : value
 
 TEMPLATE_SPECIALIZATION
 template <typename _iterator_type>
-IC _associative_vector::associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate, const allocator_type& allocator) : inherited(first, last), value_compare(predicate)
+IC _associative_vector::associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate, const allocator_type& allocator)
+    : //	inherited			(first,last,allocator),
+      inherited(first, last), value_compare(predicate)
 {
     std::sort(begin(), end(), (value_compare&)(*this));
 }
@@ -89,7 +93,8 @@ TEMPLATE_SPECIALIZATION
 IC typename _associative_vector::size_type _associative_vector::max_size() const { return (inherited::max_size()); }
 
 TEMPLATE_SPECIALIZATION
-IC typename _associative_vector::size_type _associative_vector::size() const { return inherited::size(); }
+// IC	typename _associative_vector::size_type _associative_vector::size						() const
+IC u32 _associative_vector::size() const { return (inherited::size()); }
 
 TEMPLATE_SPECIALIZATION
 IC bool _associative_vector::empty() const { return (inherited::empty()); }
@@ -210,22 +215,6 @@ IC void _associative_vector::insert(_iterator_type first, _iterator_type last)
 
     inherited::insert(end(), first, last);
     std::sort(begin(), end(), (value_compare&)(*this));
-}
-
-TEMPLATE_SPECIALIZATION
-IC typename _associative_vector::insert_result _associative_vector::emplace(const key_type& key, const mapped_type& value)
-{
-    actualize();
-    bool found = true;
-    iterator I = lower_bound(key);
-    if (I == end() || (*this)(key, (*I).first))
-    {
-        I = inherited::emplace(I, key, value);
-        found = false;
-    }
-    else
-        (*I).second = value;
-    return insert_result(I, !found);
 }
 
 TEMPLATE_SPECIALIZATION
