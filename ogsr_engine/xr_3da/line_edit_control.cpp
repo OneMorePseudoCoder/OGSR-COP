@@ -84,37 +84,13 @@ namespace text_editor
 		constexpr size_t  array_size = sizeof(m_actions) / sizeof(m_actions[0]);
 		buffer_vector<Base*> actions(m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
 		std::sort(actions.begin(), actions.end());
-		actions.erase(
-			std::unique(
-				actions.begin(),
-				actions.end()
-			),
-			actions.end()
-		);
+		actions.erase(std::unique(actions.begin(), actions.end()), actions.end());
 		delete_data(actions);
 	}
 
 	static inline bool get_caps_lock_state()
 	{
-#if 0
-    static bool first_time = true;
-    static bool is_windows_vista_or_later = false;
-    if (first_time)
-    {
-        first_time = false;
-        OSVERSIONINFO version_info;
-        ZeroMemory(&version_info, sizeof(version_info));
-        version_info.dwOSVersionInfoSize = sizeof(version_info);
-        GetVersionEx(&version_info);
-        is_windows_vista_or_later = version_info.dwMajorVersion >= 6;
-    }
-
-    if (is_windows_vista_or_later)
-        return !!(GetKeyState(VK_CAPITAL) & 1);
-    else
-#else // #if 0
-		return false;
-#endif // #if 0
+		return !!(GetKeyState(VK_CAPITAL) & 1);
 	}
 
 	void line_edit_control::update_key_states()

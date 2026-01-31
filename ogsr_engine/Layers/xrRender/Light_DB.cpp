@@ -25,7 +25,7 @@ void CLight_DB::Load(IReader* fs)
 
         for (u32 i = 0; i < count; i++)
         {
-            F->advance(sizeof(u32)); // u32 controller = F->r_u32();
+            F->advance(sizeof(u32));
 
             Flight Ldata;
             F->r(&Ldata, sizeof(Flight));
@@ -131,7 +131,7 @@ void CLight_DB::add_light(light* L)
     if (RImplementation.o.noshadows)
         L->set_shadow(false);
 
-    if (L->flags.bStatic /*&& !ps_r2_ls_flags.test(R2FLAG_R1LIGHTS)*/)
+    if (L->flags.bStatic)
         return;
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_LIGHT))
@@ -154,7 +154,6 @@ void CLight_DB::UpdateSun() const
 #ifdef DEBUG
         if (E.sun_dir.y >= 0)
         {
-            //			Log("sect_name", E.sect_name.c_str());
             Log("E.sun_dir", E.sun_dir);
             Log("E.wind_direction", E.wind_direction);
             Log("E.wind_velocity", E.wind_velocity);

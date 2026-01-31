@@ -14,14 +14,10 @@ void CRenderTarget::phase_scene_prepare()
         RCache.ClearRT(rt_Color->pRT, color);
         RCache.ClearRT(rt_Accumulator->pRT, color);
         RCache.ClearRT(rt_heat->pRT, color);
-
-        //очистка Z-буфера перенесена на этап до начала рендера неба
-        //RCache.ClearZB(get_base_zb(), 1.0f, 0);
     }
 
     //	Igor: for volumetric lights
     m_bHasActiveVolumetric = false;
-    //	Clear later if try to draw volumetric
 }
 
 // begin
@@ -41,5 +37,4 @@ void CRenderTarget::phase_scene_begin(CBackend& cmd_list)
 
 // end
 void CRenderTarget::phase_scene_end(CBackend& cmd_list)
-{
-}
+{}

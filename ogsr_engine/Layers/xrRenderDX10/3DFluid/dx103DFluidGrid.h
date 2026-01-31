@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef DX10_FLUID_ENABLE
-
 struct VS_INPUT_FLUIDSIM_STRUCT;
 
 class dx103DFluidGrid
@@ -47,5 +45,3 @@ private:
     int m_iNumVerticesBoundarySlices;
     int m_iNumVerticesBoundaryLines;
 };
-
-#endif //	dx103DFluidGrid_included

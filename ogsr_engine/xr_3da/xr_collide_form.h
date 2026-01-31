@@ -72,7 +72,7 @@ struct clQueryCollision
     IC void AddBox(const Fobb& B) { boxes.push_back(B); }
 };
 
-enum /*ENGINE_API*/ ECollisionFormType
+enum ECollisionFormType
 {
     cftObject,
     cftShape

@@ -2,7 +2,6 @@
 
 class CEffect_Rain;
 class CBackend;
-// struct Fsphere;
 
 #include "../../xrCore/_sphere.h"
 

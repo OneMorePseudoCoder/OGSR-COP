@@ -236,7 +236,7 @@ void CLocatorAPI::RegisterFolderHierarchy(LPCSTR folder_path)
 
             R_ASSERT(I.second);
         }
-        strcpy_s(temp, path); // strcpy_s(temp, folder);
+        strcpy_s(temp, path);
         if (xr_strlen(temp))
             temp[xr_strlen(temp) - 1] = 0;
     }
@@ -427,6 +427,7 @@ bool ignore_name(const char* _name)
 {
     if (!strcmp(_name, "."))
         return true;
+
     if (!strcmp(_name, ".."))
         return true;
 
@@ -473,7 +474,6 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
     // find all files
     if (-1 == (hFile = _findfirst(N, &sFile)))
     {
-        // Log		("! Wrong path: ",path);
         return false;
     }
 
@@ -556,11 +556,7 @@ void CLocatorAPI::init_gamedata_unused()
 
         CInifile* tmp = xr_new<CInifile>(fname, FALSE);
 
-        if (FS.exist(fname))
-        {
-            // tmp->load_file();
-        }
-        else
+        if (!FS.exist(fname))
         {
             FS_FileSet files_set;
 
@@ -622,7 +618,6 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR fs_name)
             pFSltx = r_open(fsgame::app_root, fs_ltx);
 
         // находим где ж лежит fsgame.ltx
-
         if (!pFSltx)
         {
             if (strstr(Core.Params, "-use-work-dir"))
@@ -1229,8 +1224,6 @@ LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src)
         }
     }
 
-    // v2 ))
-
     if (gamedata_unused_references)
     {
         if (exist(dest))
@@ -1274,20 +1267,17 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
 
         const char* entry_begin = entry.name + base_len;
 
-        if (entry.vfs != VFS_STANDARD_FILE
-            || entry.folder || (!bRecurse && strchr(entry_begin, '\\')))
+        if (entry.vfs != VFS_STANDARD_FILE || entry.folder || (!bRecurse && strchr(entry_begin, '\\')))
         {
             ++I;
             continue;
         }
 
-            //Msg("[rescan_physical_path] erace file: [%s]", entry.name);
+        // erase item
+        free_file(entry);
 
-            // erase item
-            free_file(entry);
-
-            I = files.erase(I);
-        }
+        I = files.erase(I);
+    }
 
     bool bNoRecurse = !bRecurse;
     RecurseScanPhysicalPath(full_path, false, bNoRecurse);

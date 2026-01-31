@@ -1,13 +1,7 @@
 #include "stdafx.h"
-
 #include "../xrRenderDX10/dx10BufferUtils.h"
 
-CBackend::CBackend()
-    : xforms(*this)
-    , hemi(*this)
-    , lod(*this)
-    , constants(*this)
-    , StateManager(*this)
+CBackend::CBackend() : xforms(*this), hemi(*this), lod(*this), constants(*this), StateManager(*this)
 {
     Invalidate();
 }
@@ -45,7 +39,6 @@ void CRender::CreateQuadIB()
 {
     D3D_BUFFER_DESC desc{};
     desc.ByteWidth = sizeof IndexBuffer.Indices;
-    // desc.Usage = D3D_USAGE_IMMUTABLE;
     desc.Usage = D3D_USAGE_DEFAULT;
     desc.BindFlags = D3D_BIND_INDEX_BUFFER;
     desc.CPUAccessFlags = 0;

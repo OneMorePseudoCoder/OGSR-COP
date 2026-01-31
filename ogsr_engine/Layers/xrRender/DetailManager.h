@@ -8,7 +8,7 @@
 #include "detailmodel.h"
 
 const int dm_max_decompress = 7;
-const int dm_cache1_count = 4; //
+const int dm_cache1_count = 4;
 const int dm_max_objects = 64;
 const int dm_obj_in_slot = 4;
 const float dm_slot_size = DETAIL_SLOT_SIZE;
@@ -20,11 +20,11 @@ extern u32 dm_cache1_line;
 extern u32 dm_cache_line;
 extern u32 dm_cache_size;
 extern float dm_fade;
-extern u32 dm_current_size; //				= iFloor((float)ps_r__detail_radius/4)*2;				//!
-extern u32 dm_current_cache1_line; //		= dm_current_size*2/dm_cache1_count;		//! dm_current_size*2 must be div dm_cache1_count
-extern u32 dm_current_cache_line; //		= dm_current_size+1+dm_current_size;
-extern u32 dm_current_cache_size; //		= dm_current_cache_line*dm_current_cache_line;
-extern float dm_current_fade; //				= float(2*dm_current_size)-.5f;
+extern u32 dm_current_size;
+extern u32 dm_current_cache1_line;
+extern u32 dm_current_cache_line;
+extern u32 dm_current_cache_size;
+extern float dm_current_fade;
 extern float ps_current_detail_density;
 
 struct DetailVertData
@@ -78,8 +78,7 @@ private:
         SlotPart G[dm_obj_in_slot]; //
         bool hidden;
 
-        Slot()
-            : G{}
+        Slot() : G{}
         {
             frame = 0;
             empty = 1;
@@ -93,8 +92,7 @@ private:
         u32 empty;
         vis_data vis;
         Slot** slots[dm_cache1_count * dm_cache1_count];
-        CacheSlot1()
-            : slots{}
+        CacheSlot1() : slots{}
         {
             empty = 1;
             vis.clear();

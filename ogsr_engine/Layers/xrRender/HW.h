@@ -5,14 +5,10 @@
 #pragma once
 
 #include <dxgi1_4.h>
-
 #include "hwcaps.h"
-
 #include "stats_manager.h"
 
-class CHW
-    : public pureAppActivate,
-      public pureAppDeactivate
+class CHW : public pureAppActivate, public pureAppDeactivate
 {
     //	Functions section
 public:

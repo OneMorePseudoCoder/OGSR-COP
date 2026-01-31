@@ -11,6 +11,4 @@ XRCORE_API CDUInterface* DU = nullptr;
 XRCORE_API xr_token* vid_mode_token = nullptr;
 XRCORE_API IUIRender* UIRender = nullptr;
 XRCORE_API CGameMtlLibrary* PGMLib = nullptr;
-//#ifdef DEBUG
 XRCORE_API IDebugRender* DRender = nullptr;
-//#endif // DEBUG

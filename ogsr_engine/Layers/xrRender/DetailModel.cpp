@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "detailmodel.h"
 
-constexpr D3DVERTEXELEMENT9 dwDecl[]{
+constexpr D3DVERTEXELEMENT9 dwDecl[]
+{
     {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
     {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
 
@@ -194,8 +195,6 @@ void CDetail::Optimize() const
     const int vt_new = xrSimulate(vec_indices, cache);
     if (vt_new < vt_old)
     {
-        //Msg("* DM: %d verts, %d indices, VT: %d/%d",number_vertices,number_indices,vt_old,vt_new);
-
         // Copy faces
         CopyMemory(indices, vec_indices.data(), vec_indices.size() * sizeof(u16));
 

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "motion.h"
 #include "envelope.h"
 
@@ -7,7 +6,6 @@
 #define EOBJ_SMOTION 0x1200
 #define EOBJ_OMOTION_VERSION 0x0005
 #define EOBJ_SMOTION_VERSION 0x0007
-
 
 //------------------------------------------------------------------------------------------
 // CCustomMotion
@@ -155,6 +153,7 @@ void SAnimParams::Set(CCustomMotion* M)
 {
     Set((float)M->FrameStart(), (float)M->FrameEnd(), M->FPS());
 }
+
 void SAnimParams::Update(float dt, float speed, bool loop)
 {
     if (!bPlay)

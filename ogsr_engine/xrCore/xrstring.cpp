@@ -212,6 +212,5 @@ size_t str_container::stat_economy() const
 str_container::~str_container()
 {
     clean();
-    // dump ();
     xr_delete(impl);
 }

@@ -103,7 +103,6 @@ BOOL CTheoraSurface::Load(const char* fname)
             VERIFY(m_rgb->t_info.pixelformat == m_alpha->t_info.pixelformat);
         }
 #endif
-        //.		VERIFY3			(btwIsPow2(m_rgb->t_info.frame_width)&&btwIsPow2(m_rgb->t_info.frame_height),"Invalid size.",fname);
         tm_total = m_rgb->tm_total;
         VERIFY(0 != tm_total);
         // reset playback
@@ -125,8 +124,6 @@ BOOL CTheoraSurface::Load(const char* fname)
 
 u32 CTheoraSurface::Width(bool bRealSize)
 {
-    //	return				m_rgb->t_info.frame_width;
-
     if (bRealSize)
         return m_rgb->t_info.frame_width;
     else
@@ -135,13 +132,10 @@ u32 CTheoraSurface::Width(bool bRealSize)
 
 u32 CTheoraSurface::Height(bool bRealSize)
 {
-    //	return				m_rgb->t_info.frame_height;
-
     if (bRealSize)
         return m_rgb->t_info.frame_height;
     else
         return btwPow2_Ceil((u32)m_rgb->t_info.frame_height);
-    ;
 }
 
 void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
@@ -173,6 +167,7 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
         break;
     default: NODEFAULT;
     }
+
     static const float K = 0.256788f + 0.504129f + 0.097906f;
 
     // rgb

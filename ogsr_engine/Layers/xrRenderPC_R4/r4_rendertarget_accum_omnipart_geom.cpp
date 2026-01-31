@@ -1,12 +1,9 @@
 #include "stdafx.h"
 #include "../xrRender/du_sphere_part.h"
-
 #include "../xrRenderDX10/dx10BufferUtils.h"
 
 void CRenderTarget::accum_omnip_geom_create()
 {
-    //	u32	dwUsage				= D3DUSAGE_WRITEONLY;
-
     // vertices
     {
         const u32 vCount = DU_SPHERE_PART_NUMVERTEX;

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/r_constants.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -98,7 +97,7 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
         ref_constant C = get(name);
         if (!C)
         {
-            C = xr_new<R_constant>(); //.g_constant_allocator.create();
+            C = xr_new<R_constant>();
             C->name = name;
             C->destination = destination;
             C->type = type;

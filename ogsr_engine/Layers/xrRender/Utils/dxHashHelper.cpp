@@ -50,33 +50,3 @@ void dxHashHelper::Crc32Init()
         m_CrcTable[i] = Reflect(m_CrcTable[i], 32);
     }
 }
-
-// u32				crc32		(const void* P, u32 len)
-//{
-// if (!crc32_ready)
-//{
-//	crc32_init	();
-//	crc32_ready	= TRUE;
-// }
-
-// Pass a text string to this function and it will return the CRC.
-
-// Once the lookup table has been filled in by the two functions above,
-// this function creates all CRCs using only the lookup table.
-
-// Be sure to use unsigned variables,
-// because negative values introduce high bits
-// where zero bits are required.
-
-// Start out with all bits set high.
-// u32		ulCRC		= 0xffffffff;
-// u8*		buffer		= (u8*)P;
-
-// Perform the algorithm on each character
-// in the string, using the lookup table values.
-// while(len--)
-//	ulCRC = (ulCRC >> 8) ^ crc32_table[(ulCRC & 0xFF) ^ *buffer++];
-
-// Exclusive OR the result with the beginning value.
-// return ulCRC ^ 0xffffffff;
-//}

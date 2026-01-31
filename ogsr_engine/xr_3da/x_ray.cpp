@@ -99,6 +99,7 @@ void InitSettings()
 
     FS.init_gamedata_unused();
 }
+
 void InitConsole()
 {
     Console = xr_new<CConsole>();
@@ -161,7 +162,6 @@ void InitInput() { pInput = xr_new<CInput>(); }
 void destroyInput() { xr_delete(pInput); }
 
 void InitSound1() { CSound_manager_interface::_create(0); }
-
 void InitSound2() { CSound_manager_interface::_create(1); }
 void destroySound() { CSound_manager_interface::_destroy(); }
 
@@ -170,11 +170,12 @@ void destroySettings()
     xr_delete(pSettings);
     xr_delete(pGameIni);
 }
+
 void destroyConsole()
 {
-    //Console->Destroy();
     xr_delete(Console);
 }
+
 void destroyEngine()
 {
     Device.Destroy();
@@ -218,7 +219,6 @@ void Startup()
     }
 
     // Initialize APP
-
     Device.Create();
     LALib.OnCreate();
     pApp = xr_new<CApplication>();
@@ -275,7 +275,6 @@ struct damn_keys_filter
     BOOL bScreenSaverState;
 
     // Sticky & Filter & Toggle keys
-
     STICKYKEYS StickyKeysStruct;
     FILTERKEYS FilterKeysStruct;
     TOGGLEKEYS ToggleKeysStruct;
@@ -287,14 +286,13 @@ struct damn_keys_filter
     damn_keys_filter()
     {
         // Screen saver stuff
-
         bScreenSaverState = FALSE;
 
         // Saveing current state
         SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, (PVOID)&bScreenSaverState, 0);
 
+		// Disable screensaver
         if (bScreenSaverState)
-            // Disable screensaver
             SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
 
         dwStickyKeysFlags = 0;
@@ -395,10 +393,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
     Debug._initialize();
 
-    // SetThreadAffinityMask		(GetCurrentThread(),1);
-
     // Title window
-
     DisableProcessWindowsGhosting();
 
     ShowSplash(hInstance);
@@ -549,7 +544,7 @@ void CApplication::LoadBegin(bool quick)
         if (quick)
             max_load_stage = 4; // при быстром сохранении меньше фаз загрузки. 4 вроде б
         else 
-            max_load_stage = 16; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
+            max_load_stage = 16; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
     }
 }
 
@@ -607,11 +602,9 @@ void CApplication::LoadStage()
     phase_timer.Start();
     Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 
-
     LoadDraw();
 
     ++load_stage;
-    // Msg("--LoadStage is [%d]", load_stage);
 }
 
 // Sequential
@@ -762,12 +755,12 @@ void CApplication::load_draw_internal() const
     loadingScreen->Update(load_stage, max_load_stage);
 }
 
-#pragma todo("Simp: нужно ли это? сомневаюсь.")
 // Always request high performance GPU
-extern "C" {
-// https://docs.nvidia.com/gameworks/content/technologies/desktop/optimus.htm
-_declspec(dllexport) u32 NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
+extern "C" 
+{
+	// https://docs.nvidia.com/gameworks/content/technologies/desktop/optimus.htm
+	_declspec(dllexport) u32 NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
 
-// https://gpuopen.com/amdpowerxpressrequesthighperformance/
-_declspec(dllexport) u32 AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
+	// https://gpuopen.com/amdpowerxpressrequesthighperformance/
+	_declspec(dllexport) u32 AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
 }

@@ -6,9 +6,7 @@ Flags32 psHUD_Flags{HUD_CROSSHAIR | HUD_DRAW | HUD_INFO | HUD_CROSSHAIR_RT | HUD
 ENGINE_API CCustomHUD* g_hud = nullptr;
 
 CCustomHUD::CCustomHUD()
-{
-    // g_hud = this; ???
-}
+{}
 
 CCustomHUD::~CCustomHUD()
 {

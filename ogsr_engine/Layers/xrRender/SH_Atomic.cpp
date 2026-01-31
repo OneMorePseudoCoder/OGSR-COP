@@ -1,42 +1,41 @@
 #include "stdafx.h"
-
 #include "sh_atomic.h"
 #include "ResourceManager.h"
-
 #include "dxRenderDeviceRender.h"
 
 SVS::SVS() : sh(nullptr)
-{
-}
+{}
+
 SVS::~SVS()
 {
     DEV->_DeleteVS(this);
-
-    //	Now it is release automatically
-    //_RELEASE(signature);
-
     _RELEASE(sh);
 }
+
 SPS::~SPS()
 {
     _RELEASE(sh);
     DEV->_DeletePS(this);
 }
+
 SGS::~SGS()
 {
     _RELEASE(sh);
     DEV->_DeleteGS(this);
 }
+
 SHS::~SHS()
 {
     _RELEASE(sh);
     DEV->_DeleteHS(this);
 }
+
 SDS::~SDS()
 {
     _RELEASE(sh);
     DEV->_DeleteDS(this);
 }
+
 SCS::~SCS()
 {
     _RELEASE(sh);
@@ -50,6 +49,7 @@ SInputSignature::SInputSignature(ID3DBlob* pBlob)
     signature = pBlob;
     signature->AddRef();
 };
+
 SInputSignature::~SInputSignature()
 {
     _RELEASE(signature);

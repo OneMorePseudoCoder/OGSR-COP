@@ -16,7 +16,6 @@ template <class IDeviceState, class StateDecs>
 dx10StateCache<IDeviceState, StateDecs>::~dx10StateCache()
 {
     ClearStateArray();
-    //	VERIFY(m_StateArray.empty());
 }
 
 template <class IDeviceState, class StateDecs>

@@ -55,7 +55,7 @@ public:
     {
         id %= cat.size;
         return c_storage[cat.table[id]].data;
-    } //.
+    }
     u32 get_linesize() { return _line; }
 
     void cat_create(cache_cat& cat, u32 bytes);

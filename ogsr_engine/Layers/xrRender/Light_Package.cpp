@@ -39,7 +39,6 @@ void light_Package::vis_prepare(CBackend& cmd_list) const
 
     for (light* L : v_spot)
         L->vis_prepare(cmd_list);
-    
 }
 
 // Получаем ответы от запросов к окклюдеру в обратном порядке, от

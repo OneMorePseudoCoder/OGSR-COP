@@ -33,9 +33,7 @@ void PS::OnEffectParticleBirth(void* owner, u32, PAPI::Particle& m, u32)
 }
 
 void PS::OnEffectParticleDead(void*, u32, PAPI::Particle&, u32)
-{
-    //	CPEDef* PE = static_cast<CPEDef*>(owner);
-}
+{}
 
 //------------------------------------------------------------------------------
 // class CParticleEffect
@@ -328,12 +326,9 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     const Fvector& T = dir;
     Fvector R;
 
-    // R.crossproduct(T,Device.vCameraDirection).normalize_safe();
-
     __m128 _t, _t1, _t2, _r, _r1, _r2;
 
     // crossproduct
-
     _t = _mm_load_ss((float*)&T.x);
     _t = _mm_loadh_pi(_t, (__m64*)&T.y);
 
@@ -352,7 +347,6 @@ IC void FillSprite(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const 
     _t1 = _mm_sub_ps(_t1, _t2); // z | y | 0 | x
 
     // normalize_safe
-
     _t2 = _mm_mul_ps(_t1, _t1); // zz | yy | 00 | xx
     _r1 = _mm_movehl_ps(_t2, _t2); // zz | yy | zz | yy
     _t2 = _mm_add_ss(_t2, _r1); // zz | yy | 00 | xx + yy

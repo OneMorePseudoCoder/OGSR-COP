@@ -69,6 +69,7 @@ void IGame_Persistent::PreStart(LPCSTR op)
         OnGameEnd();
     }
 }
+
 void IGame_Persistent::Start(LPCSTR op)
 {
     string256 prev_type;
@@ -579,9 +580,6 @@ void IGame_Persistent::UpdateHudRaindrops() const
     const float val_texsize = 2.0f - ssfx_hud_raindrops_size;
 
     ps_ssfx_hud_drops_2.set(val_density, val_texsize, ssfx_hud_raindrops_extragloss, ssfx_hud_raindrops_gloss);
-    // Msg("--ps_ssfx_hud_drops_2: [%f, %f, %f, %f]", val_density, val_texsize, ssfx_hud_raindrops_extragloss, ssfx_hud_raindrops_gloss);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static float drops_int{}, drops_anim{};
 
@@ -621,7 +619,6 @@ void IGame_Persistent::UpdateHudRaindrops() const
 
     // Update shader data
     ps_ssfx_hud_drops_1.set(drops_anim, drops_int, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
-    // Msg("~~ps_ssfx_hud_drops_1: [%f, %f, %f, %f]", drops_anim, drops_int, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
 }
 
 void IGame_Persistent::UpdateRainGloss() const
@@ -657,7 +654,6 @@ void IGame_Persistent::UpdateRainGloss() const
     const float ripples_size = std::max(2.0f - ssfx_default_settings.ripples_size, 0.01f); // Change how the value works to be more intuitive(<1.0 smaller |> 1.0 bigger)
     ps_ssfx_wetsurfaces_1.set(ripples_size, ssfx_default_settings.ripples_speed, ssfx_default_settings.ripples_min_speed, ssfx_default_settings.ripples_intensity);
 
-    const float waterfall_size =
-        std::max(2.0f - ssfx_default_settings.waterfall_size, 0.01f); // Change how the value works to be more intuitive(<1.0 smaller |> 1.0 bigger)
+    const float waterfall_size = std::max(2.0f - ssfx_default_settings.waterfall_size, 0.01f); // Change how the value works to be more intuitive(<1.0 smaller |> 1.0 bigger)
     ps_ssfx_wetsurfaces_2.set(waterfall_size, ssfx_default_settings.waterfall_speed, ssfx_default_settings.waterfall_min_speed, ssfx_default_settings.waterfall_intensity);
 }

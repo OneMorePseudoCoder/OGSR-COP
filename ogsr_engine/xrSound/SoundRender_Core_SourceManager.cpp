@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
 

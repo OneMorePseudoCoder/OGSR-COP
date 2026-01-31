@@ -24,7 +24,6 @@ light::light(void) : ISpatial(g_SpatialSpace)
     color.set(1, 1, 1, 1);
 
     m_volumetric_quality = 1;
-    // m_volumetric_quality	= 0.5;
     m_volumetric_intensity = 0.3;
     m_volumetric_distance = 1;
 
@@ -43,8 +42,6 @@ light::light(void) : ISpatial(g_SpatialSpace)
     vis.visible = true;
     vis.pending = false;
 
-    // TODO cmd_list ??
-
     for (int id = 0; id < R__NUM_CONTEXTS; ++id)
         svis[id].context_id = id;
 }
@@ -57,7 +54,6 @@ light::~light()
         xr_delete(f);
 
     // remove from Lights_LastFrame
-
     for (auto& it : RImplementation.Lights_LastFrame)
     {
         if (it == this)
@@ -108,7 +104,6 @@ void light::set_active(bool b)
         flags.bActive = true;
         spatial_register();
         spatial_move();
-        // Msg								("!!! L-register: %X",u32(this));
 
 #ifdef DEBUG
         Fvector zero = {0, -1000, 0};
@@ -125,13 +120,12 @@ void light::set_active(bool b)
         flags.bActive = false;
         spatial_move();
         spatial_unregister();
-        // Msg								("!!! L-unregister: %X",u32(this));
     }
 }
 
 void light::set_position(const Fvector& P)
 {
-    const float eps = EPS_L; //_max	(range*0.001f,EPS_L);
+    const float eps = EPS_L;
     if (position.similar(P, eps))
         return;
     position.set(P);
@@ -155,6 +149,7 @@ void light::set_cone(float angle)
     cone = angle;
     spatial_move();
 }
+
 void light::set_rotation(const Fvector& D, const Fvector& R)
 {
     const Fvector old_D = direction;
@@ -190,10 +185,6 @@ void light::spatial_move()
     }
     break;
     case IRender_Light::OMNIPART: {
-        // is it optimal? seems to be...
-        // spatial.sphere.P.mad		(position,direction,range);
-        // spatial.sphere.R			= range;
-        // This is optimal.
         const float fSphereR = range * RSQRTDIV2;
         spatial.sphere.P.mad(position, direction, fSphereR);
         spatial.sphere.R = fSphereR;
@@ -356,10 +347,6 @@ void light::optimize_smap_size()
     const float intensity1 = (color.r * 0.2125f + color.g * 0.7154f + color.b * 0.0721f);
     const float intensity = (intensity0 + intensity1) / 2.f; // intensity1 tends to underestimate...
 
-    // [SSS 19] Improve this code later?
-    // compute how much duelling frusta occurs	[-1..1]-> 1 + [-0.5 .. +0.5]
-    // float duel_dot = 1.f - 0.5f * Device.vCameraDirection.dotproduct(L_dir);
-
     // compute how large the light is - give more texels to larger lights, assume 8m as being optimal radius
     const float sizefactor = range / 8.f; // 4m = .5, 8m=1.f, 16m=2.f, 32m=4.f
 
@@ -369,12 +356,10 @@ void light::optimize_smap_size()
     // factors
     const float factor0 = powf(ssa, 1.f / 2.f); // ssa is quadratic
     const float factor1 = powf(intensity, 1.f / 16.f); // less perceptually important?
-    // float factor2 = powf(duel_dot, 1.f / 4.f); // difficult to fast-change this -> visible
-    const float factor3 = powf(sizefactor, 1.f / 4.f); // this shouldn't make much difference
-    const float factor4 = powf(widefactor, 1.f / 2.f); // make it linear ???
+    const float factor2 = powf(sizefactor, 1.f / 4.f); // this shouldn't make much difference
+    const float factor3 = powf(widefactor, 1.f / 2.f); // make it linear ???
 
-    // float factor = ps_r2_ls_squality * factor0 * factor1 * factor2 * factor3 * factor4;
-    const float factor = ps_r2_ls_squality * factor0 * factor1 * factor3 * factor4;
+    const float factor = ps_r2_ls_squality * factor0 * factor1 * factor2 * factor3;
 
     // final size calc
     const u32 max_size = RImplementation.o.smapsize <= static_cast<u32>(ps_ssfx_shadows.y) ? RImplementation.o.smapsize : static_cast<u32>(ps_ssfx_shadows.y);
@@ -389,16 +374,13 @@ void light::optimize_smap_size()
     // make N pixel border
     X.S.view.build_camera_dir(L_pos, L_dir, L_up);
 
-    // _min(L->cone + deg2rad(4.5f), PI*0.98f) - Here, it is needed to enlarge the shadow map frustum to include also
-    // displaced pixels and the pixels neighbor to the examining one.
-
     float tan_shift;
     if (flags.type == IRender_Light::OMNIPART) // [ SSS ] 0.3f fix almost all frustum problems... 0.5f was the old value ( SSS 19 ) but was causing issues?
         tan_shift = 0.3f;
     else if(flags.type == IRender_Light::POINT)
-        tan_shift = 0.2007129f; // deg2rad(11.5f);
+        tan_shift = 0.2007129f;
     else
-        tan_shift = 0.0610865f; // deg2rad(3.5f);
+        tan_shift = 0.0610865f;
 
     X.S.project.build_projection(cone + tan_shift, 1.f, virtual_size, range + EPS_S);
     X.S.combine.mul(X.S.project, X.S.view);
@@ -415,7 +397,7 @@ void light::export_to(light_Package& package)
     if (distance > (g_pGamePersistent->Environment().CurrentEnv->fog_distance))
         return;
 
-    if (ps_r2_ls_flags.test(R2FLAG_LIGHT_NO_DIST_SHADOWS) && (distance > 100.f /*|| range > 25.f*/))
+    if (ps_r2_ls_flags.test(R2FLAG_LIGHT_NO_DIST_SHADOWS) && (distance > 100.f))
     {
         flags.bShadow = false;
         flags.bVolumetric = false;
@@ -431,7 +413,6 @@ void light::export_to(light_Package& package)
         switch (flags.type)
         {
         case IRender_Light::POINT: {
-
             // tough: create/update 6 shadowed lights
             if (!omnipart[0])
                 for (auto& f : omnipart)

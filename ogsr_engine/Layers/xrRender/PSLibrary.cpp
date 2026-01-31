@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "PSLibrary.h"
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
@@ -47,14 +46,12 @@ void CPSLibrary::OnDestroy()
 
 PS::CPEDef* CPSLibrary::FindPED(const char* Name)
 {
-    // auto it = Name ? m_PEDs.find(Name) : m_PEDs.end(); //Сомневаюсь что сюда может попасть nullptr
     auto it = m_PEDs.find(Name);
     return it == m_PEDs.end() ? nullptr : it->second.get();
 }
 
 PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
 {
-    // auto it = Name ? m_PGDs.find(Name) : m_PGDs.end(); //Сомневаюсь что сюда может попасть nullptr
     auto it = m_PGDs.find(Name);
     return it == m_PGDs.end() ? nullptr : it->second.get();
 }
@@ -90,10 +87,6 @@ bool CPSLibrary::Load(const char* nm)
             if (def->Load(*O))
             {
                 def->m_copFormat = copFileFormat;
-
-                // if (m_PEDs.contains(def->m_Name))
-                //     Msg("~~CPSLibrary: Duplicate ParticleEffect: [%s]. Last declared will be used.", def->m_Name.c_str());
-
                 m_PEDs[def->m_Name] = std::move(def);
                 loaded_count++;
             }
@@ -118,9 +111,6 @@ bool CPSLibrary::Load(const char* nm)
             auto def = std::make_unique<PS::CPGDef>();
             if (def->Load(*O))
             {
-                // if (m_PGDs.contains(def->m_Name))
-                //    Msg("CPSLibrary: Duplicate ParticleGroup: [%s]. Last declared will be used.", def->m_Name.c_str());
-
                 m_PGDs[def->m_Name] = std::move(def);
                 loaded_count++;
             }
@@ -244,8 +234,6 @@ bool CPSLibrary::Save2(bool override) const
     {
         Msg("! Path $game_particles$ is not configured! Cannot export particles to ltx");
     }
-
-    // FS.dir_delete("$game_particles$", "", TRUE); ???
 
     string_path fn;
 

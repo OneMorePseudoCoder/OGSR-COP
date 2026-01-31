@@ -25,12 +25,8 @@
 
 #include "OpenALDeviceList.h"
 
-//#include <objbase.h>
-
 ALDeviceList::ALDeviceList()
 {
-    //snd_device_id = u32(-1);
-
     Enumerate();
 }
 
@@ -67,8 +63,6 @@ void ALDeviceList::IterateDevicesList(const char* devices, bool enumerateAllPres
         {
             if (ALCcontext* context = alcCreateContext(device, nullptr))
             {
-                // alcMakeContextCurrent(context); // оно тут вроде б как не нужно, а ломает рестарт налету
-
                 const bool is_al_soft = strstr(devices, AL_SOFT);
 
                 // if new actual device name isn't already in the list, then add it...
@@ -102,10 +96,7 @@ void ALDeviceList::Enumerate()
     // have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
     m_devices.clear();
 
-    // CoUninitialize(); // ???
-
     // grab function pointers for 1.0-API functions, and if successful proceed to enumerate all devices
-
     if (alcIsExtensionPresent(nullptr, "ALC_ENUMERATE_ALL_EXT"))
     {
         const char* devices = alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER);
@@ -143,7 +134,6 @@ void ALDeviceList::Enumerate()
 
     // make token
     snd_devices_token = xr_alloc<xr_token>(_cnt + 1);
-
     snd_devices_token[_cnt].id = -1;
     snd_devices_token[_cnt].name = nullptr;
 
@@ -182,8 +172,6 @@ void ALDeviceList::Enumerate()
     }
     else
         Log("!!SOUND: OpenAL: No devices available.");
-
-    //CoInitializeEx(NULL, COINIT_MULTITHREADED); // ???
 }
 
 void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
@@ -202,7 +190,6 @@ void ALDeviceList::SelectBestDeviceId(const char* system_default_device) const
             // select best
             u32 new_device_id = 0; // first
 
-            //if (snd_device_id == u32(-1) || psSoundFlags.test(ss_UseDefaultDevice))
             {
                 for (int i = 0; snd_devices_token[i].name; i++)
                 {

@@ -1,23 +1,14 @@
 #include "stdafx.h"
-
 #include "render.h"
-
 #include "Environment.h"
 #include "xr_efflensflare.h"
 #include "rain.h"
 #include "thunderbolt.h"
 #include "xrHemisphere.h"
 #include "perlin.h"
-
 #include "xr_input.h"
-
-//#include "resourcemanager.h"
-
 #include "IGame_Level.h"
-
-//#include "D3DUtils.h"
 #include "../xrcore/xrCore.h"
-
 #include "../Include/xrRender/EnvironmentRender.h"
 #include "../Include/xrRender/LensFlareRender.h"
 #include "../Include/xrRender/RainRender.h"
@@ -219,11 +210,8 @@ float CEnvironment::NormalizeTime(float tm)
 
 void CEnvironment::SetWeather(shared_str name, bool forced)
 {
-    //.	static BOOL bAlready = FALSE;
-    //.	if(bAlready)	return;
     if (!name.empty())
     {
-        //.		bAlready = TRUE;
         EnvsMapIt it = WeatherCycles.find(name);
         if (it == WeatherCycles.end())
         {

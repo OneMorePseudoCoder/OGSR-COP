@@ -30,7 +30,6 @@ public:
         shared_str m_OnDeadChildName;
         float m_Time0{};
         float m_Time1{};
-        //SEffect() { m_Flags.zero(); /*set(flEnabled)*/ }
 
     };
     DEFINE_VECTOR(SEffect*, EffectVec, EffectIt);

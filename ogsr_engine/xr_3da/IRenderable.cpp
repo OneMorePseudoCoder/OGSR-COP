@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "irenderable.h"
 
 IRenderable::IRenderable()

@@ -35,8 +35,7 @@ struct alignas(16) ray_t
 #define muxhps(low, high) _mm_movehl_ps((low), (high)) // low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
 static constexpr auto flt_plus_inf = std::numeric_limits<float>::infinity();
-alignas(16) static constexpr float ps_cst_plus_inf[] = {flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf},
-                                   ps_cst_minus_inf[] = {-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
+alignas(16) static constexpr float ps_cst_plus_inf[] = {flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf}, ps_cst_minus_inf[] = {-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
 ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 {
@@ -107,11 +106,6 @@ public:
     ICF BOOL _box_sse(const Fvector& n_C, const float n_R, float& dist)
     {
         aabb_t box;
-        /*
-            float		n_vR	=		2*n_R;
-            box.min.set	(n_C.x-n_vR, n_C.y-n_vR, n_C.z-n_vR);	box.min.pad = 0;
-            box.max.set	(n_C.x+n_vR, n_C.y+n_vR, n_C.z+n_vR);	box.max.pad = 0;
-        */
         __m128 NR = _mm_load_ss((float*)&n_R);
         __m128 NC = _mm_unpacklo_ps(_mm_load_ss((float*)&n_C.x), _mm_load_ss((float*)&n_C.y));
         NR = _mm_add_ss(NR, NR);

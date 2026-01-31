@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "entity_alive.h"
 #include "script_entity.h"
 #include "..\xr_3da\feel_vision.h"
@@ -81,7 +80,6 @@ public:
     float m_fTimeUpdateDelta;
     u32 m_dwLastUpdateTime;
     u32 m_current_update;
-    //	Fmatrix				m_tServerTransform;
 
     u32 m_dwCurrentTime; // time updated in UpdateCL
 
@@ -94,7 +92,6 @@ public:
         float fHealth;
 
         // non-exported (temporal)
-
         net_update()
         {
             dwTimeStamp = 0;
@@ -124,9 +121,7 @@ public:
     void eye_pp_s1();
     void eye_pp_s2();
 
-#ifdef DEBUG
     virtual void UpdateCamera();
-#endif
 
 public:
     CCustomMonster();
@@ -168,7 +163,6 @@ public:
     virtual float ffGetRange() const { return eye_range; }
     void set_fov(float new_fov);
     void set_range(float new_range);
-    //	virtual	void				feel_touch_new			(CObject	*O);
     virtual BOOL feel_visible_isRelevant(CObject* O);
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     virtual void Hit(SHit* pHDS);
@@ -176,12 +170,11 @@ public:
     virtual void OnEvent(NET_Packet& P, u16 type);
     virtual void net_Destroy();
     virtual BOOL UsedAI_Locations();
-    ///////////////////////////////////////////////////////////////////////
     virtual u16 PHGetSyncItemsNumber() { return inherited ::PHGetSyncItemsNumber(); }
     virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited ::PHGetSyncItem(item); }
     virtual void PHUnFreeze() { return inherited ::PHUnFreeze(); }
     virtual void PHFreeze() { return inherited ::PHFreeze(); }
-    ///////////////////////////////////////////////////////////////////////
+
 public:
     virtual void Load(LPCSTR section);
     virtual void reinit();
@@ -294,7 +287,6 @@ public:
     IC bool critically_wounded();
     IC const u32& critical_wound_type() const;
 
-    //////////////////////////////////////////////////////////////////////////
 private:
     bool m_invulnerable;
 

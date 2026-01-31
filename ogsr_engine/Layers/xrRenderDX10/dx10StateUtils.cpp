@@ -5,7 +5,6 @@
 
 namespace dx10StateUtils
 {
-
 D3D_FILL_MODE ConvertFillMode(D3DFILLMODE Mode)
 {
     switch (Mode)
@@ -391,10 +390,6 @@ u32 GetHash(const D3D_SAMPLER_DESC& desc)
     Hash.AddData(&desc.AddressU, sizeof(desc.AddressU));
     Hash.AddData(&desc.AddressV, sizeof(desc.AddressV));
     Hash.AddData(&desc.AddressW, sizeof(desc.AddressW));
-    //  RZ
-    //  Hash.AddData(&desc.MipLODBias, sizeof(desc.MipLODBias));
-    //	Ignore anisotropy since it's set up automatically by the manager
-    //	Hash.AddData( &desc.MaxAnisotropy, sizeof(desc.MaxAnisotropy) );
     Hash.AddData(&desc.ComparisonFunc, sizeof(desc.ComparisonFunc));
     Hash.AddData(&desc.BorderColor[0], sizeof(desc.BorderColor[0]));
     Hash.AddData(&desc.BorderColor[1], sizeof(desc.BorderColor[1]));
@@ -497,5 +492,4 @@ void ValidateState(D3D_SAMPLER_DESC& desc)
         desc.MaxAnisotropy = 1;
     }
 }
-
 }; // namespace dx10StateUtils

@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 
 #include "ispatial.h"
@@ -98,7 +97,6 @@ void ISpatial::spatial_move()
     if (spatial.node_ptr)
     {
         //*** somehow it was determined that object has been moved
-
         if (!spatial.last_sector_check_pos.similar(spatial_sector_point(), EPS_L))
         {
             spatial.type |= STYPEFLAG_INVALIDSECTOR;
@@ -122,7 +120,6 @@ void ISpatial::spatial_updatesector_internal(IRender_Sector::sector_id_t sector_
         spatial.sector_id = sector_id;
 }
 
-//////////////////////////////////////////////////////////////////////////
 void ISpatial_NODE::_init(ISpatial_NODE* _parent)
 {
     parent = _parent;
@@ -145,8 +142,6 @@ void ISpatial_NODE::_remove(ISpatial* S)
         items.erase(it);
     S->spatial.space->stat_objects--;
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 ISpatial_DB::ISpatial_DB() : m_root(nullptr), stat_nodes(0), stat_objects(0) {}
 
@@ -198,6 +193,7 @@ ISpatial_NODE* ISpatial_DB::_node_create()
     allocator_pool.pop_back();
     return N;
 }
+
 void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 {
     VERIFY(P->_empty());
@@ -298,17 +294,6 @@ void ISpatial_DB::insert(ISpatial* S)
         }
         else
         {
-            // Object outside our DB, put it into root node and hack bounds
-            // Object will reinsert itself until fits into "real", "controlled" space
-
-            /*
-            if (0 == m_root)	// KD: временная затычка - непонятно, почему может не быть кости
-            {
-                m_root = _node_create();
-                m_root->_init(NULL);
-            }
-            */
-
             m_root->_insert(S);
             S->spatial.node_center.set(m_center);
             S->spatial.node_radius = m_bounds;

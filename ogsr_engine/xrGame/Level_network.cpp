@@ -54,9 +54,7 @@ void CLevel::remove_objects()
         ProcessGameEvents();
 
         Objects.Update(true);
-        //Sleep(100);
     }
-
 
     BulletManager().Clear();
     ph_commander().clear();
@@ -84,6 +82,7 @@ void CLevel::remove_objects()
     if (!client_spawn_manager().registry().empty())
         client_spawn_manager().dump();
 #endif // DEBUG
+
     VERIFY(client_spawn_manager().registry().empty());
     client_spawn_manager().clear();
 
@@ -100,7 +99,6 @@ void CLevel::remove_objects()
 
     shader_exports.set_dof_params(0.f, 0.f, 0.f, 0.f);
 
-    //u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 
     Msg("~ ObjectResources unload completed!");
@@ -180,7 +178,6 @@ void CLevel::ClientSave()
     {
         CObject* O = Objects.o_get_by_iterator(i);
         CGameObject* P = smart_cast<CGameObject*>(O);
-        // Msg( "save:iterating:%d:%s", P->ID(), *P->cName() );
         if (P && !P->getDestroy() && P->net_SaveRelevant())
         {
             NET_Packet Packet;

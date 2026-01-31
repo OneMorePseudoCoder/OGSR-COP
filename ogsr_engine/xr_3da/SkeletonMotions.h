@@ -1,7 +1,5 @@
 //---------------------------------------------------------------------------
 #pragma once
-
-//#include		"skeletoncustom.h"
 #include "bone.h"
 #include "skeletonmotiondefs.h"
 // refs
@@ -19,31 +17,29 @@ enum
     flRKeyAbsent = (1 << 1),
     flTKey16IsBit = (1 << 2),
 };
+
 #pragma pack(push, 2)
+
 struct CKey
 {
     Fquaternion Q; // rotation
     Fvector T; // translation
 };
+
 struct CKeyQR
 {
     s16 x, y, z, w; // rotation
 };
+
 struct CKeyQT8
 {
     s8 x1, y1, z1;
 };
+
 struct CKeyQT16
 {
     s16 x1, y1, z1;
 };
-/*
-struct  CKeyQT
-{
-//	s8			x,y,z;
-    s16			x1,y1,z1;
-};
-*/
 #pragma pack(pop)
 
 //*** Motion Data *********************************************************************************
@@ -233,9 +229,9 @@ protected:
     }
 
 public:
-    bool create(shared_str key, IReader* data,
-                vecBones* bones); //{	motions_value* v = g_pMotionsContainer->dock(key,data,bones); if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
-    bool create(shared_motions const& rhs); //	{	motions_value* v = rhs.p_; if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
+    bool create(shared_str key, IReader* data, vecBones* bones);
+    bool create(shared_motions const& rhs);
+
 public:
     // construction
     shared_motions() { p_ = nullptr; }

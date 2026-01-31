@@ -7,14 +7,16 @@
 // note: D3D uses [0..1] range for Z
 namespace accum_direct
 {
-constexpr Fvector3 corners[8]{
+constexpr Fvector3 corners[8]
+{
     { -1, -1, 0.7f }, { -1, -1, +1   },
     { -1, +1, +1   }, { -1, +1, 0.7f },
     { +1, +1, +1   }, { +1, +1, 0.7f },
     { +1, -1, +1   }, { +1, -1, 0.7f }
 };
 
-constexpr u16 facetable[16][3]{
+constexpr u16 facetable[16][3]
+{
     { 3, 2, 1 },
     { 3, 1, 0 },
     { 7, 6, 5 },
@@ -31,6 +33,7 @@ constexpr u16 facetable[16][3]{
     { 2, 4, 1 },
 };
 } // namespace accum_direct
+
 void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias)
 {
     // Choose normal code-path or filtered
@@ -85,10 +88,6 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
         dir.normalize().mul(-_sqrt(intensity + EPS));
         cmd_list.set_Element(s_accum_mask->E[SE_MASK_DIRECT]); // masker
         cmd_list.set_c("Ldynamic_dir", dir.x, dir.y, dir.z, 0);
-
-        // if (stencil>=1 && aref_pass)	stencil = light_id
-        //	Done in blender!
-        // cmd_list.set_ColorWriteEnable	(FALSE		);
         cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
@@ -102,9 +101,6 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
         cmd_list.set_ColorWriteEnable();
 
         const float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
-        // float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-        //	TODO: DX10: Remove this when fix inverse culling for far region
-        //		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
         const Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f, 0.5f, fBias, 1.0f};
 
         // shadow xform
@@ -166,12 +162,11 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
             RImplementation.Index.Unlock(sizeof(accum_direct::facetable) / sizeof(u16));
 
             // corners
-
             constexpr u32 ver_count = sizeof(accum_direct::corners) / sizeof(Fvector3);
             Fvector4* pv = (Fvector4*)RImplementation.Vertex.Lock(ver_count, g_combine_cuboid.stride(), Offset);
 
             Fmatrix inv_XDcombine;
-            if (/*ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_ZCULLING) &&*/ sub_phase == SE_SUN_FAR)
+            if (sub_phase == SE_SUN_FAR)
                 inv_XDcombine.invert(xform_prev);
             else
                 inv_XDcombine.invert(xform);
@@ -226,7 +221,6 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
             st_pass = D3DSTENCILOP_KEEP;
         }
 
-        // cmd_list.set_Stencil	(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
         cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, st_mask, D3DSTENCILOP_KEEP, st_pass, D3DSTENCILOP_KEEP);
         cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
 
@@ -271,23 +265,12 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
         cmd_list.set_Element(Element);
         cmd_list.set_CullMode(CULL_CCW);
 
-        //
         Fvector L_dir;
         Device.mView.transform_dir(L_dir, fuckingsun->direction);
         L_dir.normalize();
-        // Msg("~~[%s] Ldynamic_dir is [%f, %f, %f]", __FUNCTION__, L_dir.x, L_dir.y, L_dir.z);
         cmd_list.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 
-        /* Ещё вариант
-        float intensity = 0.3f*fuckingsun->color.r + 0.48f*fuckingsun->color.g + 0.22f*fuckingsun->color.b;
-        Fvector dir = L_dir;
-        dir.normalize().mul(-_sqrt(intensity + EPS));
-        //Msg("~~[%s] Ldynamic_dir is [%f, %f, %f]", __FUNCTION__, dir.x, dir.y, dir.z);
-        cmd_list.set_c("Ldynamic_dir", dir.x, dir.y, dir.z, 0);
-        */
-
         const Fvector L_clr = {fuckingsun->color.r, fuckingsun->color.g, fuckingsun->color.b};
-        // Msg("~~[%s] Ldynamic_color (r,g,b) is [%f, %f, %f]", __FUNCTION__, L_clr.x, L_clr.y, L_clr.z);
         cmd_list.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
 
         cmd_list.set_c("m_shadow", mShadow);

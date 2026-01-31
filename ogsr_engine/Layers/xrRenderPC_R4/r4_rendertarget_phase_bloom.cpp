@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 
@@ -30,11 +29,7 @@ struct v_filter
 // Gauss filtering coeffs
 // Samples:			0-central, -1, -2,..., -7, 1, 2,... 7
 //
-void CalcGauss_k7(Fvector4& w0, // weight
-                  Fvector4& w1, // weight
-                  float r = 3.3f, // gaussian radius
-                  float s_out = 1.f // resulting magnitude
-)
+void CalcGauss_k7(Fvector4& w0, Fvector4& w1, float r = 3.3f, float s_out = 1.f)
 {
     float W[8];
 
@@ -51,12 +46,8 @@ void CalcGauss_k7(Fvector4& w0, // weight
     w0.set(W[1], W[2], W[3], W[4]); // -1, -2, -3, -4
     w1.set(W[5], W[6], W[7], W[0]); // -5, -6, -7, 0
 }
-void CalcGauss_wave(Fvector4& w0, // weight
-                    Fvector4& w1, // weight
-                    float r_base = 3.3f, // gaussian radius
-                    float r_detail = 1.0f, // gaussian radius
-                    float s_out = 1.f // resulting magnitude
-)
+
+void CalcGauss_wave(Fvector4& w0, Fvector4& w1, float r_base = 3.3f, float r_detail = 1.0f, float s_out = 1.f)
 {
     Fvector4 t0, t1;
     CalcGauss_k7(w0, w1, r_base, s_out);
@@ -72,12 +63,7 @@ void CRenderTarget::phase_bloom(CBackend& cmd_list)
 
     // Targets
     u_setrt(cmd_list, rt_Bloom_1, nullptr, nullptr, nullptr, nullptr); // No need for ZBuffer at all
-    // RImplementation.rmNormal();
 
-    // Clear	- don't clear - it's stupid here :)
-    // Stencil	- disable
-    // Misc		- draw everything (no culling)
-    // CHK_DX		(HW.pDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
     cmd_list.set_Z(FALSE);
 
     // Transfer into Bloom1
@@ -356,7 +342,6 @@ void CRenderTarget::phase_bloom(CBackend& cmd_list)
     }
 
     // re-enable z-buffer
-    // CHK_DX		(HW.pDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
     cmd_list.set_Z(TRUE);
 }
 

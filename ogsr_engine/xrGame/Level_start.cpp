@@ -69,10 +69,10 @@ bool CLevel::net_start1()
 
         typedef IGame_Persistent::params params;
         params& p = g_pGamePersistent->m_game_params;
+
         // Connect
         Server = xr_new<xrServer>();
 
-        //		if (!strstr(*m_caServerOptions,"/alife"))
         if (xr_strcmp(p.m_alife, "alife"))
         {
             string64 l_name = "";
@@ -106,7 +106,6 @@ bool CLevel::net_start2()
         {
             net_start_result_total = false;
             Msg("! Failed to start server.");
-            //			Console->Execute("main_menu on");
             return true;
         }
         Server->SLS_Default();
@@ -150,6 +149,7 @@ bool CLevel::net_start5()
     };
     return true;
 }
+
 #include "hudmanager.h"
 BOOL g_start_total_res = TRUE;
 xrServer::EConnect g_connect_server_err = xrServer::ErrConnect;

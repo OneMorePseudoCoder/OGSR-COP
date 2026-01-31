@@ -194,7 +194,6 @@ void CPortalTraverser::traverse_sector(CSector* sector, CFrustum& F, _scissor& R
     }
 }
 
-
 #ifdef DEBUG
 void CPortalTraverser::dbg_draw()
 {

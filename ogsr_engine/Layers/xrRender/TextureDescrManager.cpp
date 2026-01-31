@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "TextureDescrManager.h"
 #include "ETextureParams.h"
 
@@ -96,7 +95,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
     {
         if (strcmp(initial, fsgame::game_textures) == 0)
         {
-            FS.file_list(flist, fsgame::game_textures_reference, FS_ListFiles, "*.thm"); // FS_FileSet is actually a set )
+            FS.file_list(flist, fsgame::game_textures_reference, FS_ListFiles, "*.thm");
         }
     }
 

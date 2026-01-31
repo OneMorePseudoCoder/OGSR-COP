@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "ModelPool.h"
 #include "../../xr_3da/IGame_Persistent.h"
 #include "../../xr_3da/fmesh.h"
@@ -212,7 +211,6 @@ CModelPool::CModelPool()
     {
         // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся vis_prefetch.ltx - оказывается набит нулями, в результате чего игра не
         // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
-
         if (F->elapsed() >= sizeof(u8) && F->r_u8() == 0) 
         {
             Msg("!![%s] file [%s] broken!", __FUNCTION__, fname);
@@ -380,7 +378,7 @@ dxRender_Visual* CModelPool::CreateChild(LPCSTR name, IReader* data)
 
     // 1. Search for already loaded model
     dxRender_Visual* Base = Instance_Find(low_name);
-    //.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
+
     if (nullptr == Base)
     {
         if (data)
@@ -409,7 +407,6 @@ void CModelPool::DeleteInternal(dxRender_Visual*& V, BOOL bDiscard)
     }
     else
     {
-        //
         const REGISTRY_IT it = Registry.find(V);
         if (it != Registry.end())
         {
@@ -461,8 +458,6 @@ void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
     const REGISTRY_IT it = Registry.find(V);
     if (it != Registry.end())
     {
-        // Pool - OK
-
         // Base
         const shared_str& name = it->second;
 
@@ -561,8 +556,6 @@ void CModelPool::Prefetch()
             if (FS.exist(fsgame::game_meshes, fname.c_str()))
             {
                 ::Render->hud_loading = val2 == 2.f;
-                //if (::Render->hud_loading)
-                //    Msg("--[%s] loading hud model [%s]", __FUNCTION__, fname.c_str());
                 dxRender_Visual* V = Create(low_name.c_str());
                 ::Render->hud_loading = false;
                 Delete(V, FALSE);
@@ -629,8 +622,6 @@ dxRender_Visual* CModelPool::CreateParticles(LPCSTR name, BOOL bNoPool)
             Model = it->second;
             Model->Spawn();
             Pool.erase(it);
-
-            //Msg("used pool model [%s]", name);
         }
 
         ModelsPool_lock.unlock();
@@ -665,7 +656,6 @@ dxRender_Visual* CModelPool::CreateParticles(LPCSTR name, BOOL bNoPool)
 dxRender_Visual* CModelPool::CreateParticleEffect(LPCSTR name)
 {
     // disabled polling for direct effects
-
     ZoneScoped;
 
     string_path low_name;
@@ -673,31 +663,11 @@ dxRender_Visual* CModelPool::CreateParticleEffect(LPCSTR name)
 
     dxRender_Visual* Model{};
 
-    //{
-    //    ModelsPool_lock.lock();
-
-    //    // 0. Search POOL
-    //    const POOL_IT it = Pool.find(low_name);
-    //    if (it != Pool.end())
-    //    {
-    //        // 1. Instance found
-    //        Model = it->second;
-    //        Model->Spawn();
-    //        Pool.erase(it);
-    //    }
-
-    //    ModelsPool_lock.unlock();
-    //}
-
     if (!Model)
     {
         PS::CPEDef* effect = RImplementation.PSLibrary.FindPED(name);
         R_ASSERT(effect, "Particle effect doesn't exist", name);
         Model = CreatePE(effect);
-
-        //Registry_lock.lock();
-        //Registry.emplace(Model, low_name);
-        //Registry_lock.unlock();
     }
 
     return Model;
@@ -773,7 +743,6 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
     }
 }
 
-
 void CModelPool::save_vis_prefetch() const
 {
     if (vis_prefetch_ini)
@@ -793,7 +762,6 @@ void CModelPool::process_vis_prefetch() const
     {
         float val1{}, val2{};
         sscanf(val.c_str(), "%f,%f", &val1, &val2);
-        // Msg("--[%s] sscanf returns: [%f,%f]", __FUNCTION__, val1, val2);
         const float need = val1 * 0.8f; // скорость уменьшение популярности визуала
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
         const float rnd = Random.randF() - 0.5f;

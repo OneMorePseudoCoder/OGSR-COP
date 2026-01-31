@@ -87,7 +87,7 @@ void CSoundRender_CoreA::_restart()
 
     if (init_device_list())
     {
-        pDeviceList->SelectBestDeviceId(/*notification_client.GetDefaultDeviceName().c_str()*/);
+        pDeviceList->SelectBestDeviceId();
 
         R_ASSERT(snd_device_id >= 0 && snd_device_id < pDeviceList->GetNumDevices());
         const ALDeviceDesc& deviceDesc = pDeviceList->GetDeviceDesc(snd_device_id);
@@ -149,9 +149,6 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
         bPresent = FALSE;
         return false;
     }
-
-    // Get the device specifier.
-    //alcGetString(pDevice, ALC_DEVICE_SPECIFIER);
 
     // Create context
     pContext = alcCreateContext(pDevice, nullptr);
@@ -261,7 +258,7 @@ void CSoundRender_CoreA::_initialize(int stage)
         return;
     }
 
-    pDeviceList->SelectBestDeviceId(/*notification_client.GetDefaultDeviceName().c_str()*/);
+    pDeviceList->SelectBestDeviceId();
 
     R_ASSERT(snd_device_id >= 0 && snd_device_id < pDeviceList->GetNumDevices());
     const ALDeviceDesc& deviceDesc = pDeviceList->GetDeviceDesc(snd_device_id);
@@ -328,7 +325,6 @@ void CSoundRender_CoreA::_initialize(int stage)
     }
 
     bReady = TRUE;
-    //notification_client.Start();
 }
 
 void CSoundRender_CoreA::set_master_volume(float f)
@@ -356,7 +352,6 @@ void CSoundRender_CoreA::release_context()
 
 void CSoundRender_CoreA::_clear()
 {
-    //notification_client.Stop();
     bReady = FALSE;
 
     inherited::_clear();

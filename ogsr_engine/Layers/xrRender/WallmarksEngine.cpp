@@ -34,8 +34,6 @@ struct wallmark_static_queue_item
 };
 } // namespace WallmarksEngine
 
-// #include "xr_effsun.h"
-
 const float W_DIST_FADE = 15.f;
 const float W_DIST_FADE_SQR = W_DIST_FADE * W_DIST_FADE;
 const float I_DIST_FADE_SQR = 1.f / W_DIST_FADE_SQR;
@@ -48,6 +46,7 @@ CWallmarksEngine::wm_slot* CWallmarksEngine::FindSlot(const ref_shader& shader)
     const WMSlotVecIt it = std::find(marks.begin(), marks.end(), shader);
     return (it != marks.end()) ? *it : nullptr;
 }
+
 CWallmarksEngine::wm_slot* CWallmarksEngine::AppendSlot(const ref_shader& shader)
 {
     marks.push_back(xr_new<wm_slot>(shader));
@@ -76,22 +75,20 @@ CWallmarksEngine::~CWallmarksEngine()
 
 void CWallmarksEngine::Clear()
 {
+    for (auto& mark : marks)
     {
-        for (auto& mark : marks)
-        {
-            for (StaticWMVecIt m_it = mark->static_items.begin(); m_it != mark->static_items.end(); ++m_it)
-                static_wm_destroy(*m_it);
+        for (StaticWMVecIt m_it = mark->static_items.begin(); m_it != mark->static_items.end(); ++m_it)
+            static_wm_destroy(*m_it);
 
-            xr_delete(mark);
-        }
-        marks.clear();
+        xr_delete(mark);
     }
 
-    {
-        for (auto& it : static_pool)
-            xr_delete(it);
-        static_pool.clear();
-    }
+    marks.clear();
+
+    for (auto& it : static_pool)
+        xr_delete(it);
+
+    static_pool.clear();
 }
 
 // allocate
@@ -113,6 +110,7 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::static_wm_allocate()
 
 // destroy
 void CWallmarksEngine::static_wm_destroy(CWallmarksEngine::static_wallmark* W) { static_pool.push_back(W); }
+
 // render
 void CWallmarksEngine::static_wm_render(const CWallmarksEngine::static_wallmark* W, FVF::LIT*& V)
 {
@@ -129,7 +127,6 @@ void CWallmarksEngine::static_wm_render(const CWallmarksEngine::static_wallmark*
     }
 }
 
-//--------------------------------------------------------------------------------
 void CWallmarksEngine::RecurseTri(const u32 t, Fmatrix& mView, CWallmarksEngine::static_wallmark& W)
 {
     CDB::TRI* T = sml_collector.getT() + t;
@@ -147,10 +144,6 @@ void CWallmarksEngine::RecurseTri(const u32 t, Fmatrix& mView, CWallmarksEngine:
     sml_poly_dest.clear();
 
     sPoly* P = sml_clipper.ClipPoly(sml_poly_src, sml_poly_dest);
-
-    //. todo
-    // uv_gen = mView * []
-    // UV = pos*uv_gen
 
     if (P)
     {
@@ -186,7 +179,7 @@ void CWallmarksEngine::RecurseTri(const u32 t, Fmatrix& mView, CWallmarksEngine:
             test_normal.mknormal(v_data[v_ids[0]], v_data[v_ids[1]], v_data[v_ids[2]]);
             const float cosa = test_normal.dotproduct(sml_normal);
             if (cosa < 0.034899f)
-                continue; // cos(88)
+                continue;
             RecurseTri(adj, mView, W);
         }
     }
@@ -235,7 +228,6 @@ void CWallmarksEngine::add_static_wallmark_internal(const WallmarksEngine::wallm
 
     // query for polygons in bounding box
     // calculate adjacency
-
     Fbox bb_query;
     Fvector bbc, bbd;
     bb_query.set(q.contact_point, q.contact_point);
@@ -277,7 +269,6 @@ void CWallmarksEngine::add_static_wallmark_internal(const WallmarksEngine::wallm
 
     {
         ZoneScopedN("RecurseTri");
-
         RecurseTri(0, mView, *W);
     }
 
@@ -292,42 +283,34 @@ void CWallmarksEngine::add_static_wallmark_internal(const WallmarksEngine::wallm
     bb.invalidate();
     for (const auto& el : W->verts)
         bb.modify(el.p);
+
     bb.getsphere(W->bounds.P, W->bounds.R);
 
-    // append to slot
-
-    //if (W->bounds.R < 1.f)
+    // search if similar wallmark exists
+    wm_slot* slot = FindSlot(q.shader);
+    if (slot)
     {
-        // search if similar wallmark exists
-        wm_slot* slot = FindSlot(q.shader);
-        if (slot)
+        StaticWMVecIt it = slot->static_items.begin();
+        StaticWMVecIt end = slot->static_items.end();
+        for (; it != end; ++it)
         {
-            StaticWMVecIt it = slot->static_items.begin();
-            StaticWMVecIt end = slot->static_items.end();
-            for (; it != end; ++it)
+            static_wallmark* wm = *it;
+            if (wm->bounds.P.similar(W->bounds.P, 0.02f))
             {
-                static_wallmark* wm = *it;
-                if (wm->bounds.P.similar(W->bounds.P, 0.02f))
-                {
-                    // replace
-                    static_wm_destroy(wm);
-                    *it = W;
-                    return;
-                }
+                // replace
+                static_wm_destroy(wm);
+                *it = W;
+                return;
             }
         }
-        else
-        {
-            slot = AppendSlot(q.shader);
-        }
-
-        // no similar - register _new_
-        slot->static_items.push_back(W);
     }
-    //else
-    //{
-    //	static_wm_destroy(W);
-    //}
+    else
+    {
+        slot = AppendSlot(q.shader);
+    }
+
+    // no similar - register _new_
+    slot->static_items.push_back(W);
 }
 
 void CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& sh, const float wm_size)
@@ -495,16 +478,7 @@ void CWallmarksEngine::Render()
                     BeginStream(hGeom, w_offset, w_verts, w_start);
                 }
 
-                //FVF::LIT* w_save = w_verts;
-                //try
-                {
-                    W->Parent()->RenderWallmark(W, w_verts);
-                }
-                /*catch (...)
-                {
-                    Msg("! Failed to render dynamic wallmark");
-                    w_verts = w_save;
-                }*/
+                W->Parent()->RenderWallmark(W, w_verts);
             }
 #ifdef DEBUG
             W->used_in_render = u32(-1);

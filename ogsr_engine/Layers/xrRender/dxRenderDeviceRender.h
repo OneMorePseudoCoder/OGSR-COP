@@ -19,6 +19,7 @@ public:
     virtual void OnDeviceDestroy(BOOL bKeepTextures);
     virtual void Destroy();
     virtual void Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2);
+
     //	Init
     virtual void SetupStates();
     virtual void OnDeviceCreate();

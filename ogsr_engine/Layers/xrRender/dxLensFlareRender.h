@@ -10,7 +10,6 @@ public:
     virtual void CreateShader(LPCSTR sh_name, LPCSTR tex_name);
     virtual void DestroyShader();
 
-    // private:
 public:
     ref_shader hShader;
 };

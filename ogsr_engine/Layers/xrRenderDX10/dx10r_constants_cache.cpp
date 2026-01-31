@@ -1,8 +1,5 @@
 #include "stdafx.h"
-
-
 #include "../xrRender/r_constants_cache.h"
-
 
 template <>
 dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_PixelBuffer>(R_constant* C) const

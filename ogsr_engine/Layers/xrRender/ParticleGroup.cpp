@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "../../xrParticles/psystem.h"
 #include "ParticleGroup.h"
 #include "PSLibrary.h"
@@ -166,18 +165,16 @@ void CParticleGroup::SItem::Clear()
     GetVisuals(visuals);
     for (auto& visual : visuals)
     {
-        //RImplementation.model_Delete(*it);
         IRenderVisual* pVisual = smart_cast<IRenderVisual*>(visual);
         RImplementation.model_Delete(pVisual);
         visual = nullptr;
     }
 
-    //	Igor: zero all pointers! Previous code didn't zero _source_ pointers,
-    //	just temporary ones.
     _effect = nullptr;
     _children_related.clear();
     _children_free.clear();
 }
+
 void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m)
 {
     CParticleEffect* C = smart_cast<CParticleEffect*>(RImplementation.Models->CreateParticleEffect(eff_name));
@@ -266,14 +263,12 @@ void CParticleGroup::SItem::Stop(BOOL def_stop)
     {
         for (it = _children_related.begin(); it != _children_related.end(); ++it)
         {
-            //RImplementation.model_Delete(*it);
             IRenderVisual* pVisual = smart_cast<IRenderVisual*>(*it);
             RImplementation.model_Delete(pVisual);
             *it = nullptr;
         }
         for (it = _children_free.begin(); it != _children_free.end(); ++it)
         {
-            //RImplementation.model_Delete(*it);
             IRenderVisual* pVisual = smart_cast<IRenderVisual*>(*it);
             RImplementation.model_Delete(pVisual);
             *it = nullptr;
@@ -296,7 +291,6 @@ void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& veloci
         E->UpdateParent(m, velocity, bXFORM);
 }
 
-//------------------------------------------------------------------------------
 void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 {
     CParticleGroup* PG = static_cast<CParticleGroup*>(owner);
@@ -312,6 +306,7 @@ void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
     if (eff->m_Flags.is(CPGDef::SEffect::flOnPlayChild))
         PG->items[param].StartRelatedChild(PE, *eff->m_OnPlayChildName, m);
 }
+
 void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 {
     CParticleGroup* PG = static_cast<CParticleGroup*>(owner);
@@ -328,11 +323,11 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
         PG->items[param].StartFreeChild(PE, *eff->m_OnDeadChildName, m);
 }
 
-//------------------------------------------------------------------------------
 struct zero_vis_pred
 {
     bool operator()(const dxRender_Visual* x) { return x == nullptr; }
 };
+
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
     CParticleEffect* E = smart_cast<CParticleEffect*>(_effect);
@@ -412,7 +407,6 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
                 else
                 {
                     rem_cnt++;
-                    //RImplementation.model_Delete(*it);
                     IRenderVisual* pVisual = smart_cast<IRenderVisual*>(*it);
                     RImplementation.model_Delete(pVisual);
                     *it = nullptr;
@@ -426,7 +420,6 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
             _children_free.erase(new_end, _children_free.end());
         }
     }
-    //	Msg("C: %d CS: %d",_children.size(),_children_stopped.size());
 }
 
 void CParticleGroup::SItem::OnDeviceCreate()
@@ -466,7 +459,6 @@ CParticleGroup::CParticleGroup()
 
 CParticleGroup::~CParticleGroup()
 {
-    // Msg ("!!! destoy PG");
     for (auto& item : items)
         item.Clear();
     items.clear();

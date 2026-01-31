@@ -54,8 +54,7 @@ void CPortal::OnRender()
         // draw solid
         cmd_list.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
 
-        cmd_list.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
-                     float(color_get_A(portalColor)) / 255.f);
+        cmd_list.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f, float(color_get_A(portalColor)) / 255.f);
 
         cmd_list.dbg_Draw(D3DPT_TRIANGLEFAN, &*V.begin(), V.size() - 2);
 
@@ -70,8 +69,7 @@ void CPortal::OnRender()
         }
         cmd_list.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
 
-        cmd_list.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f,
-                     float(color_get_A(portalColor)) / 255.f);
+        cmd_list.set_c("tfactor", float(color_get_R(portalColor)) / 255.f, float(color_get_G(portalColor)) / 255.f, float(color_get_B(portalColor)) / 255.f, float(color_get_A(portalColor)) / 255.f);
 
         cmd_list.dbg_Draw(D3DPT_LINESTRIP, &*(V.begin() + 1), V.size() - 2);
         if (bDebug)
@@ -85,7 +83,7 @@ void CPortal::OnRender()
     }
 }
 #endif
-//
+
 void CPortal::setup(const level_portal_data_t& data, const xr_vector<CSector*>& sectors)
 {
     const auto* V = data.vertices.begin();
@@ -100,7 +98,6 @@ void CPortal::setup(const level_portal_data_t& data, const xr_vector<CSector*>& 
         BB.modify(V[v]);
     BB.getsphere(S.P, S.R);
 
-    //
     poly.assign(V, vcnt);
     pFace = face;
     pBack = back;
@@ -123,11 +120,6 @@ void CPortal::setup(const level_portal_data_t& data, const xr_vector<CSector*>& 
     R_ASSERT(_cnt, "Invalid portal detected");
     N.div(float(_cnt));
     P.build(poly[0], N);
-
-    /*
-    if (_abs(1-P.n.magnitude())<EPS)
-    xrDebug::Fatal      (DEBUG_INFO,"Degenerated portal found at {%3.2f,%3.2f,%3.2f}.",VPUSH(poly[0]));
-    */
 }
 
 void CSector::setup(const level_sector_data_t& data, const xr_vector<CPortal*>& portals)

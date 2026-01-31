@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "hwcaps.h"
 
 void CHWCaps::Update()
@@ -25,11 +24,7 @@ void CHWCaps::Update()
     raster.bCubemap = TRUE;
 
     // ***************** Info
-    Msg("* GPU shading: vs(%x/%d.%d/%d), ps(%x/%d.%d/%d)", 
-        0, geometry_major, geometry_minor, 
-        CAP_VERSION(geometry_major, geometry_minor), 
-        0, raster_major, raster_minor,
-        CAP_VERSION(raster_major, raster_minor));
+    Msg("* GPU shading: vs(%x/%d.%d/%d), ps(%x/%d.%d/%d)", 0, geometry_major, geometry_minor, CAP_VERSION(geometry_major, geometry_minor), 0, raster_major, raster_minor, CAP_VERSION(raster_major, raster_minor));
 
     // *******1********** Vertex cache
     //	TODO: DX10: Find a way to detect cache size
@@ -40,7 +35,6 @@ void CHWCaps::Update()
     if (0 == raster_major)
         geometry_major = 0; // Disable VS if no PS
 
-    //
     bTableFog = FALSE;
 
     // Detect if stencil available

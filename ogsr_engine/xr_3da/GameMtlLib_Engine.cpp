@@ -1,6 +1,4 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
-
 #include "GameMtlLib.h"
 
 void DestroySounds(SoundVec& lst)
@@ -8,19 +6,9 @@ void DestroySounds(SoundVec& lst)
     for (auto& it : lst)
         it.destroy();
 }
-/*
-void DestroyMarks(ShaderVec& lst)
-{
-    for (ShaderIt it=lst.begin(); lst.end() != it; ++it)
-        it->destroy();
-}
-*/
 
 void DestroyPSs(PSVec& lst)
-{
-    //	for (PSIt it=lst.begin(); lst.end() != it; ++it)
-    //		Device.Resources->Delete(*it);
-}
+{}
 
 void CreateSounds(SoundVec& lst, xr_vector<std::string>& buf)
 {
@@ -43,20 +31,6 @@ void CreateSoundNames(xr_vector<std::string>& lst, LPCSTR buf)
         lst.push_back(s);
     }
 }
-
-/*
-void CreateMarks(ShaderVec& lst, LPCSTR buf)
-{
-    string256	tmp;
-    int cnt		=_GetItemCount(buf);	R_ASSERT(cnt<=GAMEMTL_SUBITEM_COUNT);
-    ref_shader	s;
-    for (int k=0; k<cnt; ++k)
-    {
-        s.create		("effects\\wallmark",_GetItem(buf,k,tmp));
-        lst.push_back	(s);
-    }
-}
-*/
 
 void CreateMarks(IWallMarkArray* pMarks, LPCSTR buf)
 {
@@ -128,7 +102,7 @@ void SGameMtlPair::CreateAllParticles()
 {
     for (const auto& collide_particle : CollideParticles)
     {
-        for (u32 i = 0; i < 4; i++) // 16 ??
+        for (u32 i = 0; i < 4; i++)
         {
             IRenderVisual* vis = Render->model_CreateParticles(collide_particle.c_str(), TRUE);
             Render->model_Delete(vis);

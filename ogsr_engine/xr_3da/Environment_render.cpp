@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "Environment.h"
 #include "render.h"
 #include "xr_efflensflare.h"
@@ -11,7 +9,6 @@
 //-----------------------------------------------------------------------------
 // Environment render
 //-----------------------------------------------------------------------------
-// BOOL bNeed_re_create_env = FALSE;
 void CEnvironment::RenderSky(CBackend& cmd_list)
 {
     if (nullptr == g_pGameLevel)
@@ -36,7 +33,7 @@ void CEnvironment::RenderFlares(CBackend& cmd_list)
 {
     if (nullptr == g_pGameLevel)
         return;
-    // 1
+
     eff_LensFlare->Render(cmd_list, FALSE, TRUE, TRUE);
 }
 
@@ -61,7 +58,6 @@ void CEnvironment::RenderLast(CBackend& cmd_list)
         eff_Rain->Calculate();
     }
 
-    // 2
     eff_Rain->Render(cmd_list);
     eff_Thunderbolt->Render(cmd_list);
 }

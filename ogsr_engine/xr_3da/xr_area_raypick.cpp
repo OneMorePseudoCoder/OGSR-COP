@@ -104,9 +104,9 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
 //--------------------------------------------------------------------------------
 BOOL CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, const CObject* ignore_object) const
 {
-    BOOL _res = _RayPick(start, dir, range, tgt, R, ignore_object);
-    return _res;
+    return _RayPick(start, dir, range, tgt, R, ignore_object);
 }
+
 BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, const CObject* ignore_object) const
 {
     ZoneScoped;
@@ -157,9 +157,9 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 //--------------------------------------------------------------------------------
 BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, const CObject* ignore_object) const
 {
-    BOOL _res = _RayQuery(dest, R, CB, user_data, tb, ignore_object);
-    return (_res);
+    return _RayQuery(dest, R, CB, user_data, tb, ignore_object);
 }
+
 BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, const CObject* ignore_object) const
 {
     ZoneScoped;

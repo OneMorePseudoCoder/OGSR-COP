@@ -22,7 +22,6 @@ void CObject::cNameSect_set(shared_str N)
     spatial.dbg_name = NameSection;
 }
 
-//#include "SkeletonCustom.h"
 void CObject::cNameVisual_set(shared_str N)
 {
     // check if equal
@@ -41,12 +40,6 @@ void CObject::cNameVisual_set(shared_str N)
         IKinematics* old_k = old_v ? old_v->dcast_PKinematics() : nullptr;
         IKinematics* new_k = renderable.visual->dcast_PKinematics();
 
-        /*
-        if(old_k && new_k){
-            new_k->Update_Callback			= old_k->Update_Callback;
-            new_k->Update_Callback_Param	= old_k->Update_Callback_Param;
-        }
-        */
         if (old_k && new_k)
         {
             new_k->SetUpdateCallback(old_k->GetUpdateCallback());
@@ -71,6 +64,7 @@ void CObject::processing_activate()
     if (0 == (Props.bActiveCounter - 1))
         g_pGameLevel->Objects.o_activate(this);
 }
+
 void CObject::processing_deactivate()
 {
     VERIFY(0 != Props.bActiveCounter, "Invalid sequence of processing enable/disable calls: underflow", *cName());
@@ -93,6 +87,7 @@ void CObject::setEnabled(BOOL _enabled)
         spatial.type &= ~STYPE_COLLIDEABLE;
     }
 }
+
 void CObject::setVisible(BOOL _visible)
 {
     if (_visible)
@@ -113,11 +108,13 @@ void CObject::Center(Fvector& C) const
     ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", __FUNCTION__, cName().c_str(), ID());
     renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
 }
+
 float CObject::Radius() const
 {
     ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", __FUNCTION__, cName().c_str(), ID());
     return renderable.visual->getVisData().sphere.R;
 }
+
 const Fbox& CObject::BoundingBox() const
 {
     ASSERT_FMT(renderable.visual, "[%s]: %s[%u] has no renderable.visual", __FUNCTION__, cName().c_str(), ID());
@@ -133,7 +130,6 @@ CObject::CObject() : ISpatial(g_SpatialSpace)
     spatial.type |= STYPE_COLLIDEABLE;
     spatial.type |= STYPE_RENDERABLE;
 
-    //dwFrame_AsCrow = (u32)-1;
     spatial.dbg_name = "object";
 
     // Transform
@@ -223,7 +219,7 @@ void CObject::net_Destroy()
         shedule_unregister();
 
     spatial_unregister();
-    //	setDestroy					(true);
+
     // remove visual
     cNameVisual_set(nullptr);
 }
@@ -234,7 +230,6 @@ const float base_spu_epsR = 0.05f;
 
 void CObject::spatial_update(float eps_P, float eps_R)
 {
-    //
     BOOL bUpdate = FALSE;
     if (PositionStack.empty())
     {
@@ -287,7 +282,6 @@ void CObject::spatial_update(float eps_P, float eps_R)
                 if (!C.similar(spatial.sphere.P, eps_P))
                     spatial_move();
             }
-            // else nothing to do :_)
         }
     }
 }
@@ -337,10 +331,6 @@ void CObject::shedule_Update(u32 T)
     // Always make me crow on shedule-update
     // Makes sure that update-cl called at least with freq of shedule-update
     MakeMeCrow();
-    /*
-    if (AlwaysTheCrow())																	MakeMeCrow	();
-    else if (Device.vCameraPosition.distance_to_sqr(Position()) < CROW_RADIUS*CROW_RADIUS)	MakeMeCrow	();
-    */
 }
 
 void CObject::spatial_register()
@@ -378,21 +368,23 @@ CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
 
     VERIFY((new_parent == 0) || (old_parent == 0), "Before set parent - execute H_SetParent(0)");
 
-    // if (Parent) Parent->H_ChildRemove	(this);
     if (nullptr == old_parent)
         OnH_B_Chield(); // before attach
     else
         OnH_B_Independent(just_before_destroy); // before detach
+
     if (new_parent)
         spatial_unregister();
     else
         spatial_register();
+
     Parent = new_parent;
+
     if (nullptr == old_parent)
         OnH_A_Chield(); // after attach
     else
         OnH_A_Independent(); // after detach
-    // if (Parent)	Parent->H_ChildAdd		(this);
+
     MakeMeCrow();
     return old_parent;
 }
@@ -401,6 +393,7 @@ void CObject::OnH_A_Chield() {}
 void CObject::OnH_B_Chield() { setVisible(false); }
 void CObject::OnH_A_Independent() { setVisible(true); }
 void CObject::OnH_B_Independent(bool just_before_destroy) {}
+
 void CObject::MakeMeCrow()
 {
     if (Props.crow)

@@ -1,12 +1,10 @@
 #include "stdafx.h"
-
 #include "ResourceManager.h"
 #include "r_constants.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
 R_constant_table::~R_constant_table()
 {
-    // dxRenderDeviceRender::Instance().Resources->_DeleteConstantTable(this);
     DEV->_DeleteConstantTable(this);
 }
 

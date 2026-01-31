@@ -112,12 +112,6 @@ uint32_t crc32_bitwise(const void* data, size_t length, uint32_t previousCrc32)
         {
             // branch-free
             crc = (crc >> 1) ^ (-int32_t(crc & 1) & Polynomial);
-
-            // branching, much slower:
-            // if (crc & 1)
-            //  crc = (crc >> 1) ^ Polynomial;
-            // else
-            //  crc =  crc >> 1;
         }
     }
 
@@ -131,8 +125,7 @@ uint32_t crc32_halfbyte(const void* data, size_t length, uint32_t previousCrc32)
     const uint8_t* current = (const uint8_t*)data;
 
     /// look-up table for half-byte, same as crc32Lookup[0][16*i]
-    static const uint32_t Crc32Lookup16[16] = {0x00000000, 0x1DB71064, 0x3B6E20C8, 0x26D930AC, 0x76DC4190, 0x6B6B51F4, 0x4DB26158, 0x5005713C,
-                                               0xEDB88320, 0xF00F9344, 0xD6D6A3E8, 0xCB61B38C, 0x9B64C2B0, 0x86D3D2D4, 0xA00AE278, 0xBDBDF21C};
+    static const uint32_t Crc32Lookup16[16] = {0x00000000, 0x1DB71064, 0x3B6E20C8, 0x26D930AC, 0x76DC4190, 0x6B6B51F4, 0x4DB26158, 0x5005713C, 0xEDB88320, 0xF00F9344, 0xD6D6A3E8, 0xCB61B38C, 0x9B64C2B0, 0x86D3D2D4, 0xA00AE278, 0xBDBDF21C};
 
     while (length-- != 0)
     {
@@ -186,19 +179,6 @@ uint32_t crc32_1byte_tableless(const void* data, size_t length, uint32_t previou
         uint32_t low = (s ^ (s << 6)) & 0xFF;
         uint32_t a = (low * ((1 << 23) + (1 << 14) + (1 << 2)));
         crc = (crc >> 8) ^ (low * ((1 << 24) + (1 << 16) + (1 << 8))) ^ a ^ (a >> 1) ^ (low * ((1 << 20) + (1 << 12))) ^ (low << 19) ^ (low << 17) ^ (low >> 2);
-
-        // Hagai's code:
-        /*uint32_t t = (s ^ (s << 6)) << 24;
-
-        // some temporaries to optimize XOR
-        uint32_t x = (t >> 1) ^ (t >> 2);
-        uint32_t y = x ^ (x >> 3);
-        uint32_t z = (t >> 12) ^ (t >> 16);
-
-        crc = (crc >> 8) ^
-               t ^ (t >> 23) ^
-               y ^ (y >>  6) ^
-               z ^ (z >> 10);*/
     }
 
     return ~crc; // same as crc ^ 0xFFFFFFFF

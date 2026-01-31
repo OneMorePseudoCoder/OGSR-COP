@@ -44,7 +44,6 @@ BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
     return FALSE;
 }
 
-//--------------------------------------------------------------------------------------------------------------
 SState* CResourceManager::_CreateState(SimulatorStates& state_code)
 {
     // Search equal state-code
@@ -62,6 +61,7 @@ SState* CResourceManager::_CreateState(SimulatorStates& state_code)
     v_states.back()->state_code = state_code;
     return v_states.back();
 }
+
 void CResourceManager::_DeleteState(const SState* state)
 {
     if (0 == (state->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -71,7 +71,6 @@ void CResourceManager::_DeleteState(const SState* state)
     Msg("! ERROR: Failed to find compiled stateblock");
 }
 
-//--------------------------------------------------------------------------------------------------------------
 SPass* CResourceManager::_CreatePass(const SPass& proto)
 {
     for (const auto& v_passe : v_passes)
@@ -94,6 +93,7 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
     v_passes.push_back(P);
     return v_passes.back();
 }
+
 void CResourceManager::_DeletePass(const SPass* P)
 {
     if (0 == (P->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -103,7 +103,6 @@ void CResourceManager::_DeletePass(const SPass* P)
     Msg("! ERROR: Failed to find compiled pass");
 }
 
-//--------------------------------------------------------------------------------------------------------------
 SVS* CResourceManager::_CreateVS(LPCSTR _name)
 {
     string_path name;
@@ -127,8 +126,6 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         SVS* _vs = xr_new<SVS>();
         _vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
         m_vs.insert(mk_pair(_vs->set_name(name), _vs));
-        //_vs->vs				= NULL;
-        //_vs->signature		= NULL;
         if (0 == _stricmp(_name, "null"))
         {
             return _vs;
@@ -185,6 +182,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         return _vs;
     }
 }
+
 void CResourceManager::_DeleteVS(const SVS* vs)
 {
     if (0 == (vs->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -210,7 +208,6 @@ void CResourceManager::_DeleteVS(const SVS* vs)
     Msg("! ERROR: Failed to find compiled vertex-shader '%s'", *vs->cName);
 }
 
-//--------------------------------------------------------------------------------------------------------------
 SPS* CResourceManager::_CreatePS(LPCSTR _name)
 {
     string_path name;
@@ -281,6 +278,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         return _ps;
     }
 }
+
 void CResourceManager::_DeletePS(const SPS* ps)
 {
     if (0 == (ps->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -294,8 +292,6 @@ void CResourceManager::_DeletePS(const SPS* ps)
     }
     Msg("! ERROR: Failed to find compiled pixel-shader '%s'", *ps->cName);
 }
-
-//--------------------------------------------------------------------------------------------------------------
 
 static BOOL dcl_equal(const D3DVERTEXELEMENT9* a, const D3DVERTEXELEMENT9* b)
 {
@@ -326,6 +322,7 @@ SDeclaration* CResourceManager::_CreateDecl(const D3DVERTEXELEMENT9* dcl)
     v_declarations.push_back(D);
     return D;
 }
+
 void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
 {
     if (0 == (dcl->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -335,7 +332,6 @@ void CResourceManager::_DeleteDecl(const SDeclaration* dcl)
     Msg("! ERROR: Failed to find compiled vertex-declarator");
 }
 
-//--------------------------------------------------------------------------------------------------------------
 R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
 {
     if (C.empty())
@@ -348,6 +344,7 @@ R_constant_table* CResourceManager::_CreateConstantTable(R_constant_table& C)
     v_constant_tables.back()->dwFlags |= xr_resource_flagged::RF_REGISTERED;
     return v_constant_tables.back();
 }
+
 void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
 {
     if (0 == (C->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -357,8 +354,7 @@ void CResourceManager::_DeleteConstantTable(const R_constant_table* C)
     Msg("! ERROR: Failed to find compiled constant-table");
 }
 
-//--------------------------------------------------------------------------------------------------------------
-CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount /* = 1 */, u32 slices_num /*=1*/, Flags32 flags /*= {}*/)
+CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount, u32 slices_num, Flags32 flags)
 {
     R_ASSERT(Name && Name[0] && w && h);
 
@@ -377,6 +373,7 @@ CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 S
         return RT;
     }
 }
+
 void CResourceManager::_DeleteRT(const CRT* RT)
 {
     if (0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -389,11 +386,6 @@ void CResourceManager::_DeleteRT(const CRT* RT)
         return;
     }
     Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
-}
-
-//--------------------------------------------------------------------------------------------------------------
-void CResourceManager::DBG_VerifyGeoms()
-{
 }
 
 SGeometry* CResourceManager::CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
@@ -420,6 +412,7 @@ SGeometry* CResourceManager::CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVerte
     v_geoms.push_back(Geom);
     return Geom;
 }
+
 SGeometry* CResourceManager::CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
     auto dcl = xr_vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
@@ -427,6 +420,7 @@ SGeometry* CResourceManager::CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndex
     SGeometry* g = CreateGeom(dcl.data(), vb, ib);
     return g;
 }
+
 void CResourceManager::DeleteGeom(const SGeometry* Geom)
 {
     if (0 == (Geom->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -438,7 +432,6 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
 
 CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 {
-    // DBG_VerifyTextures	();
     if (0 == xr_strcmp(_Name, "null"))
         return nullptr;
 
@@ -473,10 +466,9 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
 
     return T;
 }
+
 void CResourceManager::_DeleteTexture(const CTexture* T)
 {
-    // DBG_VerifyTextures	();
-
     if (0 == (T->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
 
@@ -496,21 +488,6 @@ void CResourceManager::_DeleteTexture(const CTexture* T)
     Msg("! ERROR: Failed to find texture surface '%s'", *T->cName);
 }
 
-#ifdef DEBUG
-void CResourceManager::DBG_VerifyTextures()
-{
-    map_Texture::iterator I = m_textures.begin();
-    map_Texture::iterator E = m_textures.end();
-    for (; I != E; I++)
-    {
-        R_ASSERT(I->first);
-        R_ASSERT(I->second);
-        R_ASSERT(I->second->cName);
-        R_ASSERT(0 == xr_strcmp(I->first, *I->second->cName));
-    }
-}
-#endif
-
 bool cmp_tl(const std::pair<u32, ref_texture>& _1, const std::pair<u32, ref_texture>& _2) { return _1.first < _2.first; }
 
 STextureList* CResourceManager::_CreateTextureList(STextureList& L)
@@ -526,6 +503,7 @@ STextureList* CResourceManager::_CreateTextureList(STextureList& L)
     lst_textures.push_back(lst);
     return lst;
 }
+
 void CResourceManager::_DeleteTextureList(const STextureList* L)
 {
     if (0 == (L->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -588,6 +566,7 @@ SConstantList* CResourceManager::_CreateConstantList(SConstantList& L)
     lst_constants.push_back(lst);
     return lst;
 }
+
 void CResourceManager::_DeleteConstantList(const SConstantList* L)
 {
     if (0 == (L->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -615,6 +594,7 @@ dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(u32 context_id, ID3D
     v_constant_buffer[context_id].push_back(pTempBuffer);
     return pTempBuffer;
 }
+
 bool CResourceManager::_DeleteConstantBuffer(u32 context_id, const dx10ConstantBuffer* pBuffer)
 {
     if (0 == (pBuffer->dwFlags & xr_resource_flagged::RF_REGISTERED))
@@ -643,6 +623,7 @@ SInputSignature* CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
 
     return pSign;
 }
+
 void CResourceManager::_DeleteInputSignature(const SInputSignature* pSignature)
 {
     if (0 == (pSignature->dwFlags & xr_resource_flagged::RF_REGISTERED))

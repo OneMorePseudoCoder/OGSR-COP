@@ -51,7 +51,6 @@ void CHW::CreateD3D()
     // Минимально поддерживаемая версия Windows => Windows Vista SP2 или Windows 7.
     R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&m_pFactory)));
 
-    
     UINT i = 0;
     while (m_pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
     {
@@ -70,22 +69,16 @@ void CHW::CreateD3D()
     IDXGIFactory6* pFactory6 = nullptr;
     if (SUCCEEDED(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory6))))
     {
-        pFactory6->EnumAdapterByGpuPreference(
-            0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&m_pAdapter));
-
+        pFactory6->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&m_pAdapter));
         Msg(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
-
         _RELEASE(pFactory6);
-
         b_modern = true;
     }
     else
     {
         Msg(" !CHW::CreateD3D() use EnumAdapters1(0)");
-
         m_pFactory->EnumAdapters1(0, &m_pAdapter);
     }
-
 }
 
 void CHW::DestroyD3D()
@@ -168,22 +161,13 @@ void CHW::CreateDevice(HWND m_hWnd)
 
     auto& pContext = d3d_contexts_pool[CHW::IMM_CTX_ID];
 
-    constexpr D3D_FEATURE_LEVEL pFeatureLevels[] = {
+    constexpr D3D_FEATURE_LEVEL pFeatureLevels[] = 
+    {
         D3D_FEATURE_LEVEL_11_1,
         D3D_FEATURE_LEVEL_11_0,
     };
 
-    R_CHK(D3D11CreateDevice(
-        m_pAdapter
-        , D3D_DRIVER_TYPE_UNKNOWN // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
-        , nullptr
-        , createDeviceFlags
-        , pFeatureLevels
-        , std::size(pFeatureLevels)
-        , D3D11_SDK_VERSION
-        , &pDevice
-        , &FeatureLevel
-        , &pContext));
+    R_CHK(D3D11CreateDevice(m_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, createDeviceFlags, pFeatureLevels, std::size(pFeatureLevels), D3D11_SDK_VERSION, &pDevice, &FeatureLevel, &pContext));
 
     R_ASSERT(FeatureLevel >= D3D_FEATURE_LEVEL_11_0); //На всякий случай
 
@@ -194,12 +178,6 @@ void CHW::CreateDevice(HWND m_hWnd)
     }
 
     CreateSwapChain2(m_hWnd);
-
-    //// https://habr.com/ru/post/308980/
-    //IDXGIDevice1* pDeviceDXGI = nullptr;
-    //R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&pDeviceDXGI)));
-    //R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
-    //_RELEASE(pDeviceDXGI);
 
     _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
@@ -224,13 +202,10 @@ void CHW::CreateDevice(HWND m_hWnd)
                 if (IsDebuggerPresent())
                 {
                     d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
-                    // d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
                 }
 
                 // Add more message IDs here as needed
-                D3D11_MESSAGE_ID hide[]{
-                    D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
-                };
+                D3D11_MESSAGE_ID hide[]{ D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS };
 
                 D3D11_INFO_QUEUE_FILTER filter{};
                 filter.DenyList.NumIDs = std::size(hide);
@@ -300,8 +275,7 @@ void CHW::ResetDevice(HWND m_hWnd)
     SelectResolution(desc.Width, desc.Height);
 
     CHK_DX(m_pSwapChain->ResizeTarget(&desc));
-    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, desc.Width, desc.Height, desc.Format
-        , DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
+    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, desc.Width, desc.Height, desc.Format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
 
     UpdateWindowProps(m_hWnd);
 
@@ -334,16 +308,10 @@ void CHW::SelectResolution(u32& dwWidth, u32& dwHeight)
 }
 
 void CHW::OnAppActivate()
-{
-    //const HWND insertPos = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
-
-    //SetWindowPos(Device.m_hWnd, insertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-}
+{}
 
 void CHW::OnAppDeactivate()
-{
-    //SetWindowPos(Device.m_hWnd, HWND_NOTOPMOST , 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-}
+{}
 
 bool CHW::ThisInstanceIsGlobal() const
 {
@@ -378,8 +346,7 @@ void CHW::DumpVideoMemoryUsage() const
         IDXGIAdapter3* adapter3;
         DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
 
-        if (SUCCEEDED(m_pAdapter->QueryInterface(&adapter3)) 
-            && SUCCEEDED(adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
+        if (SUCCEEDED(m_pAdapter->QueryInterface(&adapter3)) && SUCCEEDED(adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
         {
             Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: %zu MB (%zu bytes)",
                 Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, 
@@ -408,7 +375,7 @@ void CHW::UpdateWindowProps(HWND m_hWnd) const
 
     // Set window properties depending on what mode were in.
     static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
-    //dwWindowStyle = WS_VISIBLE;
+
     if (bBordersMode)
         dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
 
@@ -436,11 +403,7 @@ void CHW::UpdateWindowProps(HWND m_hWnd) const
 
         GetClientRect(GetDesktopWindow(), &DesktopRect);
 
-        SetRect(&m_rcWindowBounds, 
-            (DesktopRect.right - dxgi_mode_desc.Width) / 2, 
-            (DesktopRect.bottom - dxgi_mode_desc.Height) / 2,
-            (DesktopRect.right + dxgi_mode_desc.Width) / 2, 
-            (DesktopRect.bottom + dxgi_mode_desc.Height) / 2);
+        SetRect(&m_rcWindowBounds, (DesktopRect.right - dxgi_mode_desc.Width) / 2, (DesktopRect.bottom - dxgi_mode_desc.Height) / 2, (DesktopRect.right + dxgi_mode_desc.Width) / 2, (DesktopRect.bottom + dxgi_mode_desc.Height) / 2);
     }
     else
     {
@@ -453,13 +416,7 @@ void CHW::UpdateWindowProps(HWND m_hWnd) const
     if (bBordersMode)
         AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
 
-    SetWindowPos(m_hWnd, HWND_NOTOPMOST
-        , m_rcWindowBounds.left
-        , m_rcWindowBounds.top + fYOffset
-        , (m_rcWindowBounds.right - m_rcWindowBounds.left)
-        , (m_rcWindowBounds.bottom - m_rcWindowBounds.top)
-        
-        , /*SWP_SHOWWINDOW | */SWP_NOCOPYBITS | SWP_DRAWFRAME);
+    SetWindowPos(m_hWnd, HWND_NOTOPMOST, m_rcWindowBounds.left, m_rcWindowBounds.top + fYOffset, (m_rcWindowBounds.right - m_rcWindowBounds.left), (m_rcWindowBounds.bottom - m_rcWindowBounds.top), SWP_NOCOPYBITS | SWP_DRAWFRAME);
 }
 
 struct _uniq_mode

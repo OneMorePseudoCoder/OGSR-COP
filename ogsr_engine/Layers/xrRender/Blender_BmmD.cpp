@@ -3,8 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "blender_BmmD.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -17,10 +15,10 @@ CBlender_BmmD::CBlender_BmmD()
     xr_strcpy(oT2_Name, "$null");
 
     description.version = 3;
-    xr_strcpy(oR_Name, "detail\\detail_grnd_grass"); //"$null");
-    xr_strcpy(oG_Name, "detail\\detail_grnd_asphalt"); //"$null");
-    xr_strcpy(oB_Name, "detail\\detail_grnd_earth"); //"$null");
-    xr_strcpy(oA_Name, "detail\\detail_grnd_yantar"); //"$null");
+    xr_strcpy(oR_Name, "detail\\detail_grnd_grass");
+    xr_strcpy(oG_Name, "detail\\detail_grnd_asphalt");
+    xr_strcpy(oB_Name, "detail\\detail_grnd_earth");
+    xr_strcpy(oA_Name, "detail\\detail_grnd_yantar");
 }
 
 CBlender_BmmD::~CBlender_BmmD() {}
@@ -132,18 +130,14 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         break;
     case SE_R2_NORMAL_LQ: // deffer
         uber_deffer(C, false, "base", "impl", false, oT2_Name[0] ? oT2_Name : nullptr, true);
-        // C.r_Sampler		("s_lmap",	C.L_textures[1]);
         C.r_dx10Texture("s_lmap", C.L_textures[1]);
         C.r_dx10Sampler("smp_linear");
-
         C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         C.r_StencilRef(0x01);
-
         C.r_End();
         break;
     case SE_R2_SHADOW: // smap
         C.r_Pass("shadow_direct_base", "dumb", FALSE, TRUE, TRUE, FALSE);
-        // C.r_Sampler		("s_base",C.L_textures[0]);
         C.r_dx10Texture("s_base", C.L_textures[0]);
         C.r_dx10Sampler("smp_base");
         C.r_dx10Sampler("smp_linear");

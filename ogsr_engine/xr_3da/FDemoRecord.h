@@ -1,20 +1,11 @@
 #pragma once
-
 #include "iinputreceiver.h"
 #include "effector.h"
 
 class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
 {
-    //struct force_position
-    //{
-    //    bool set_position;
-    //    Fvector p;
-    //} g_position{};
-
     int iCount;
     IWriter* file{};
-
-
 
     Fmatrix m_Camera;
     u32 m_Stage;
@@ -73,7 +64,4 @@ public:
     Fvector m_HPB;
     Fvector m_Position;
     bool m_b_redirect_input_to_level;
-
-    // static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
-    // static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 };

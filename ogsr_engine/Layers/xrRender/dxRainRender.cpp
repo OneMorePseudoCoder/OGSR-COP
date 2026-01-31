@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "dxRainRender.h"
-
 #include "../../xr_3da/Rain.h"
-
 
 dxRainRender::dxRainRender()
 {
@@ -112,7 +110,6 @@ void dxRainRender::Render(CBackend& cmd_list, CEffect_Rain & owner)
         cmd_list.set_Shader(SH_Rain);
         cmd_list.set_Geometry(hGeom_Rain);
         cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, 0, vCount / 2);
-        // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_CCW);
         cmd_list.set_CullMode(CULL_CCW);
         cmd_list.set_c("ssfx_rain_setup", ps_ssfx_rain_2); // Alpha, Brigthness, Refraction, Reflection
     }
@@ -150,8 +147,7 @@ void dxRainRender::Render(CBackend& cmd_list, CEffect_Rain & owner)
             }
 
             // Render
-            if (RImplementation.ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R) 
-                && (fis_zero(ps_r2_no_details_radius) || Device.vCameraPosition.distance_to(P->bounds.P) > ps_r2_no_rain_radius))
+            if (RImplementation.ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R) && (fis_zero(ps_r2_no_details_radius) || Device.vCameraPosition.distance_to(P->bounds.P) > ps_r2_no_rain_radius))
             {
                 // Build matrix
                 float scale = P->time / particles_time;

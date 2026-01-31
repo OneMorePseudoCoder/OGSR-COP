@@ -109,7 +109,6 @@ public:
         fDensityFactor = 0.0f;
     }
     void Load(IReader& fs);
-    void Save(IWriter& fs);
     IC int GetID() { return ID; }
 };
 DEFINE_VECTOR(SGameMtl*, GameMtlVec, GameMtlIt);
@@ -128,16 +127,6 @@ protected:
     int ID_parent;
 
 public:
-    enum
-    {
-        //flFlotation		= (1<<0),
-        //flBreakingSounds = (1 << 1),
-        //flStepSounds = (1 << 2),
-        //flCollideSounds	= (1<<3),
-        //flCollideSounds = (1 << 4),
-        //flCollideParticles = (1 << 5),
-        //flCollideMarks = (1 << 6)
-    };
     Flags32 OwnProps; // unused in game
     //	properties
     SoundVec BreakingSounds;
@@ -172,10 +161,7 @@ public:
         mtl1 = m1;
     }
     IC bool IsPair(int m0, int m1) { return !!(((mtl0 == m0) && (mtl1 == m1)) || ((mtl0 == m1) && (mtl1 == m0))); }
-    void Save(IWriter& fs);
     void Load(IReader& fs);
-    //IC int GetParent() { return ID_parent; }
-    BOOL SetParent(int parent);
 #ifdef DEBUG
     LPCSTR dbg_Name();
 #endif
@@ -200,14 +186,7 @@ class ENGINE_API CGameMtlLibrary
 
 public:
     CGameMtlLibrary();
-    ~CGameMtlLibrary()
-    {
-        /*
-        R_ASSERT		(0==material_pairs_rt.size());
-        R_ASSERT		(0==material_pairs.size());
-        R_ASSERT		(0==materials.size());
-        */
-    }
+    ~CGameMtlLibrary() {}
     IC void Unload()
     {
         material_count = 0;
@@ -305,7 +284,6 @@ public:
 
     // IO routines
     void Load();
-    bool Save();
 
 private:
     void loadSounds();

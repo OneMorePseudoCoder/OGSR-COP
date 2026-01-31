@@ -36,8 +36,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority)
                 if (it.second.items->empty() && it.second.trees->empty())
                     continue;
 
-                // cmd_list.set_Pass(it->first);
-
                 cmd_list.set_VS(it.first->vs);
                 cmd_list.set_GS(it.first->gs);
                 cmd_list.set_PS(it.first->ps);
@@ -70,9 +68,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority)
 
                 if (!items.trees->empty())
                 {
-                    cmd_list.set_c("benders_setup",
-                                   Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
-                                            ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
+                    cmd_list.set_c("benders_setup", Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
 
                     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS))
                     {
@@ -140,8 +136,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
                 if (it.second.items->empty())
                     continue;
 
-                // cmd_list.set_Pass(it->first);
-
                 cmd_list.set_VS(it.first->vs);
                 cmd_list.set_GS(it.first->gs);
                 cmd_list.set_PS(it.first->ps);
@@ -153,6 +147,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
                 {
                     cmd_list.set_States(state = it.first->state._get()->state);
                 }
+
                 if (it.first->T._get() != textures)
                 {
                     cmd_list.set_Textures(textures = it.first->T._get());
@@ -203,14 +198,8 @@ void render_item(u32 context_id, const T& item)
     RImplementation.apply_object(dsgraph.cmd_list, item.second.pObject);
     dsgraph.cmd_list.apply_lmaterial();
 
-    // Change culling mode if HUD meshes were flipped
-    // if (cullMode != CULL_NONE)
-    //{
-    //     cmd_list.set_CullMode(cullMode == CULL_CW ? CULL_CCW : CULL_CW);
-    // }
-
     const float lod = calcLOD(item.first, V->getVisData().sphere.R);
-    dsgraph.cmd_list.lod.set_lod(lod); // !!!
+    dsgraph.cmd_list.lod.set_lod(lod);
     V->Render(dsgraph.cmd_list, lod, dsgraph.phase == CRender::PHASE_SMAP);
 }
 
@@ -239,8 +228,6 @@ void render_large_map(const u32 context_id, mapSortedLarge_T& map)
     {
         if (it.second.items->empty())
             continue;
-
-        // cmd_list.set_Pass(it->first);
 
         dsgraph.cmd_list.set_VS(it.first->vs);
         dsgraph.cmd_list.set_GS(it.first->gs);
@@ -371,7 +358,6 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear)
 
     PIX_EVENT_CTX(cmd_list, dsgraph_render_emissive);
 
-    //sort_front_to_back_render_and_clean(context_id, mapEmissive);
     mapEmissive.traverse_left_right(context_id, render_item);
     if (clear)
         mapEmissive.clear();
@@ -382,7 +368,6 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear)
 
         RImplementation.rmNear(cmd_list);
 
-        //sort_front_to_back_render_and_clean(context_id, mapHUDEmissive);
         mapHUDEmissive.traverse_left_right(context_id, render_item);
         if (clear)
             mapHUDEmissive.clear();

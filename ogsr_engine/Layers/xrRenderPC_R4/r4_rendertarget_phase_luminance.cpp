@@ -42,7 +42,6 @@ void CRenderTarget::phase_luminance(CBackend& cmd_list)
     cmd_list.set_CullMode(CULL_NONE);
     cmd_list.set_ColorWriteEnable();
     cmd_list.set_Z(FALSE);
-    // CHK_DX									(HW.pDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
 
     // 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
     u_setrt(cmd_list, rt_LUM_64, nullptr, nullptr, nullptr, nullptr);
@@ -172,6 +171,5 @@ void CRenderTarget::phase_luminance(CBackend& cmd_list)
     }
 
     // Cleanup states
-    // CHK_DX		(HW.pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));
     cmd_list.set_Z(TRUE);
 }

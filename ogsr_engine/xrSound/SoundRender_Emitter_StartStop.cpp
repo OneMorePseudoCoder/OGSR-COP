@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "SoundRender_Core.h"
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Source.h"
@@ -11,14 +10,13 @@ void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
     VERIFY(_owner);
     owner_data = _owner->_p;
     VERIFY(owner_data);
-    //	source					= (CSoundRender_Source*)owner_data->handle;
     p_source.position.set(0, 0, 0);
-    p_source.min_distance = source()->m_fMinDist; // DS3D_DEFAULTMINDISTANCE;
-    p_source.max_distance = source()->m_fMaxDist; // 300.f;
-    p_source.base_volume = source()->m_fBaseVolume; // 1.f
-    p_source.volume = 1.f; // 1.f
+    p_source.min_distance = source()->m_fMinDist;
+    p_source.max_distance = source()->m_fMaxDist;
+    p_source.base_volume = source()->m_fBaseVolume;
+    p_source.volume = 1.f;
     p_source.freq = 1.f;
-    p_source.max_ai_distance = source()->m_fMaxAIDist; // 300.f;
+    p_source.max_ai_distance = source()->m_fMaxAIDist;
 
     if (fis_zero(delay, EPS_L))
     {
@@ -86,7 +84,6 @@ void CSoundRender_Emitter::pause(BOOL bVal, int id)
 
 void CSoundRender_Emitter::cancel()
 {
-    // Msg		("- %10s : %3d[%1.4f] : %s","cancel",dbg_ID,priority(),source->fname);
     switch (m_current_state)
     {
     case stPlaying:

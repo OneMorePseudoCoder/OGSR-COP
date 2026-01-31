@@ -450,11 +450,4 @@ void CDetailManager::MT_CALC()
 }
 
 void CDetailManager::Clear()
-{
-    //if (ps_ssfx_grass_shadows.x <= 0)
-    //    return;
-
-    //for (auto& list : m_visibles)
-    //    for (auto& vis : list)
-    //        vis.clear();
-}
+{}

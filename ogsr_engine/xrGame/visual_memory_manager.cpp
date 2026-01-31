@@ -25,18 +25,15 @@
 #include "gamepersistent.h"
 #include "actor_memory.h"
 #include "client_spawn_manager.h"
-#include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 #include "holder_custom.h"
 #include "inventory.h"
 #include "torch.h"
-
-#ifndef MASTER_GOLD
-#include "clsid_game.h"
 #include "ai_debug.h"
-#endif // MASTER_GOLD
+#include "ai/monsters/basemonster/base_monster.h"
+#include "ai/monsters/zombie/zombie.h"
 
 struct SRemoveOfflinePredicate
 {
@@ -127,10 +124,8 @@ void CVisualMemoryManager::reinit()
     }
 
     m_visible_objects.clear();
-    //	m_visible_objects.reserve			(100);
 
     m_not_yet_visible_objects.clear();
-    //	m_not_yet_visible_objects.reserve	(100);
 
     if (m_object)
         m_object->feel_vision_clear();
@@ -157,7 +152,7 @@ void CVisualMemoryManager::reload(LPCSTR section)
         m_free.Load(section, !!m_client);
 }
 
-/*IC*/ const CVisionParameters& CVisualMemoryManager::current_state() const
+const CVisionParameters& CVisualMemoryManager::current_state() const
 {
     if (m_stalker)
     {
@@ -175,9 +170,6 @@ void CVisualMemoryManager::reload(LPCSTR section)
 
 u32 CVisualMemoryManager::visible_object_time_last_seen(const CObject* object) const
 {
-    if (Actor()->Holder() && smart_cast<const CActor*>(object))
-        object = smart_cast<const CObject*>(Actor()->Holder());
-
     VISIBLES::iterator I = std::find(m_objects->begin(), m_objects->end(), object_id(object));
     if (I != m_objects->end())
         return (I->m_level_time);
@@ -187,8 +179,8 @@ u32 CVisualMemoryManager::visible_object_time_last_seen(const CObject* object) c
 
 bool CVisualMemoryManager::visible_right_now(const CGameObject* game_object) const
 {
-    if (Actor()->Holder() && smart_cast<const CActor*>(game_object))
-        game_object = smart_cast<const CGameObject*>(Actor()->Holder());
+    if (should_ignore_object(game_object))
+        return (false);
 
     VISIBLES::const_iterator I = std::find(objects().begin(), objects().end(), object_id(game_object));
     if ((objects().end() == I))
@@ -205,8 +197,8 @@ bool CVisualMemoryManager::visible_right_now(const CGameObject* game_object) con
 
 bool CVisualMemoryManager::visible_now(const CGameObject* game_object) const
 {
-    if (Actor()->Holder() && smart_cast<const CActor*>(game_object))
-        game_object = smart_cast<const CGameObject*>(Actor()->Holder());
+    if (should_ignore_object(game_object))
+        return (false);
 
     VISIBLES::const_iterator I = std::find(objects().begin(), objects().end(), object_id(game_object));
     return ((objects().end() != I) && (*I).visible(mask()));
@@ -322,8 +314,7 @@ float CVisualMemoryManager::get_visible_value(float distance, float object_dista
     clamp(fog, 0.f, 1.f);
     float fog_factor = 1.f - pow(fog, current_state().m_fog_pow);
 
-    return (time_delta / current_state().m_time_quant * luminocity * (1.f + current_state().m_velocity_factor * object_velocity) * (distance - object_distance) /
-            (distance - always_visible_distance) * fog_factor * trans);
+    return (time_delta / current_state().m_time_quant * luminocity * (1.f + current_state().m_velocity_factor * object_velocity) * (distance - object_distance) / (distance - always_visible_distance) * fog_factor * trans);
 }
 
 CNotYetVisibleObject* CVisualMemoryManager::not_yet_visible_object(const CGameObject* game_object)
@@ -353,7 +344,6 @@ bool CVisualMemoryManager::visible(const CGameObject* game_object, float time_de
 
     if (game_object->getDestroy())
         return (false);
-
 
     float object_distance, distance = object_visible_distance(game_object, object_distance);
 
@@ -412,23 +402,16 @@ void CVisualMemoryManager::add_visible_object(const CObject* object, float time_
     if (object && object->getDestroy())
         return;
 
-#ifndef MASTER_GOLD
-    if (object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
+    if (!fictitious && should_ignore_object(object))
         return;
-#endif // MASTER_GOLD
 
-    //	START_PROFILE("Memory Manager/visuals/update/add_visibles/visible")
     auto game_object = smart_cast<const CGameObject*>(object);
     if (!game_object || (!fictitious && !visible(game_object, time_delta)))
         return;
-    //	STOP_PROFILE
 
-    //	START_PROFILE("Memory Manager/visuals/update/add_visibles/find_object_by_id")
     const CGameObject* self = m_object;
     auto J = std::find(m_objects->begin(), m_objects->end(), object_id(game_object));
-    //	STOP_PROFILE
 
-    //	START_PROFILE("Memory Manager/visuals/update/add_visibles/fill")
     if (m_objects->end() == J)
     {
         CVisibleObject visible_object;
@@ -461,15 +444,12 @@ void CVisualMemoryManager::add_visible_object(const CObject* object, float time_
             (*J).m_enabled = true;
         }
     }
-    //	STOP_PROFILE
 }
 
 void CVisualMemoryManager::add_visible_object(CVisibleObject visible_object)
 {
-#ifndef MASTER_GOLD
-    if (visible_object.m_object && (visible_object.m_object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
+    if (should_ignore_object(visible_object.m_object))
         return;
-#endif // MASTER_GOLD
 
     VERIFY(m_objects);
     auto J = std::find(m_objects->begin(), m_objects->end(), object_id(visible_object.m_object));
@@ -490,29 +470,6 @@ void CVisualMemoryManager::add_visible_object(CVisibleObject visible_object)
         m_objects->push_front(visible_object);
     }
 }
-
-#ifdef DEBUG
-void CVisualMemoryManager::check_visibles() const
-{
-    squad_mask_type mask = this->mask();
-    auto I = m_objects->begin();
-    auto E = m_objects->end();
-    for (; I != E; ++I)
-    {
-        if (!(*I).visible(mask))
-            continue;
-
-        xr_vector<Feel::Vision::feel_visible_Item>::iterator i = m_object->feel_visible.begin();
-        xr_vector<Feel::Vision::feel_visible_Item>::iterator e = m_object->feel_visible.end();
-        for (; i != e; ++i)
-            if (i->O->ID() == (*I).m_object->ID())
-            {
-                VERIFY(i->fuzzy > 0.f);
-                break;
-            }
-    }
-}
-#endif
 
 bool CVisualMemoryManager::visible(u32 _level_vertex_id, float yaw, float eye_fov) const
 {
@@ -674,19 +631,9 @@ void CVisualMemoryManager::update(float time_delta)
 
     // verifying if object is online
     {
-        m_not_yet_visible_objects.erase(std::remove_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), SRemoveOfflinePredicate()),
-                                        m_not_yet_visible_objects.end());
+        m_not_yet_visible_objects.erase(std::remove_if(m_not_yet_visible_objects.begin(), m_not_yet_visible_objects.end(), SRemoveOfflinePredicate()), m_not_yet_visible_objects.end());
     }
     STOP_PROFILE
-
-#if 0 // def DEBUG
-	if (m_stalker) {
-		CAgentMemberManager::MEMBER_STORAGE::const_iterator	I = m_stalker->agent_manager().member().members().begin();
-		CAgentMemberManager::MEMBER_STORAGE::const_iterator	E = m_stalker->agent_manager().member().members().end();
-		for ( ; I != E; ++I)
-			(*I)->object().memory().visual().check_visibles();
-	}
-#endif
 
     if (m_object && g_actor)
     {
@@ -875,4 +822,28 @@ float CVisualMemoryManager::visible_transparency_threshold(const CGameObject* ga
         VERIFY(m_client);
         return m_client->feel_vision_get_transparency(game_object);
     }
+}
+
+bool CVisualMemoryManager::should_ignore_object(CObject const* object) const
+{
+    if (!object)
+        return true;
+
+    if (smart_cast<CActor const*>(object) && psAI_Flags.test(aiIgnoreActor))
+        return true;
+
+    CBaseMonster const* monster = smart_cast<CBaseMonster const*>(object);
+
+    if (monster)
+    {
+        if (!monster->can_be_seen())
+            return true;
+
+        CZombie const* zombie = smart_cast<CZombie const*>(object);
+
+        if (zombie && zombie->fake_death_is_active())
+            return true;
+    }
+
+    return false;
 }

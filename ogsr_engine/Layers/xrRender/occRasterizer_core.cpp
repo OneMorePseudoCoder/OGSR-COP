@@ -74,6 +74,7 @@ IC void Vclamp(int& v, int a, int b)
     else if (v >= b)
         v = b - 1;
 }
+
 IC BOOL shared(occTri* T1, occTri* T2)
 {
     if (T1 == T2)
@@ -86,6 +87,7 @@ IC BOOL shared(occTri* T1, occTri* T2)
         return TRUE;
     return FALSE;
 }
+
 IC BOOL lesser(float& a, float& b)
 {
     const u32* A = (u32*)(&a);
@@ -163,7 +165,6 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     {
         if (shared(currentTri, pFrame[i - 1]))
         {
-            // float ZR = (Z+2*pDepth[i-1])*one_div_3;
             if (Z < pDepth[i])
             {
                 pFrame[i] = currentTri;
@@ -193,7 +194,6 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     {
         if (shared(currentTri, pFrame[i + 1]))
         {
-            // float ZR = (Z+2*pDepth[i+1])*one_div_3;
             if (Z < pDepth[i])
             {
                 pFrame[i] = currentTri;
@@ -232,6 +232,7 @@ IC void i_test_micro(int x, int y)
         }
     }
 }
+
 void i_test(int x, int y)
 {
     i_test_micro(x, y - 1);

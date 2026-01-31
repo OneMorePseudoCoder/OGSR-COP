@@ -18,7 +18,6 @@
 
 void CLevel::ClientReceive()
 {
-
     m_dwRPC = 0;
     m_dwRPS = 0;
 
@@ -38,13 +37,10 @@ void CLevel::ClientReceive()
                 Msg("Unconventional M_SPAWN received : cgf[%s] | bReady[%s]", (m_bGameConfigStarted) ? "true" : "false", (bReady) ? "true" : "false");
                 break;
             }
-            /*/
-            cl_Process_Spawn(*P);
-            /*/
+
             game_events->insert(*P);
             if (g_bDebugEvents)
                 ProcessGameEvents();
-            //*/
         }
         break;
         case M_EVENT:
@@ -107,7 +103,6 @@ void CLevel::ClientReceive()
         }
         break;
         case M_SAVE_GAME: {
-            //ClientSave();
         }
         break;
         case M_AUTH_CHALLENGE: {
@@ -122,7 +117,6 @@ void CLevel::ClientReceive()
             Msg("- M_CHANGE_LEVEL_GAME Received");
             {
                 const char* m_SO = m_caServerOptions.c_str();
-                //					const char* m_CO = m_caClientOptions.c_str();
 
                 m_SO = strchr(m_SO, '/');
                 if (m_SO)
@@ -156,8 +150,6 @@ void CLevel::ClientReceive()
 
         net_msg_Release();
     }
-
-    //	if (!g_bDebugEvents) ProcessGameSpawns();
 }
 
 void CLevel::OnMessage(void* data, u32 size)

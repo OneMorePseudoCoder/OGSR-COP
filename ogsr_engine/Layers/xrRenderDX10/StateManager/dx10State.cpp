@@ -1,17 +1,11 @@
 #include "stdafx.h"
 #include "dx10State.h"
-
-//#include "dx10RSManager.h"
 #include "dx10StateCache.h"
 
 dx10State::dx10State() : m_pRasterizerState(nullptr), m_pDepthStencilState(nullptr), m_pBlendState(nullptr), m_uiStencilRef(UINT(-1)), m_uiAlphaRef(0) {}
 
 dx10State::~dx10State()
-{
-    //	m_pRasterizerState is a weak link
-    //	m_pDepthStencilState is a weak link
-    //	m_pBlendState is a weak link
-}
+{}
 
 dx10State* dx10State::Create(SimulatorStates& state_code)
 {
@@ -22,7 +16,6 @@ dx10State* dx10State::Create(SimulatorStates& state_code)
     pState->m_pRasterizerState = RSManager.GetState(state_code);
     pState->m_pDepthStencilState = DSSManager.GetState(state_code);
     pState->m_pBlendState = BSManager.GetState(state_code);
-    // ID3DxxDevice::CreateSamplerState
 
     //	Create samplers here
     {

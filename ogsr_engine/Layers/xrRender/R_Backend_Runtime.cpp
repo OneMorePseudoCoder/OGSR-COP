@@ -1,15 +1,11 @@
 #include "stdafx.h"
-
 #include "../../xrCDB/frustum.h"
-
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 
 void CBackend::OnFrameEnd()
 {
-    // if (context_id == CHW::IMM_CTX_ID)
-        HW.get_context(context_id)->ClearState();
-
+    HW.get_context(context_id)->ClearState();
     Invalidate();
 }
 

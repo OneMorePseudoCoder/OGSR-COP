@@ -20,15 +20,11 @@
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
-
 #include "client_spawn_manager.h"
-#include "memory_manager.h"
 #include "..\xr_3da\IGame_Persistent.h"
 
-#ifndef MASTER_GOLD
 #include "clsid_game.h"
 #include "ai_debug.h"
-#endif // MASTER_GOLD
 
 #define SILENCE
 //#define SAVE_OWN_SOUNDS
@@ -86,9 +82,7 @@ IC void CSoundMemoryManager::update_sound_threshold()
     VERIFY(_valid(m_min_sound_threshold));
     VERIFY(!fis_zero(m_decrease_factor));
     VERIFY(m_sound_decrease_quant);
-    // t = max(t*f^((tc - tl)/tq),min_threshold)
-    m_sound_threshold = _max(m_self_sound_factor * m_sound_threshold * exp(float(Device.dwTimeGlobal - m_last_sound_time) / float(m_sound_decrease_quant) * log(m_decrease_factor)),
-                             m_min_sound_threshold);
+    m_sound_threshold = _max(m_self_sound_factor * m_sound_threshold * exp(float(Device.dwTimeGlobal - m_last_sound_time) / float(m_sound_decrease_quant) * log(m_decrease_factor)), m_min_sound_threshold);
     VERIFY(_valid(m_sound_threshold));
 }
 
@@ -115,10 +109,8 @@ IC bool is_sound_type(int s, const ESoundTypes& t) { return ((s & t) == t); }
 
 void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power)
 {
-#ifndef MASTER_GOLD
     if (object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
         return;
-#endif // MASTER_GOLD
 
     VERIFY(_valid(sound_power));
     if (!m_sounds)
@@ -129,9 +121,9 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
 
     CObject* self = m_object;
     VERIFY(self);
+
 #ifndef SILENCE
-    Msg("%s (%d) - sound type %x from %s at %d in (%.2f,%.2f,%.2f) with power %.2f", *self->cName(), Device.dwTimeGlobal, sound_type, object ? *object->cName() : "world",
-        Device.dwTimeGlobal, position.x, position.y, position.z, sound_power);
+    Msg("%s (%d) - sound type %x from %s at %d in (%.2f,%.2f,%.2f) with power %.2f", *self->cName(), Device.dwTimeGlobal, sound_type, object ? *object->cName() : "world", Device.dwTimeGlobal, position.x, position.y, position.z, sound_power);
 #endif
 
     // ignore unknown sounds
@@ -188,16 +180,13 @@ void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound
             if (_entity_alive && (self->ID() != _entity_alive->ID()) && (_entity_alive->g_Team() != entity_alive->g_Team()))
                 m_object->memory().hit().add(_entity_alive);
         }
+
         if (!m_stalker || !m_stalker->memory().enemy().selected())
             add(object, sound_type, position, sound_power);
         else
         {
             if (object)
             {
-                //				bool		is_shooting = is_sound_type(sound_type,SOUND_TYPE_WEAPON_SHOOTING);
-                //				bool		is_colliding = is_sound_type(sound_type,SOUND_TYPE_WORLD_OBJECT_COLLIDING);
-                //				bool		very_close = m_stalker->Position().distance_to_sqr(object->Position()) <= COMBAT_SOUND_PERCEIVE_RADIUS_SQR;
-                //				if (is_shooting || is_colliding || very_close)
                 add(object, sound_type, position, sound_power);
             }
         }
@@ -269,11 +258,6 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
         return;
 
 #ifndef SAVE_VISIBLE_OBJECT_SOUNDS
-    /*
-    #	ifdef SAVE_FRIEND_SOUNDS
-            const CEntityAlive	*entity_alive	= smart_cast<const CEntityAlive*>(object);
-    #	endif
-    */
     // we do not save sounds from the objects we see (?!)
     if (game_object && m_object->memory().visual().visible_now(game_object))
         return;
@@ -299,8 +283,7 @@ void CSoundMemoryManager::add(const CObject* object, int sound_type, const Fvect
     }
     else
     {
-        (*J).fill(game_object, self, ESoundTypes(sound_type), sound_power,
-                  (!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
+        (*J).fill(game_object, self, ESoundTypes(sound_type), sound_power, (!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
         if (!game_object)
             (*J).m_object_params.m_position = position;
     }

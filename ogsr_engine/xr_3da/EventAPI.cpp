@@ -2,7 +2,6 @@
 #include "eventapi.h"
 #include "xr_ioconsole.h"
 
-//---------------------------------------------------------------------
 class ENGINE_API CEvent
 {
     friend class CEventAPI;
@@ -38,16 +37,16 @@ public:
             Handler->OnEvent(this, P1, P2);
     }
 };
-//-----------------------------------------
+
 CEvent::CEvent(const char* S)
 {
     Name = xr_strdup(S);
     _strupr(Name);
     dwRefCount = 1;
 }
+
 CEvent::~CEvent() { xr_free(Name); }
 
-//-----------------------------------------
 IC bool ev_sort(CEvent* E1, CEvent* E2) { return E1->GetFull() < E2->GetFull(); }
 
 void CEventAPI::Dump()
@@ -77,6 +76,7 @@ EVENT CEventAPI::Create(const char* N)
     CS.Leave();
     return X;
 }
+
 void CEventAPI::Destroy(EVENT& E)
 {
     CS.Enter();
@@ -109,12 +109,14 @@ void CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
     Destroy(E);
     CS.Leave();
 }
+
 void CEventAPI::Signal(EVENT E, u64 P1, u64 P2)
 {
     CS.Enter();
     E->Signal(P1, P2);
     CS.Leave();
 }
+
 void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
 {
     CS.Enter();
@@ -123,6 +125,7 @@ void CEventAPI::Signal(LPCSTR N, u64 P1, u64 P2)
     Destroy(E);
     CS.Leave();
 }
+
 void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
 {
     CS.Enter();
@@ -133,6 +136,7 @@ void CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
     Events_Deferred.back().P2 = P2;
     CS.Leave();
 }
+
 void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
 {
     CS.Enter();

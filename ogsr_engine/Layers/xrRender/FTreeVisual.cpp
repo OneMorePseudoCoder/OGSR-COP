@@ -99,7 +99,8 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
         constexpr float FTreeVisual_quant = 32768.f / FTreeVisual_tile;
         constexpr float FTreeVisual_scale = 1.f / FTreeVisual_quant;
 
-        tree_data = {
+        tree_data = 
+        {
             xform._11, xform._21, xform._31, xform._41,
             xform._12, xform._22, xform._32, xform._42,
             xform._13, xform._23, xform._33, xform._43,
@@ -140,7 +141,6 @@ void FTreeVisual::DoRenderInstanced(CBackend& cmd_list, const xr_vector<FloraVer
 
     cmd_list.Render(D3DPT_TRIANGLELIST, vBase, 0, countV, startI, PC, flora_count);
     cmd_list.stat.r.s_flora.add(flora_count);
-    //Msg("--[%s] rendered [%u] trees", __FUNCTION__, flora_count);
 }
 
 #define PCOPY(a) a = pFrom->a
@@ -199,8 +199,6 @@ FTreeVisual_PM::~FTreeVisual_PM(void) {}
 
 void FTreeVisual_PM::select_lod_id(float lod, u32 context_id)
 {
-    // inherited::select_lod_id(lod);
-
     const int lod_id = iFloor((1.f - clampr(lod, 0.f, 1.f)) * static_cast<float>(pSWI->count - 1)+ 0.5f);
     selected_lod_id[context_id] = lod_id;
 
@@ -213,6 +211,7 @@ void FTreeVisual_PM::select_lod_id(float lod, u32 context_id)
 }
 
 void FTreeVisual_PM::Release() { inherited::Release(); }
+
 void FTreeVisual_PM::Load(const char* N, IReader* data, u32 dwFlags)
 {
     inherited::Load(N, data, dwFlags);
@@ -234,9 +233,6 @@ void FTreeVisual_PM::Render(CBackend& cmd_list, float lod, bool use_fast_geo) { 
 void FTreeVisual_PM::RenderInstanced(CBackend& cmd_list, const xr_vector<FloraVertData*>& data)
 {
     const FSlideWindow& SW = pSWI->sw[selected_lod_id[cmd_list.context_id]];
-    //R_ASSERT(selected_lod_id[cmd_list.context_id] >= 0 && selected_lod_id[cmd_list.context_id] < int(pSWI->count));
-
-    //Msg("--[%s] selected_lod_id [%u]", __FUNCTION__, selected_lod_id[cmd_list.context_id]);
     inherited::DoRenderInstanced(cmd_list, data, SW.num_verts, iBase + SW.offset, SW.num_tris);
 }
 

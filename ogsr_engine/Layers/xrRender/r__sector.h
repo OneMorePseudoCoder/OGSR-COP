@@ -93,8 +93,6 @@ public:
     xr_vector<_scissor> r_scissors;
     u32 r_marker{};
 
-    //_scissor r_scissor_merged{};
-
 public:
     // Main interface
     dxRender_Visual* root() { return m_root; }

@@ -21,7 +21,6 @@ void CRenderTarget::phase_accumulator(CBackend& cmd_list)
         cmd_list.ClearRT(rt_Accumulator, {}); // black
 
         //	render this after sun to avoid troubles with sun
-
         // Stencil	- draw only where stencil >= 0x1
         cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
         cmd_list.set_CullMode(CULL_NONE);

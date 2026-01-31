@@ -3,12 +3,10 @@
 
 namespace dx10BufferUtils
 {
-
 HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable, bool bIndexBuffer)
 {
     D3D_BUFFER_DESC desc;
     desc.ByteWidth = DataSize;
-    // desc.Usage = bImmutable ? D3D_USAGE_IMMUTABLE : D3D_USAGE_DEFAULT;
     desc.Usage = D3D_USAGE_DEFAULT;
     desc.BindFlags = bIndexBuffer ? D3D_BIND_INDEX_BUFFER : D3D_BIND_VERTEX_BUFFER;
     desc.CPUAccessFlags = 0;
@@ -17,9 +15,7 @@ HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize,
     D3D_SUBRESOURCE_DATA subData;
     subData.pSysMem = pData;
 
-    const HRESULT res = HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
-    // R_CHK(res);
-    return res;
+    return HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
 }
 
 HRESULT CreateVertexBuffer(ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable) { return CreateBuffer(ppBuffer, pData, DataSize, bImmutable, false); }
@@ -35,9 +31,7 @@ HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
     desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
     desc.MiscFlags = 0;
 
-    const HRESULT res = HW.pDevice->CreateBuffer(&desc, nullptr, ppBuffer);
-    // R_CHK(res);
-    return res;
+    return HW.pDevice->CreateBuffer(&desc, nullptr, ppBuffer);
 }
 
 struct VertexFormatPairs

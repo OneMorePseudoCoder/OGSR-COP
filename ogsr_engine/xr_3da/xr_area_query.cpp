@@ -1,8 +1,6 @@
 #include "stdafx.h"
-
 #include "xr_area.h"
 #include "xr_object.h"
-
 #include "../xrCore/_vector3d_ext.h"
 
 using namespace collide;

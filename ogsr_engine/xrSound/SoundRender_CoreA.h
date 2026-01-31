@@ -5,8 +5,6 @@
 #include <eax.h>
 #include <alext.h>
 
-//#include "NotificationClient.h"
-
 #ifdef DEBUG
 #define A_CHK(expr) \
     { \
@@ -54,8 +52,6 @@ class CSoundRender_CoreA : public CSoundRender_Core
 
     BOOL EAXQuerySupport(BOOL bDeferred, const GUID* guid, u32 prop, void* val, u32 sz);
     BOOL EAXTestSupport(BOOL bDeferred);
-
-    //NotificationClient notification_client{};
 
 protected:
     virtual void i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz);

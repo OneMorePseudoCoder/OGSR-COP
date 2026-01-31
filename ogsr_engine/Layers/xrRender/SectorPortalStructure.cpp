@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "SectorPortalStructure.h"
 
 void SectorPortalStructure::load(const xr_vector<CSector::level_sector_data_t>& sectors_data, const xr_vector<CPortal::level_portal_data_t>& portals_data)

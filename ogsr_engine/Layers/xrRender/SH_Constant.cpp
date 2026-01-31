@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-
-
 void CConstant::Calculate()
 {
     if (dwFrame == Device.dwFrame)

@@ -542,8 +542,7 @@ void pSinkVelocity(IWriter& F, BOOL kill_inside, pDomain D, BOOL allow_rotate)
     S.Save(F);
 }
 
-void pSource(IWriter& F, float particle_rate, pDomain pos, pDomain vel, pDomain rot, pDomain size, BOOL single_size, pDomain color, float alpha, float age, float age_sigma,
-             float parent_motion, BOOL allow_rotate)
+void pSource(IWriter& F, float particle_rate, pDomain pos, pDomain vel, pDomain rot, pDomain size, BOOL single_size, pDomain color, float alpha, float age, float age_sigma, float parent_motion, BOOL allow_rotate)
 {
     PASource S;
     S.type = PASourceID;
@@ -741,8 +740,7 @@ EPAExplosion::EPAExplosion() : EParticleAction(PAPI::PAExplosionID)
 
 void EPAExplosion::Compile(IWriter& F)
 {
-    pExplosion(F, _vector("Center").val, _float("Velocity").val, _float("Magnitude").val, _float("Standart Dev").val, _float("Epsilon").val, _float("Age").val,
-               _bool("Allow Rotate").val);
+    pExplosion(F, _vector("Center").val, _float("Velocity").val, _float("Magnitude").val, _float("Standart Dev").val, _float("Epsilon").val, _float("Age").val, _bool("Allow Rotate").val);
 }
 
 EPAFollow::EPAFollow() : EParticleAction(PAPI::PAFollowID)
@@ -791,8 +789,7 @@ EPAJet::EPAJet() : EParticleAction(PAPI::PAJetID)
 
 void EPAJet::Compile(IWriter& F)
 {
-    pJet(F, pDomain(EXPAND_DOMAIN(_domain("Accelerate"))), _vector("Center").val, _float("Magnitude").val, _float("Epsilon").val, _float("Max Radius").val,
-         _bool("Allow Rotate").val);
+    pJet(F, pDomain(EXPAND_DOMAIN(_domain("Accelerate"))), _vector("Center").val, _float("Magnitude").val, _float("Epsilon").val, _float("Max Radius").val, _bool("Allow Rotate").val);
 }
 
 EPAKillOld::EPAKillOld() : EParticleAction(PAPI::PAKillOldID)
@@ -951,9 +948,7 @@ EPASource::EPASource() : EParticleAction(PAPI::PASourceID)
 
 void EPASource::Compile(IWriter& F)
 {
-    pSource(F, _float("Rate").val, pDomain(EXPAND_DOMAIN(_domain("Domain"))), pDomain(EXPAND_DOMAIN(_domain("Velocity"))), pDomain(EXPAND_DOMAIN(_domain("Rotation"))),
-            pDomain(EXPAND_DOMAIN(_domain("Size"))), _bool("Single Size").val, pDomain(EXPAND_DOMAIN(_domain("Color"))), _float("Color\\Alpha").val, _float("Starting Age").val,
-            _float("Age Sigma").val, _float("Parent Motion").val, _bool("Allow Rotate").val);
+    pSource(F, _float("Rate").val, pDomain(EXPAND_DOMAIN(_domain("Domain"))), pDomain(EXPAND_DOMAIN(_domain("Velocity"))), pDomain(EXPAND_DOMAIN(_domain("Rotation"))), pDomain(EXPAND_DOMAIN(_domain("Size"))), _bool("Single Size").val, pDomain(EXPAND_DOMAIN(_domain("Color"))), _float("Color\\Alpha").val, _float("Starting Age").val, _float("Age Sigma").val, _float("Parent Motion").val, _bool("Allow Rotate").val);
 }
 
 EPASpeedLimit::EPASpeedLimit() : EParticleAction(PAPI::PASpeedLimitID)
@@ -979,8 +974,7 @@ EPATargetColor::EPATargetColor() : EParticleAction(PAPI::PATargetColorID)
 
 void EPATargetColor::Compile(IWriter& F)
 {
-    pTargetColor(F, _vector("Color").val, _float("Alpha").val, _float("Scale").val
-        , _float("TimeFrom").val, _float("TimeTo").val);
+    pTargetColor(F, _vector("Color").val, _float("Alpha").val, _float("Scale").val, _float("TimeFrom").val, _float("TimeTo").val);
 }
 
 EPATargetSize::EPATargetSize() : EParticleAction(PAPI::PATargetSizeID)
@@ -1040,14 +1034,11 @@ EPATurbulence::EPATurbulence() : EParticleAction(PAPI::PATurbulenceID)
     appendFloat("Magnitude", 10.f, -P_MAXFLOAT, P_MAXFLOAT);
     appendFloat("Delta", 0.01f, -P_MAXFLOAT, P_MAXFLOAT);
     appendVector("Movement", PVector::vNum, 1, 1, 1);
-    // -
     nval = nullptr;
     age = 0.f;
 }
 
 void EPATurbulence::Compile(IWriter& F) { pTurbulence(F, _float("Frequency").val, _int("Octaves").val, _float("Magnitude").val, _float("Delta").val, _vector("Movement").val); }
-
-//---------------------------------------------------------------------------
 
 PDomain::PDomain(EType et, BOOL ra, u32 color, PDomainEnum t, float inA0, float inA1, float inA2, float inA3, float inA4, float inA5, float inA6, float inA7, float inA8)
 {

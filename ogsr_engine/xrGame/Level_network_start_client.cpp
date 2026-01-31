@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "xrServer.h"
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"
 #include "Physics.h"
@@ -18,23 +19,15 @@ bool CLevel::net_start_client1()
     pApp->LoadBegin();
     // name_of_server
     string64 name_of_server = "";
-    //	strcpy_s(name_of_server,*m_caClientOptions);
+
     if (strchr(*m_caClientOptions, '/'))
         strncpy_s(name_of_server, *m_caClientOptions, strchr(*m_caClientOptions, '/') - *m_caClientOptions);
 
     if (strchr(name_of_server, '/'))
         *strchr(name_of_server, '/') = 0;
 
-    // Startup client
-    /*	string256					temp;
-        sprintf_s						(temp,"%s %s",
-                                    CStringTable().translate("st_client_connecting_to").c_str(), name_of_server);
-
-        g_pGamePersistent->LoadTitle				(temp);*/
     return true;
 }
-
-#include "xrServer.h"
 
 bool CLevel::net_start_client2()
 {
@@ -102,8 +95,6 @@ bool CLevel::net_start_client5()
 {
     if (connected_to_server)
     {
-        // HUD
-
         // Textures
         HUD().Load();
         g_pGamePersistent->LoadTitle("st_loading_textures");

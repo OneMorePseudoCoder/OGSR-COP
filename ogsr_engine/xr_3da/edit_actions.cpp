@@ -13,8 +13,7 @@
 namespace text_editor
 {
 	base::base() : m_previous_action(NULL)
-	{
-	}
+	{}
 
 	base::~base()
 	{
@@ -33,8 +32,6 @@ namespace text_editor
 			m_previous_action->on_key_press(control);
 		}
 	}
-
-	// -------------------------------------------------------------------------------------------------
 
 	callback_base::callback_base(Callback const& callback, key_state state)
 	{
@@ -56,16 +53,13 @@ namespace text_editor
 		base::on_key_press(control);
 	}
 
-	// -------------------------------------------------------------------------------------------------
-
 	type_pair::type_pair(u32 dik, char c, char c_shift, bool b_translate)
 	{
 		init(dik, c, c_shift, b_translate);
 	}
 
 	type_pair::~type_pair()
-	{
-	}
+	{}
 
 	void type_pair::init(u32 dik, char c, char c_shift, bool b_translate)
 	{
@@ -74,7 +68,6 @@ namespace text_editor
 		m_char = c;
 		m_char_shift = c_shift;
 	}
-
 
 	void type_pair::on_key_press(line_edit_control* const control)
 	{
@@ -94,12 +87,8 @@ namespace text_editor
 		control->insert_character(c);
 	}
 
-	// -------------------------------------------------------------------------------------------------
-
-	key_state_base::key_state_base(key_state state, base* type_pair)
-		: m_type_pair(type_pair), m_state(state)
-	{
-	}
+	key_state_base::key_state_base(key_state state, base* type_pair) : m_type_pair(type_pair), m_state(state)
+	{}
 
 	key_state_base::~key_state_base()
 	{

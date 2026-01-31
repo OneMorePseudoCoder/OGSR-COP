@@ -9,12 +9,6 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-/*
-#ifdef DEBUG
-#include <dinput.h>
-#endif
-*/
-
 CZombie::CZombie()
 {
     StateMan = xr_new<CStateManagerZombie>(this);
@@ -38,10 +32,6 @@ void CZombie::Load(LPCSTR section)
     SVelocityParam& velocity_turn = move().get_velocity(MonsterMovement::eVelocityParameterStand);
     SVelocityParam& velocity_walk = move().get_velocity(MonsterMovement::eVelocityParameterWalkNormal);
     SVelocityParam& velocity_run = move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
-    // SVelocityParam &velocity_walk_dmg	= move().get_velocity(MonsterMovement::eVelocityParameterWalkDamaged);
-    // SVelocityParam &velocity_run_dmg	= move().get_velocity(MonsterMovement::eVelocityParameterRunDamaged);
-    // SVelocityParam &velocity_steal		= move().get_velocity(MonsterMovement::eVelocityParameterSteal);
-    // SVelocityParam &velocity_drag		= move().get_velocity(MonsterMovement::eVelocityParameterDrag);
 
     anim().AddAnim(eAnimStandIdle, "stand_idle_", -1, &velocity_none, PS_STAND, "fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
     anim().AddAnim(eAnimStandTurnLeft, "stand_turn_ls_", -1, &velocity_turn, PS_STAND, "fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
@@ -81,6 +71,7 @@ void CZombie::reinit()
     time_dead_start = 0;
     last_hit_frame = 0;
     time_resurrect = 0;
+    fakedeath_is_active = false;
     fake_death_left = fake_death_count;
 
     active_triple_idx = u8(-1);
@@ -110,11 +101,6 @@ void CZombie::vfAssignBones()
     // Установка callback на кости
     bone_spine = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
     bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-    // if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
-    //{
-    // bone_spine->set_callback(BoneCallback,this);
-    // bone_head->set_callback(BoneCallback,this);
-    //}
 
     // Bones settings
     Bones.Reset();
@@ -138,10 +124,8 @@ BOOL CZombie::net_Spawn(CSE_Abstract* DC)
 #define TIME_FAKE_DEATH 5000
 #define TIME_RESURRECT_RESTORE 2000
 
-// void CZombie::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
 void CZombie::Hit(SHit* pHDS)
 {
-    //	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
     inherited::Hit(pHDS);
 
     if (!g_Alive())
@@ -157,7 +141,7 @@ void CZombie::Hit(SHit* pHDS)
                 com_man().ta_activate(anim_triple_death[active_triple_idx]);
                 move().stop();
                 time_dead_start = Device.dwTimeGlobal;
-
+                fakedeath_is_active = true;
                 if (fake_death_left == 0)
                     fake_death_left = 1;
                 fake_death_left--;
@@ -177,9 +161,8 @@ void CZombie::shedule_Update(u32 dt)
         if (time_dead_start + TIME_FAKE_DEATH < Device.dwTimeGlobal)
         {
             time_dead_start = 0;
-
+            fakedeath_is_active = false;
             com_man().ta_pointbreak();
-
             time_resurrect = Device.dwTimeGlobal;
         }
     }
@@ -192,6 +175,7 @@ bool CZombie::fake_death_fall_down()
 
     com_man().ta_activate(anim_triple_death[u8(Random.randI(FAKE_DEATH_TYPES_COUNT))]);
     move().stop();
+    fakedeath_is_active = true;
 
     return true;
 }
@@ -211,25 +195,7 @@ void CZombie::fake_death_stand_up()
     if (!active)
         return;
 
+    fakedeath_is_active = false;
+
     com_man().ta_pointbreak();
 }
-
-/*
-#ifdef DEBUG
-void CZombie::debug_on_key(int key)
-{
-    switch (key){
-    case DIK_MINUS:
-        {
-            fake_death_fall_down();
-        }
-        break;
-    case DIK_EQUALS:
-        {
-            fake_death_stand_up();
-        }
-        break;
-    }
-}
-#endif
-*/

@@ -50,7 +50,6 @@ public:
     enum
     {
         dfSprite = (1 << 0),
-        //			dfObject		= (1<<1),
 
         dfFramed = (1 << 10),
         dfAnimated = (1 << 11),

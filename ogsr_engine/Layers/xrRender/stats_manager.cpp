@@ -7,7 +7,6 @@
 #include "stdafx.h"
 #include "stats_manager.h"
 
-
 void stats_manager::increment_stats(u32 size, enum_stats_buffer_type type, _D3DPOOL location)
 {
     R_ASSERT(type >= 0 && type < enum_stats_buffer_type_COUNT);
@@ -138,14 +137,6 @@ void stats_manager::decrement_stats(u32 size, enum_stats_buffer_type type, _D3DP
 
     memory_usage_summary[type][location] -= size;
 }
-
-// stats_manager::~stats_manager ()
-//{
-//#ifdef DEBUG
-//	Msg		( "m_buffers_list.size() = %d", m_buffers_list.size() );
-///	R_ASSERT( m_buffers_list.size() == 0);	//  Some buffers stats are not removed from the list.
-//#endif
-//}
 
 u32 get_format_pixel_size(DXGI_FORMAT format)
 {

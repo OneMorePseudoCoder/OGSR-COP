@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "blender_fluid.h"
-
-#ifdef DX10_FLUID_ENABLE
-
-
 #include "dx103DFluidManager.h"
 #include "dx103DFluidRenderer.h"
 
@@ -441,4 +437,3 @@ void CBlender_fluid_raycast::Compile(CBlender_Compile& C)
     C.r_End();
 }
 
-#endif

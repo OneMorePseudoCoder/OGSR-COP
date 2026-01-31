@@ -1,9 +1,6 @@
 #include "stdafx.h"
-
-
 #include "ResourceManager.h"
 #include "../../xr_3da/Render.h"
-
 
 void CResourceManager::reset_begin()
 {

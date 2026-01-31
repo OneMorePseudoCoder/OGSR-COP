@@ -194,7 +194,7 @@ public:
     void start_runaway_invisible() { m_runaway_invisible_time = Device.dwTimeGlobal; }
     void clear_runaway_invisible() { m_runaway_invisible_time = 0; }
 
-    virtual bool can_be_seen() const { return get_visibility_state() == full_visibility; }
+    virtual bool can_be_seen() const override { return get_visibility_state() == full_visibility; }
     visibility_t get_visibility_state() const;
     void set_visibility_state(visibility_t new_state);
     void force_visibility_state(int state);

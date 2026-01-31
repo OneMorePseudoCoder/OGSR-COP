@@ -116,13 +116,11 @@ void CRender::render_lights_shadowed(light_Package& LP)
     auto& source = LP.v_shadowed;
 
     // Refactor order based on ability to pack shadow-maps
-
     // 1. calculate area + sort in descending order
     {
         for (u32 it = 0; it < source.size(); it++)
         {
             light* L = source[it];
-            // L->vis_update();
             if (!L->vis.visible)
             {
                 source.erase(source.begin() + it);
@@ -140,21 +138,6 @@ void CRender::render_lights_shadowed(light_Package& LP)
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    // sort lights by importance???
-    // while (has_any_lights_that_cast_shadows) {
-    //		if (has_point_shadowed)		->	generate point shadowmap
-    //		if (has_spot_shadowed)		->	generate spot shadowmap
-    //		switch-to-accumulator
-    //		if (has_point_unshadowed)	-> 	accum point unshadowed
-    //		if (has_spot_unshadowed)	-> 	accum spot unshadowed
-    //		if (was_point_shadowed)		->	accum point shadowed
-    //		if (was_spot_shadowed)		->	accum spot shadowed
-    //	}
-    //	if (left_some_lights_that_doesn't cast shadows)
-    //		accumulate them
-
-    // if (has_spot_shadowed)
     while (!source.empty())
     {
         stats.s_used++;
@@ -228,7 +211,6 @@ void CRender::render_lights_shadowed(light_Package& LP)
                 }
             }
         }
-
     calc:
         for (auto& task : light_tasks)
         {
@@ -323,7 +305,6 @@ void CRender::render_lights(light_Package& LP)
 
             for (auto* p_light : LP.v_spot)
             {
-                //p_light->vis_update();
                 if (p_light->vis.visible)
                 {
                     p_light->optimize_smap_size();

@@ -3,7 +3,6 @@
 #include "DetailManager.h"
 #include "../xrCDB/cl_intersect.h"
 
-
 //--------------------------------------------------- Decompression
 IC float Interpolate(float* base, u32 x, u32 y, u32 size)
 {
@@ -38,7 +37,6 @@ IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
 
 
 #ifdef DEBUG
-//#include "../../Include/xrRender/DebugRender.h"
 #include "dxDebugRender.h"
 static void draw_obb(const Fmatrix& matrix, const u32& color)
 {
@@ -215,7 +213,7 @@ void CDetailManager::cache_Decompress(Slot* S)
 
 #ifdef DEBUG
             if (det_render_debug)
-                draw_obb(mXform, color_rgba(255, 0, 0, 255)); // Fmatrix().mul_43( mXform, Fmatrix().scale(5,5,5) )
+                draw_obb(mXform, color_rgba(255, 0, 0, 255));
 #endif
 
             // clamp для hemi перенесен сюда из вершинного шейдера:

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "soundrender_emitter.h"
 #include "soundrender_core.h"
 #include "soundrender_source.h"
@@ -17,6 +16,7 @@ void CSoundRender_Emitter::set_position(const Fvector& pos)
 
     bMoved = TRUE;
 }
+
 // Перемотка звука на заданную секунду [rewind snd to target time] --#SM+#--
 void CSoundRender_Emitter::set_time(float t)
 {
@@ -33,7 +33,6 @@ CSoundRender_Emitter::CSoundRender_Emitter(void)
     dbg_ID = ++incrementalID;
 #endif
     target = NULL;
-    //.	source						= NULL;
     owner_data = NULL;
     smooth_volume = 1.f;
     occluder_volume = 1.f;
@@ -119,7 +118,6 @@ u32 CSoundRender_Emitter::play_time()
         return 0;
 }
 
-#include "SoundRender_Source.h"
 void CSoundRender_Emitter::set_cursor(u32 p)
 {
     m_stream_cursor = p;

@@ -1,9 +1,5 @@
 #include "stdafx.h"
-
 #include "blender_fluid.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidEmitters.h"
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
@@ -90,18 +86,7 @@ void dx103DFluidEmitters::ApplyDensity(CBackend& cmd_list, const CEmitter& Emitt
 
     const float fRadius = Emitter.m_fRadius;
 
-    switch (Emitter.m_eType)
-    {
-    case ET_SimpleDraught:
-        // fRadius += (0.1f - fRadius) * (1.0f + 0.5f * _sin( (1.0f/30.0f) * t * (2.0f * float(PI))) );
-        // float fFactor = 1.0f + 0.5f * _sin(t * (2.0f * float(PI)) / 30 );
-        // FlowVelocity.mul( fFactor );
-        break;
-    }
-
     // Color is the density of the smoke. We use a sinusoidal function of 't' to make it more interesting.
-    // static float t = 0.0f;
-    // t += 0.05f;
     const float fMiddleIntencity = 1;
     const float saturation = Emitter.m_fSaturation;
     FLOAT density = 1.5f * (((_sin(t * 1.5f + 2.0f * float(PI) / 3.0f) * 0.5f + 0.5f)) * saturation + fMiddleIntencity * (1.0f - saturation));
@@ -135,8 +120,6 @@ void dx103DFluidEmitters::ApplyVelocity(CBackend& cmd_list, const CEmitter& Emit
     switch (Emitter.m_eType)
     {
     case ET_SimpleDraught:
-        // fRadius += (0.1f - fRadius) * (1.0f + 0.5f * _sin( (1.0f/30.0f) * t * (2.0f * float(PI))) );
-        // float fFactor = 1.0f + 0.5f * _sin(t * (2.0f * float(PI)) / 10 );
         float fPeriod = Emitter.m_DraughtParams.m_fPeriod;
         if (fPeriod < 0.0001f)
             fPeriod = 0.0001f;
@@ -158,5 +141,3 @@ void dx103DFluidEmitters::ApplyVelocity(CBackend& cmd_list, const CEmitter& Emit
 
     m_pGrid->DrawSlices(cmd_list);
 }
-
-#endif

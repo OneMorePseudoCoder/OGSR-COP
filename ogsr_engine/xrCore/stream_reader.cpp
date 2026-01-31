@@ -88,7 +88,8 @@ void CMapStreamReader::r(void* _buffer, size_t buffer_size)
         advance(elapsed_in_window);
 
         elapsed_in_window = m_current_window_size;
-    } while (m_current_window_size < buffer_size);
+    } 
+    while (m_current_window_size < buffer_size);
 
     Memory.mem_copy(buffer, m_current_pointer, buffer_size);
     advance(buffer_size);

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 void CMatrix::Calculate()
 {
     if (dwFrame == Device.dwFrame)

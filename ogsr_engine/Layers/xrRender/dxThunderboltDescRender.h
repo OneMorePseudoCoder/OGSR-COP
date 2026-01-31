@@ -11,7 +11,6 @@ public:
 
     virtual void CreateModel(LPCSTR m_name);
     virtual void DestroyModel();
-    // private:
 public:
     IRender_DetailModel* l_model;
 };

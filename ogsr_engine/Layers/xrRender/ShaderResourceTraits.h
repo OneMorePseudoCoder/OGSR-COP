@@ -134,7 +134,7 @@ inline T* CResourceManager::CreateShader(const char* name)
 
         // Open file
         string_path cname;
-        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
+        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), shName, ShaderTypeTraits<T>::GetShaderExt());
         FS.update_path(cname, fsgame::game_shaders, cname);
 
         // duplicate and zero-terminate

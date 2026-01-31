@@ -1,16 +1,9 @@
 #include "stdafx.h"
-
 #include "blender_fluid.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidObstacles.h"
-
 #include "../../../xr_3da/xr_object.h"
-
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
-
 #include "../xr_3da/IPhysicsDefinitions.h"
 
 namespace
@@ -25,7 +18,8 @@ shared_str strMassCenter;
 shared_str strOOBBWorldAngularVelocity;
 shared_str strOOBBWorldTranslationVelocity;
 
-Fvector4 UnitClipPlanes[] = {
+Fvector4 UnitClipPlanes[] = 
+{
     {-1.f, 0.0f, 0.0f, 0.5f}, //
     {1.f, 0.0f, 0.0f, 0.5f}, //
     {0.0f, -1.f, 0.0f, 0.5f}, //	Top
@@ -162,24 +156,11 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(CBackend& cmd_list, const dx1
     box.getradius(size);
 
     // Traverse object database
-    g_SpatialSpace->q_box(m_lstRenderables,
-                          0, // ISpatial_DB::O_ORDERED,
-                          STYPE_RENDERABLE, center, size);
+    g_SpatialSpace->q_box(m_lstRenderables, 0, STYPE_RENDERABLE, center, size);
 
     // Determine visibility for dynamic part of scene
     for (const auto& spatial : m_lstRenderables)
     {
-        //	Can use to optimize invisible dynamic objects if necessary
-        // CSector*	sector		= (CSector*)spatial->spatial.sector;
-        // if	(0==sector)
-        // continue;	// disassociated from S/P structure
-        // if	(PortalTraverser.i_marker != sector->r_marker)
-        // continue;	// inactive (untouched) sector
-
-        // IRenderable*	renderable		= spatial->dcast_Renderable	();
-        // if (0==renderable)
-        //      continue;
-
         CObject* pObject = spatial->dcast_CObject();
         if (!pObject)
             continue;
@@ -263,15 +244,9 @@ void dx103DFluidObstacles::RenderPhysicsElement(CBackend& cmd_list, IPhysicsElem
     fVelocityScale /= 30.0f * 2.0f;
 
     //	Emphasize velocity influence on the fog
-    // fVelocityScale *= 10;
-    // fVelocityScale *= 4;	//	Good for the beginning
     fVelocityScale *= 6;
-
     AngularVelocity.mul(fVelocityScale);
     TranslationVelocity.mul(fVelocityScale);
-
-    //	Emphasize velocity influence on the fog
-    // TranslationVelocity.mul( 2.0f );
 
     cmd_list.set_c(strMassCenter, MassCenter);
     cmd_list.set_c(strOOBBWorldAngularVelocity, AngularVelocity);
@@ -291,8 +266,6 @@ void dx103DFluidObstacles::RenderDynamicOOBB(CBackend& cmd_list, IPhysicsGeometr
     PIX_EVENT_CTX(cmd_list, RenderDynamicObstacle);
 
     Fmatrix Transform;
-    // Transform.mul(WorldToFluid, Element.XFORM());
-
     Fvector3 BoxSize;
     Fmatrix OOBBTransform;
     Geometry.get_Box(OOBBTransform, BoxSize);
@@ -318,5 +291,3 @@ void dx103DFluidObstacles::RenderDynamicOOBB(CBackend& cmd_list, IPhysicsGeometr
 
     m_pGrid->DrawSlices(cmd_list);
 }
-
-#endif

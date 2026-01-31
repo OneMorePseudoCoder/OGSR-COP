@@ -40,8 +40,7 @@ struct alignas(16) ray_t
 #define muxhps(low, high) _mm_movehl_ps((low), (high)) // low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
 static constexpr auto flt_plus_inf = std::numeric_limits<float>::infinity();
-alignas(16) static constexpr float ps_cst_plus_inf[] = {flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf},
-                                   ps_cst_minus_inf[] = {-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
+alignas(16) static constexpr float ps_cst_plus_inf[] = {flt_plus_inf, flt_plus_inf, flt_plus_inf, flt_plus_inf}, ps_cst_minus_inf[] = {-flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf};
 
 ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
 {
@@ -82,7 +81,6 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist)
     const BOOL ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
 
     storess(lmin, &dist);
-    // storess	(lmax, &rs.t_far);
 
     return ret;
 }
@@ -115,10 +113,6 @@ public:
     ICF BOOL _box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist)
     {
         aabb_t box;
-        /*
-            box.min.sub (bCenter,bExtents);	box.min.pad = 0;
-            box.max.add	(bCenter,bExtents); box.max.pad = 0;
-        */
         __m128 CN = _mm_unpacklo_ps(_mm_load_ss((float*)&bCenter.x), _mm_load_ss((float*)&bCenter.y));
         CN = _mm_movelh_ps(CN, _mm_load_ss((float*)&bCenter.z));
         __m128 EX = _mm_unpacklo_ps(_mm_load_ss((float*)&bExtents.x), _mm_load_ss((float*)&bExtents.y));

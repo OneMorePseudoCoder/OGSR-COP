@@ -135,7 +135,6 @@ CLensFlare::CLensFlare()
     LightColor.set(0xFFFFFFFF);
     fGradientValue = 0.f;
 
-    // hGeom						= 0;
     m_Current = nullptr;
 
     m_State = lfsNone;
@@ -165,10 +164,9 @@ struct STranspParam
     collide::ray_cache* pray_cache;
     float vis;
     float vis_threshold;
-    STranspParam(collide::ray_cache* p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold)
-        : P(_P), D(_D), f(_f), pray_cache(p), vis(1.f), vis_threshold(_vis_threshold)
-    {}
+    STranspParam(collide::ray_cache* p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold) : P(_P), D(_D), f(_f), pray_cache(p), vis(1.f), vis_threshold(_vis_threshold) {}
 };
+
 IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 {
     STranspParam* fp = (STranspParam*)params;
@@ -197,7 +195,8 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
     return (fp->vis > fp->vis_threshold);
 }
 
-constexpr  Fvector2 RayDeltas[CLensFlare::MAX_RAYS] = {
+constexpr  Fvector2 RayDeltas[CLensFlare::MAX_RAYS] = 
+{
      { 0,  0},
      { 1,  0},
      {-1,  0},
@@ -209,8 +208,10 @@ void CLensFlare::OnFrame(shared_str id)
 {
     if (dwFrame == Device.dwFrame)
         return;
+
     if (!g_pGameLevel)
         return;
+    
     dwFrame = Device.dwFrame;
 
     R_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir));
@@ -224,7 +225,6 @@ void CLensFlare::OnFrame(shared_str id)
 
     CLensFlareDescriptor* desc = !id.empty() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : nullptr;
 
-    LFState previous_state = m_State;
     switch (m_State)
     {
     case lfsNone:
@@ -252,11 +252,6 @@ void CLensFlare::OnFrame(shared_str id)
     }
 
     clamp(m_StateBlend, 0.f, 1.f);
-
-    if (m_State != previous_state)
-    {
-        // Msg("%6d : [%s] -> [%s]", Device.dwFrame, state_to_string(previous_state), state_to_string(m_State));
-    }
 
     if ((m_Current == nullptr) || (LightColor.magnitude_rgb() == 0.f))
     {
@@ -323,9 +318,6 @@ void CLensFlare::OnFrame(shared_str id)
     Fvector vecSx;
     Fvector vecSy;
 
-    // float fScale = m_Current->m_Source.fRadius * vSunDir.magnitude();
-    // float fScale = m_Current->m_Source.fRadius;
-    //	HACK: it must be read from the weather!
     float fScale = 0.02f;
 
     vecSx.mul(vecX, fScale);
@@ -422,8 +414,10 @@ void CLensFlare::Render(CBackend& cmd_list, BOOL bSun, BOOL bFlares, BOOL bGradi
 
     if (!bRender)
         return;
+
     if (!m_Current)
         return;
+    
     VERIFY(m_Current);
 
     m_pRender->Render(cmd_list , *this, bSun, bFlares, bGradient);

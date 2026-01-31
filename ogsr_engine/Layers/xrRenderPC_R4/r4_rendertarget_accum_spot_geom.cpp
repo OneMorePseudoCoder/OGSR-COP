@@ -1,12 +1,9 @@
 #include "stdafx.h"
-
 #include "../xrRender/du_cone.h"
 #include "../xrRenderDX10/dx10BufferUtils.h"
 
 void CRenderTarget::accum_spot_geom_create()
 {
-    //	u32	dwUsage				= D3DUSAGE_WRITEONLY;
-
     // vertices
     {
         const u32 vCount = DU_CONE_NUMVERTEX;
@@ -42,8 +39,6 @@ struct Slice
 
 void CRenderTarget::accum_volumetric_geom_create()
 {
-    // u32	dwUsage				= D3DUSAGE_WRITEONLY;
-
     // vertices
     {
         //	VOLUMETRIC_SLICES quads

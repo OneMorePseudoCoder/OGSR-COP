@@ -42,7 +42,7 @@ void CEffect_Rain::Prepare(Fvector2& offset, Fvector3& axis, float W_Velocity, f
     // Wind gust, to add variation.
     float Wind_Gust = RainPerlin->GetContinious(Device.fTimeGlobal * 0.3f) * 2.0f;
     // Wind velocity [ 0 ~ 1 ]
-    float Wind_Velocity = W_Velocity + Wind_Gust; // g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f
+    float Wind_Velocity = W_Velocity + Wind_Gust;
     clamp(Wind_Velocity, 0.0f, 1.0f);
     // Wind velocity controles the angle
     float pitch = drop_max_angle * Wind_Velocity;

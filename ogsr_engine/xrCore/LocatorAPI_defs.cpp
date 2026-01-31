@@ -33,7 +33,6 @@ void FS_File::set(const xr_string& nm, long sz, time_t _time_write, unsigned att
 //////////////////////////////////////////////////////////////////////
 FS_Path::FS_Path(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, u32 flags)
 {
-    //	VERIFY			(_Root&&_Root[0]);
     string_path temp;
     strcpy_s(temp, _Root);
     if (_Add)
@@ -73,7 +72,6 @@ void FS_Path::_set(LPSTR add)
 
 void FS_Path::_set_root(LPSTR root)
 {
-    //	R_ASSERT		(root);
     xr_free(m_Root);
     m_Root = xr_strlwr(xr_strdup(root));
     if (m_Root[0] && m_Root[xr_strlen(m_Root) - 1] != '\\')

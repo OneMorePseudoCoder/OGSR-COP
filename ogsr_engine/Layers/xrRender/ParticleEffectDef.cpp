@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "ParticleEffectDef.h"
 #include "ParticleEffect.h"
 #include "ParticleEffectActions.h"
@@ -226,10 +224,6 @@ BOOL CPEDef::Load(IReader& F)
             if (!valid)
                 break;
         }
-        //if (valid)
-        //    Compile(m_EActionList);
-        //else
-        //    m_EActionList.clear();
     }
 
     return TRUE;
@@ -258,7 +252,6 @@ void PS::CPEDef::Compile(EPAVec& v)
 
 BOOL CPEDef::Load2(CInifile& ini)
 {
-    //.	u16 version		= ini.r_u16("_effect", "version");
     if (ini.line_exist("_effect", "update_step"))
     {
         m_uStep = ini.r_u32("_effect", "update_step");

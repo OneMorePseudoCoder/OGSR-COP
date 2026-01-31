@@ -80,7 +80,6 @@ public:
     void SoundEvent_OnDestDestroy(Feel::Sound*);
 
     // Loader interface
-    // ref_shader					LL_CreateShader			(int S, int T, int M, int C);
     void LL_CheckTextures();
 
     virtual void OnChangeCurrentWeather(const char* sect) = 0;

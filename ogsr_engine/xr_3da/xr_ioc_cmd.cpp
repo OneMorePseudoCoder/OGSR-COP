@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "xr_ioconsole.h"
 #include "xr_ioc_cmd.h"
 #include "cameramanager.h"
@@ -96,9 +95,6 @@ public:
     virtual void Execute(LPCSTR args)
     {
         Device.DumpResourcesMemoryUsage();
-        // Device.Resources->_DumpMemoryUsage();
-        //	TODO: move this console commant into renderer
-        // VERIFY(0);
     }
 };
 
@@ -229,9 +225,6 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 
     FS.update_path(cfg_full_name, fsgame::app_data_root, cfg_name);
 
-    // if( NULL == FS.exist(cfg_full_name) )
-    //	FS.update_path					(cfg_full_name, "$fs_root$", cfg_name);
-
     if (NULL == FS.exist(cfg_full_name))
         xr_strcpy(cfg_full_name, cfg_name);
 
@@ -246,7 +239,6 @@ void CCC_LoadCFG::Execute(LPCSTR args)
             {
                 // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся user.ltx - оказывается набит нулями, в результате чего игра не
                 // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
-
                 if (F->elapsed() >= sizeof(u8))
                 {
                     if (F->r_u8() == 0)
@@ -525,17 +517,11 @@ void CCC_Register()
     CMD3(CCC_Token, "r_fps_lock", &g_dwFPSlimit, FpsLockToken);
 
     CMD3(CCC_Mask, "rs_v_sync", &psDeviceFlags, rsVSync);
-    //CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
-    //CMD3(CCC_Mask, "rs_refresh_60hz", &psDeviceFlags, rsRefresh60hz);
     CMD3(CCC_Mask, "rs_stats", &psDeviceFlags, rsStatistic);
     CMD4(CCC_Float, "rs_vis_distance", &psVisDistance, 0.4f, 1.1f);
     CMD3(CCC_Mask, "rs_cam_pos", &psDeviceFlags, rsCameraPos);
 
     CMD3(CCC_Mask, "rs_occ_draw", &psDeviceFlags, rsOcclusionDraw);
-
-    //CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-    //CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-    //CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
 
     CMD3(CCC_Mask, "rs_hw_stats", &psDeviceFlags, rsHWInfo);
 
@@ -571,9 +557,6 @@ void CCC_Register()
     CMD1(CCC_soundDevice, "snd_device");
     CMD3(CCC_Mask, "snd_device_default", &psSoundFlags, ss_UseDefaultDevice);
 
-    /*psSoundOcclusionScale = pSettings->r_float("sound", "occlusion_scale");
-    clamp(psSoundOcclusionScale, 0.1f, 1.f);*/
-
     CMD4(CCC_Float, "snd_rolloff", &psSoundRolloff, 0.1f, 2.f);
     //CMD4(CCC_Float, "snd_fade_speed", &psSoundFadeSpeed, 1.f, 10.f);
     CMD4(CCC_Float, "snd_occ_scale", &psSoundOcclusionScale, 0.1f, 1.f);
@@ -597,9 +580,6 @@ void CCC_Register()
     CMD4(CCC_Float, "rain_puddles_wetting", &puddles_wetting, 0.1f, 20.0f);
 
     CMD2(CCC_Bool, "g_prefetch", &g_prefetch);
-
-    //extern BOOL g_laserdotcorrection;
-    //CMD2(CCC_Bool, "g_laserdotcorrection", &g_laserdotcorrection);
 
     // commands to control custom shader params from console (and use to user.ltx)
 

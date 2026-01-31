@@ -8,39 +8,37 @@
 
 #pragma once
 
-#ifdef DEBUG
-#define aiDebug (1 << 0)
-#define aiBrain (1 << 1)
-#define aiMotion (1 << 2)
-#define aiFrustum (1 << 3)
-#define aiFuncs (1 << 4)
-#define aiALife (1 << 5)
-#define aiLua (1 << 6)
-#define aiGOAP (1 << 7)
-#define aiCover (1 << 8)
-#define aiAnimation (1 << 9)
-#define aiVision (1 << 10)
-#define aiMonsterDebug (1 << 11)
-#define aiStats (1 << 12)
-#define aiDestroy (1 << 13)
-#define aiSerialize (1 << 14)
-#define aiDialogs (1 << 15)
-#define aiInfoPortion (1 << 16)
-#define aiGOAPScript (1 << 17)
-#define aiGOAPObject (1 << 18)
-#define aiStalker (1 << 19)
-#define aiDrawGameGraph (1 << 20)
-#define aiDrawGameGraphStalkers (1 << 21)
-#define aiDrawGameGraphObjects (1 << 22)
-#define aiNilObjectAccess (1 << 23)
-#endif // DEBUG
-
-#ifndef MASTER_GOLD
-#define aiIgnoreActor (1 << 24)
 extern Flags32 psAI_Flags;
-#endif // MASTER_GOLD
 
+enum psAI_Flags : u32
+{
 #ifdef DEBUG
-#define aiDrawVisibilityRays (1 << 26)
-#define aiAnimationStats (1 << 27)
+    aiDebug = (1 << 0),
+    aiBrain = (1 << 1),
+    aiMotion = (1 << 2),
+    aiFrustum = (1 << 3),
+    aiFuncs = (1 << 4),
+    aiALife = (1 << 5),
+    aiLua = (1 << 6),
+    aiGOAP = (1 << 7),
+    aiCover = (1 << 8),
+    aiAnimation = (1 << 9),
+    aiVision = (1 << 10),
+    aiMonsterDebug = (1 << 11),
+    aiStats = (1 << 12),
+    aiDestroy = (1 << 13),
+    aiSerialize = (1 << 14),
+    aiDialogs = (1 << 15),
+    aiInfoPortion = (1 << 16),
+    aiGOAPScript = (1 << 17),
+    aiGOAPObject = (1 << 18),
+    aiStalker = (1 << 19),
+    aiDrawGameGraph = (1 << 20),
+    aiDrawGameGraphStalkers = (1 << 21),
+    aiDrawGameGraphObjects = (1 << 22),
+    aiNilObjectAccess = (1 << 23),
+    aiDrawVisibilityRays = (1 << 24),
+    aiAnimationStats = (1 << 25),
 #endif // DEBUG
+    aiIgnoreActor = (1 << 26),
+};

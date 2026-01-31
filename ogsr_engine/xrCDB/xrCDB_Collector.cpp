@@ -16,8 +16,7 @@ u32 Collector::VPack(const Fvector& V, float eps)
     return verts.size() - 1;
 }
 
-void Collector::add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, // vertices
-                                  u32 dummy, float eps)
+void Collector::add_face_packed_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy, float eps)
 {
     TRI T;
     T.verts[0] = VPack(v0, eps);

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "soundrender_core.h"
 #include "soundrender_source.h"
 
@@ -48,7 +47,6 @@ void CSoundRender_Source::i_decompress(OggVorbis_File* ovf, char* _dest, u32 siz
 {
     long TotalRet = 0;
 
-    // Read loop
     // Read loop
     while (TotalRet < static_cast<long>(size))
     {

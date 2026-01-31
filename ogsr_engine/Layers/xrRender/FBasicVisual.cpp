@@ -3,13 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "../../xr_3da/render.h"
-
 #include "fbasicvisual.h"
 #include "../../xr_3da/fmesh.h"
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -44,6 +40,7 @@ dxRender_Visual::dxRender_Visual()
     Type = 0;
     shader = nullptr;
     vis.clear();
+    dbg_shader_id = u16(0);
 }
 
 dxRender_Visual::~dxRender_Visual() {}
@@ -67,7 +64,6 @@ static bool replaceShadersLine(const char* N, char* fnS, u32 fnS_size, LPCSTR it
         if (xr_strcmp(s1, fnS) == 0)
         {
             xr_strcpy(fnS, fnS_size, s2);
-            // Msg("~~[%s][%s] replaced [%s] by [%s]", __FUNCTION__, N, s1, s2);
             break;
         }
     }
@@ -115,8 +111,6 @@ static ref_shader& GetCachedModelShader(const char* sh, const char* tex)
 
     if (const auto it = g_ModelShadersCache.find(key); it != g_ModelShadersCache.end())
     {
-        //Msg("hit model shader cache: %s", key.c_str());
-
         return it->second;
     }
     else
@@ -132,9 +126,6 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
     IsHudVisual = ::Render->hud_loading;
 
     dbg_name = N;
-
-    /*if (dbg_name.size() > 0)
-        Msg("dxRender_Visual::Load dbg_name=%s", dbg_name.c_str());*/
 
     // header
     VERIFY(data);
@@ -164,8 +155,9 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
         string256 fnT, fnS;
         data->r_stringZ(fnT, sizeof(fnT));
         data->r_stringZ(fnS, sizeof(fnS));
-        if (replaceShaders(N, fnS, sizeof fnS)) {
-            //Msg("~~[%s] replaced shaders for [%s]: %s", __FUNCTION__, N, fnS);
+        if (replaceShaders(N, fnS, sizeof fnS)) 
+        {
+            Msg("~~[%s] replaced shaders for [%s]: %s", __FUNCTION__, N, fnS);
         }
         dbg_texture_name = fnT;
         dbg_shader_name = fnS;

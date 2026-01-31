@@ -75,15 +75,7 @@ u16 pvCompress(const Fvector& vec)
     int xbits = iFloor(tmp.x * w);
     int ybits = iFloor(tmp.y * w);
 
-    /*
-    VERIFY( xbits <  127 );
-    VERIFY( xbits >= 0   );
-    VERIFY( ybits <  127 );
-    VERIFY( ybits >= 0   );
-    */
-
     // Now we can be sure that 0<=xp<=126, 0<=yp<=126, 0<=xp+yp<=126
-
     // however for the sampling we want to transform this triangle
     // into a rectangle.
     if (xbits >= 64)

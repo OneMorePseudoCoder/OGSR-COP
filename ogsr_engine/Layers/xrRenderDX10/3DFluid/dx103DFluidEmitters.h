@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef DX10_FLUID_ENABLE
-
 class dx103DFluidGrid;
 class dx103DFluidData;
 
@@ -38,7 +36,7 @@ public:
             {
                 float m_fPeriod;
                 float m_fPhase;
-                float m_fAmp; //	Speed == [FlowSpeed*(1-m_fAmp)..FlowSpeed*(1+m_fAmp)]
+                float m_fAmp;
             } m_DraughtParams;
         };
 
@@ -67,5 +65,3 @@ private:
 
     dx103DFluidGrid* m_pGrid;
 };
-
-#endif //	dx103DFluidEmitters_included

@@ -59,7 +59,7 @@ NET_Packet* INetQueue::Retreive()
     cs.Enter();
     if (!ready.empty())
         P = ready.front();
-    //---------------------------------------------
+
     else
     {
         u32 tmp_time = GetTickCount() - 60000;
@@ -70,7 +70,7 @@ NET_Packet* INetQueue::Retreive()
             unused.pop_back();
         }
     }
-    //---------------------------------------------
+
     cs.Leave();
     return P;
 }
@@ -78,7 +78,7 @@ void INetQueue::Release()
 {
     cs.Enter();
     VERIFY(!ready.empty());
-    //---------------------------------------------
+
     u32 tmp_time = GetTickCount() - 60000;
     u32 size = unused.size();
     if ((LastTimeCreate < tmp_time) && (size > 32))
@@ -87,7 +87,7 @@ void INetQueue::Release()
     }
     else
         unused.push_back(ready.front());
-    //---------------------------------------------
+
     ready.pop_front();
     cs.Leave();
 }
@@ -110,8 +110,6 @@ void IPureClient::Disconnect() //Вызывается при выходе из �
 
 void IPureClient::OnMessage(void* data, u32 size) //Сюда приходят сообщения из IPureServer::SendTo и IPureServer::SendBroadcast_LL
 {
-    /// Msg("~~[%s] data: [%p], size: [%u]", __FUNCTION__, data, size);
-
     // One of the messages - decompress it
     NET_Packet* P = net_Queue.CreateGet();
 

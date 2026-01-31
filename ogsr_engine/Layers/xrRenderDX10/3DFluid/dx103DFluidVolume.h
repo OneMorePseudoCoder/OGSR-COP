@@ -1,7 +1,4 @@
 #pragma once
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidData.h"
 #include "../../xrRender/FBasicVisual.h"
 
@@ -24,5 +21,3 @@ private:
 
     dx103DFluidData m_FluidData;
 };
-
-#endif //	dx103DFluidVolume_included

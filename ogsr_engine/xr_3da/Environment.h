@@ -138,11 +138,6 @@ public:
     shared_str sky_texture_env_name;
     shared_str clouds_texture_name;
 
-    /*
-    ref_texture			sky_texture		;
-    ref_texture			sky_texture_env	;
-    ref_texture			clouds_texture	;
-    */
     FactoryPtr<IEnvDescriptorRender> m_pDescriptor;
 
     Fvector4 clouds_color;
@@ -178,8 +173,6 @@ public:
     float bloom_exposure{};
     float bloom_sky_intensity{};
 
-    //	int					lens_flare_id;
-    //	int					tb_id;
     shared_str lens_flare_id;
     shared_str tb_id;
 
@@ -213,11 +206,6 @@ public:
 class ENGINE_API CEnvDescriptorMixer : public CEnvDescriptor
 {
 public:
-    /*
-    STextureList		sky_r_textures;
-    STextureList		sky_r_textures_env;
-    STextureList		clouds_r_textures;
-    */
     FactoryPtr<IEnvDescriptorMixerRender> m_pDescriptorMixer;
     float weight;
 
@@ -234,7 +222,6 @@ public:
 class ENGINE_API CEnvironment
 {
     friend class dxEnvironmentRender;
-
 
 public:
     DEFINE_VECTOR(CEnvAmbient*, EnvAmbVec, EnvAmbVecIt);
@@ -255,11 +242,9 @@ private:
     void calculate_dynamic_sun_dir() const;
     void calculate_config_sun_dir() const;
 
-    
     static bool sort_env_pred(const CEnvDescriptor* x, const CEnvDescriptor* y) { return x->exec_time < y->exec_time; }
     static bool sort_env_etl_pred(const CEnvDescriptor* x, const CEnvDescriptor* y) { return x->exec_time_loaded < y->exec_time_loaded; }
 
-    
     FactoryPtr<IEnvironmentRender> m_pRender;
 
     CPerlinNoise1D* PerlinNoise1D;

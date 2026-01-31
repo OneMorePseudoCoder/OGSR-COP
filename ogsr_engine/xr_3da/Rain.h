@@ -8,16 +8,16 @@
 inline const float max_desired_items = std::thread::hardware_concurrency() < 3u ? 1000.f : 2000.f;
 inline const float min_desired_items = max_desired_items / 10.f;
 
-constexpr float source_radius = 15;//12.5f;
-constexpr float source_offset = 40.f; // 40
+constexpr float source_radius = 15;
+constexpr float source_offset = 40.f; 
 
-constexpr float max_distance = source_offset * 1.5f; // 1.25f;
+constexpr float max_distance = source_offset * 1.5f;
 constexpr float sink_offset = -(max_distance - source_offset);
 
 constexpr float drop_length = 7.f;
 constexpr float drop_width = 0.40f;
-constexpr float drop_angle = deg2rad(15.0f); // 3.0
-constexpr float drop_max_angle = deg2rad(35.f); // 10;
+constexpr float drop_angle = deg2rad(15.0f);
+constexpr float drop_max_angle = deg2rad(35.f);
 constexpr float drop_max_wind_vel = 20.0f;
 constexpr float drop_speed_min = 40.f;
 constexpr float drop_speed_max = 80.f;
@@ -65,15 +65,6 @@ private:
 private:
     // Visualization	(rain) and (drops)
     FactoryPtr<IRainRender> m_pRender;
-    /*
-    // Visualization	(rain)
-    ref_shader						SH_Rain;
-    ref_geom						hGeom_Rain;
-
-    // Visualization	(drops)
-    IRender_DetailModel*			DM_Drop;
-    ref_geom						hGeom_Drops;
-    */
 
     // Data and logic
     xr_vector<Item> items;

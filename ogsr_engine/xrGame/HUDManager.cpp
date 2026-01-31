@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "HUDManager.h"
 #include "hudtarget.h"
-
 #include "actor.h"
 #include "..\xr_3da\igame_level.h"
 #include "clsid_game.h"
@@ -21,26 +20,6 @@ CFontManager::CFontManager()
 
 void CFontManager::InitializeFonts()
 {
-    //pFontMedium = nullptr;
-    //pFontSmall = nullptr;
-
-    //pFontDI = nullptr;
-
-    //pFontArial14 = nullptr;
-    //pFontArial21 = nullptr;
-    //pFontGraffiti19Russian = nullptr;
-    //pFontGraffiti22Russian = nullptr;
-    //pFontLetterica16Russian = nullptr;
-    //pFontLetterica18Russian = nullptr;
-    //pFontGraffiti32Russian = nullptr;
-    //pFontGraffiti40Russian = nullptr;
-    //pFontGraffiti50Russian = nullptr;
-    //pFontLetterica25 = nullptr;
-
-    //delete_data(m_all_fonts);
-
-    //m_all_fonts.clear();
-
     InitializeFont(pFontMedium, "hud_font_medium");
     InitializeFont(pFontSmall, "hud_font_small");
 
@@ -71,7 +50,7 @@ void CFontManager::InitializeFonts()
 LPCSTR CFontManager::GetFontTexName(LPCSTR section)
 {
     constexpr const char* tex_names[] = {"texture800", "texture", "texture1600"};
-    int def_idx = 1; // default 1024x768
+    int def_idx = 1;
     int idx = def_idx;
 
     u32 h = Device.dwHeight;
@@ -181,22 +160,19 @@ void CFontManager::Render()
 
 void CFontManager::OnDeviceReset() { InitializeFonts(); }
 
-//--------------------------------------------------------------------
 CHUDManager::CHUDManager()
 {
     pUI = 0;
     m_pHUDTarget = xr_new<CHUDTarget>();
     OnDisconnected();
 }
-//--------------------------------------------------------------------
+
 CHUDManager::~CHUDManager()
 {
     xr_delete(pUI);
     xr_delete(m_pHUDTarget);
     b_online = false;
 }
-
-//--------------------------------------------------------------------
 
 void CHUDManager::Load()
 {
@@ -209,7 +185,7 @@ void CHUDManager::Load()
     pUI->Load(NULL);
     OnDisconnected();
 }
-//--------------------------------------------------------------------
+
 void CHUDManager::OnFrame()
 {
     if (!b_online)
@@ -218,7 +194,6 @@ void CHUDManager::OnFrame()
         pUI->UIOnFrame();
     m_pHUDTarget->CursorOnFrame();
 }
-//--------------------------------------------------------------------
 
 bool need_render_hud()
 {
@@ -326,7 +301,7 @@ void CHUDManager::RenderUI()
     if (!b_online)
         return;
 
-    if (HUD().GetUI()->GameIndicatorsShown() /*&& psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
+    if (HUD().GetUI()->GameIndicatorsShown())
     {
         HitMarker.Render();
 
@@ -366,6 +341,7 @@ void CHUDManager::ShowCrosshair(bool show) { m_pHUDTarget->m_bShowCrosshair = sh
 void CHUDManager::Hit(int idx, float power, const Fvector& dir) { HitMarker.Hit(idx, dir); }
 
 void CHUDManager::SetHitmarkType(LPCSTR tex_name) { HitMarker.InitShader(tex_name); }
+
 #include "ui\UIMainInGameWnd.h"
 void CHUDManager::OnScreenRatioChanged()
 {
@@ -382,7 +358,6 @@ void CHUDManager::OnScreenRatioChanged()
 
 void CHUDManager::OnDisconnected()
 {
-    //.	if(!b_online)			return;
     b_online = false;
     if (pUI)
         Device.seqFrame.Remove(pUI);

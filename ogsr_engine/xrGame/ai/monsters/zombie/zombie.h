@@ -43,19 +43,14 @@ public:
     u32 time_dead_start;
     u32 last_hit_frame;
     u32 time_resurrect;
-
+    bool fakedeath_is_active;
     u8 fake_death_count;
     float health_death_threshold;
     u8 fake_death_left;
 
+    virtual bool fake_death_is_active() const { return fakedeath_is_active; }
     bool fake_death_fall_down(); // return true if everything is ok
     void fake_death_stand_up();
-
-    /*
-    #ifdef DEBUG
-        virtual void	debug_on_key			(int key);
-    #endif
-    */
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "../xrRender/uber_deffer.h"
 #include "Blender_deffer_aref.h"
 
@@ -52,8 +50,6 @@ void CBlender_deffer_aref::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    // oBlend.value	= FALSE	;
-
     if (oBlend.value)
     {
         switch (C.iElement)
@@ -63,11 +59,6 @@ void CBlender_deffer_aref::Compile(CBlender_Compile& C)
             if (lmapped)
             {
                 C.r_Pass("lmapE", "lmapE", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
-                // C.r_Sampler			("s_base",	C.L_textures[0]	);
-                // C.r_Sampler			("s_lmap",	C.L_textures[1]	);
-                // C.r_Sampler_clf		("s_hemi",	*C.L_textures[2]);
-                // C.r_Sampler			("s_env",	r2_T_envs0,		false,D3DTADDRESS_CLAMP);
-
                 C.r_dx10Texture("s_base", C.L_textures[0]);
                 C.r_dx10Texture("s_lmap", C.L_textures[1]);
                 C.r_dx10Texture("s_hemi", *C.L_textures[2]);
@@ -81,7 +72,6 @@ void CBlender_deffer_aref::Compile(CBlender_Compile& C)
             else
             {
                 C.r_Pass("vert", "vert", TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
-                // C.r_Sampler			("s_base",	C.L_textures[0]	);
                 C.r_dx10Texture("s_base", C.L_textures[0]);
                 C.r_dx10Sampler("smp_base");
                 C.r_End();
@@ -116,7 +106,6 @@ void CBlender_deffer_aref::Compile(CBlender_Compile& C)
 
         case SE_R2_SHADOW: // smap
             C.r_Pass("shadow_direct_base_aref", "shadow_direct_base_aref", FALSE, TRUE, TRUE, FALSE);
-            // C.r_Sampler		("s_base",C.L_textures[0]);
             C.r_dx10Texture("s_base", C.L_textures[0]);
             C.r_dx10Sampler("smp_base");
             C.r_dx10Sampler("smp_linear");

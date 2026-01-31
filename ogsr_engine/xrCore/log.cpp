@@ -26,7 +26,8 @@ static void AddOne(std::string& split, bool first_line)
     if (LogCB)
         LogCB(split.c_str()); //Вывод в логкаллбек
 
-    auto insert_time = [&] {
+    auto insert_time = [&] 
+    {
         if (first_line)
         {
             string64 buf, curTime;
@@ -50,8 +51,6 @@ static void AddOne(std::string& split, bool first_line)
     static std::string last_str;
     static int items_count;
 
-    //LogFile.push_back(split); //Вывод в консоль
-
     if (last_str == split)
     {
         std::string tmp = split;
@@ -70,7 +69,6 @@ static void AddOne(std::string& split, bool first_line)
     }
     else
     {
-        // DUMP_PHASE;
         LogFile.push_back(split);
         last_str = split;
         items_count = 0;
@@ -132,7 +130,6 @@ void __cdecl Msg(const char* format, ...)
         Log(strBuf);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
 void Log(const char* msg, const Fvector& dop)
 {
     char buf[1024];
@@ -143,11 +140,9 @@ void Log(const char* msg, const Fvector& dop)
 void Log(const char* msg, const Fmatrix& dop)
 {
     char buf[1024];
-    std::snprintf(buf, sizeof(buf), "%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n", msg, dop.i.x, dop.i.y, dop.i.z, dop._14_, dop.j.x, dop.j.y, dop.j.z, dop._24_,
-                  dop.k.x, dop.k.y, dop.k.z, dop._34_, dop.c.x, dop.c.y, dop.c.z, dop._44_);
+    std::snprintf(buf, sizeof(buf), "%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n", msg, dop.i.x, dop.i.y, dop.i.z, dop._14_, dop.j.x, dop.j.y, dop.j.z, dop._24_, dop.k.x, dop.k.y, dop.k.z, dop._34_, dop.c.x, dop.c.y, dop.c.z, dop._44_);
     Log(buf);
 }
-/////////////////////////////////////////////////////////////////////////////////////////////
 
 void SetLogCB(LogCallback cb) { LogCB = cb; }
 
@@ -185,7 +180,6 @@ void CreateLog(BOOL nl)
                 xr_strconcat(logFName, "logs\\", temp);
             }
 
-            //logstream.imbue(std::locale(""));
             VerifyPath(logFName);
             logstream.open(logFName);
         }

@@ -642,8 +642,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
         update_object_handler();
         STOP_PROFILE
     }
-    //	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
-    //		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
+
     // Queue shrink
     VERIFY(_valid(Position()));
     u32 dwTimeCL = Level().timeServer() - NET_Latency;
@@ -664,10 +663,6 @@ void CAI_Stalker::shedule_Update(u32 DT)
         agent_manager().update();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
-//		bool			check = !!memory().enemy().selected();
-#if 0 // def DEBUG
-		memory().visual().check_visibles();
-#endif
         if (g_mt_config.test(mtAiVision))
             Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CCustomMonster::Exec_Visibility));
         else

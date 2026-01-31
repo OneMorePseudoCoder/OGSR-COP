@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
@@ -12,13 +10,13 @@ CRT::~CRT()
     DEV->_DeleteRT(this);
 }
 
-void CRT::create(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount /*= 1*/, u32 slices_num /*=1*/, Flags32 flags /*= {}*/)
+void CRT::create(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount, u32 slices_num, Flags32 flags)
 {
     if (pSurface)
         return;
 
     R_ASSERT(HW.pDevice && Name && Name[0] && w && h);
-    _order = CPU::GetCLK(); // Device.GetTimerGlobal()->GetElapsed_clk();
+    _order = CPU::GetCLK();
 
     dwWidth = w;
     dwHeight = h;
@@ -71,9 +69,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount /*= 1
         dwFlags |= CreateBase;
         if (!bUseAsDepth)
         {
-            /*u32 idx;
-            char const* str = strrchr(Name, '_');
-            sscanf(++str, "%u", &idx);*/
             R_CHK(HW.m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pSurface)));
         }
     }
@@ -257,9 +252,10 @@ void CRT::set_slice_write(u32 context_id, int slice)
 }
 
 void CRT::reset_begin() { destroy(); }
+
 void CRT::reset_end() { create(*cName, dwWidth, dwHeight, fmt, sampleCount, n_slices, { dwFlags }); }
 
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount /*= 1*/, u32 slices_num /*=1*/, Flags32 flags /*= 0*/)
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount, u32 slices_num, Flags32 flags)
 {
     _set(DEV->_CreateRT(Name, w, h, f, SampleCount, slices_num, flags));
 }

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "soundrender.h"
 #include "soundrender_environment.h"
 #pragma warning(push)
@@ -188,8 +187,6 @@ void CSoundRender_Environment::saveIni(CInifile* ini, LPCSTR name) const
 //////////////////////////////////////////////////////////////////////////
 void SoundEnvironment_LIB::Load(LPCSTR f_name)
 {
-    // R_ASSERT(library.empty());
-
     IReader* F = FS.r_open(f_name);
     IReader* C;
 

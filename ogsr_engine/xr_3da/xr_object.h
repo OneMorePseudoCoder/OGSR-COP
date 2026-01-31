@@ -69,9 +69,6 @@ public:
     //u32 dwFrame_AsCrow{};
 
     // Crow-MODE
-    // if (object_is_visible)
-    // if (object_is_near)
-    // if (object_is_crow_always)
     void MakeMeCrow_internal();
     void MakeMeCrow();
 

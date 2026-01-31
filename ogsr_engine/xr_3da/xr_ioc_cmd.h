@@ -26,9 +26,6 @@
         Console->AddCommand(&x##cls); \
     }
 
-// KRodin: закомментировано.
-//#include "xrSASH.h"
-
 class ENGINE_API IConsole_Command
 {
 public:
@@ -74,11 +71,6 @@ public:
         Info(I);
         Msg("~ Invalid syntax in call to '%s'", cName);
         Msg("~ Valid arguments: %s", I);
-
-        /*
-        g_SASH.OnConsoleInvalidSyntax("~ Invalid syntax in call to '%s'",cName, false);
-        g_SASH.OnConsoleInvalidSyntax("~ Valid arguments: %s", I, true);
-        */
     }
     virtual void Execute(LPCSTR args) = 0;
 
@@ -100,7 +92,6 @@ public:
 
     virtual void add_to_LRU(shared_str const& arg);
     void add_LRU_to_tips(vecTips& tips);
-
 }; // class IConsole_Command
 
 class ENGINE_API CCC_Mask : public IConsole_Command
@@ -824,6 +815,7 @@ enum : u32
     gc_step,
     gc_timeout
 };
+
 extern int psLUA_GCSTEP;
 extern int psLUA_GCTIMEOUT, psLUA_GCTIMEOUT_MIN;
 extern u32 ps_lua_gc_method;

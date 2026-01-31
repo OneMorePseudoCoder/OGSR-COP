@@ -55,8 +55,6 @@ int _GetItemCount(LPCSTR src, char separator)
             res++;
             last_res = res;
             cnt++;
-            //if (res[0] == separator)
-            //    break;
         }
         if (xr_strlen(last_res))
             cnt++;
@@ -111,98 +109,6 @@ u32 _ParseItem(LPCSTR src, xr_token* token_list)
     return u32(-1);
 }
 
-//u32 _ParseItem(LPSTR src, int ind, xr_token* token_list)
-//{
-//    char dst[128];
-//    _GetItem(src, ind, dst);
-//    return _ParseItem(dst, token_list);
-//}
-
-//LPSTR _ReplaceItems(LPCSTR src, int idx_start, int idx_end, LPCSTR new_items, LPSTR dst, char separator)
-//{
-//    LPSTR n = dst;
-//    int level = 0;
-//    bool bCopy = true;
-//    for (LPCSTR p = src; *p != 0; p++)
-//    {
-//        if ((level >= idx_start) && (level < idx_end))
-//        {
-//            if (bCopy)
-//            {
-//                for (LPCSTR itm = new_items; *itm != 0;)
-//                    *n++ = *itm++;
-//                bCopy = false;
-//            }
-//            if (*p == separator)
-//                *n++ = separator;
-//        }
-//        else
-//        {
-//            *n++ = *p;
-//        }
-//        if (*p == separator)
-//            level++;
-//    }
-//    *n = '\0';
-//    return dst;
-//}
-
-//LPSTR _ReplaceItem(LPCSTR src, int index, LPCSTR new_item, LPSTR dst, char separator)
-//{
-//    LPSTR n = dst;
-//    int level = 0;
-//    bool bCopy = true;
-//    for (LPCSTR p = src; *p != 0; p++)
-//    {
-//        if (level == index)
-//        {
-//            if (bCopy)
-//            {
-//                for (LPCSTR itm = new_item; *itm != 0;)
-//                    *n++ = *itm++;
-//                bCopy = false;
-//            }
-//            if (*p == separator)
-//                *n++ = separator;
-//        }
-//        else
-//        {
-//            *n++ = *p;
-//        }
-//        if (*p == separator)
-//            level++;
-//    }
-//    *n = '\0';
-//    return dst;
-//}
-
-//void _SequenceToList(LPSTRVec& lst, LPCSTR in, char separator)
-//{
-//    int t_cnt = _GetItemCount(in, separator);
-//    string1024 T;
-//    for (int i = 0; i < t_cnt; i++)
-//    {
-//        _GetItem(in, i, T, separator, 0);
-//        _Trim(T);
-//        if (xr_strlen(T))
-//            lst.push_back(xr_strdup(T));
-//    }
-//}
-//
-//void _SequenceToList(RStringVec& lst, LPCSTR in, char separator)
-//{
-//    lst.clear();
-//    int t_cnt = _GetItemCount(in, separator);
-//    xr_string T;
-//    for (int i = 0; i < t_cnt; i++)
-//    {
-//        _GetItem(in, i, T, separator, 0);
-//        _Trim(T);
-//        if (T.size())
-//            lst.push_back(T.c_str());
-//    }
-//}
-
 void _SequenceToList(SStringVec& lst, LPCSTR in, char separator)
 {
     lst.clear();
@@ -216,19 +122,6 @@ void _SequenceToList(SStringVec& lst, LPCSTR in, char separator)
             lst.push_back(T.c_str());
     }
 }
-
-//xr_string _ListToSequence(const SStringVec& lst)
-//{
-//    static xr_string out;
-//    out = "";
-//    if (lst.size())
-//    {
-//        out = lst.front();
-//        for (SStringVec::const_iterator s_it = lst.begin() + 1; s_it != lst.end(); s_it++)
-//            out += xr_string(",") + (*s_it);
-//    }
-//    return out;
-//}
 
 xr_string& _TrimLeft(xr_string& str)
 {
@@ -284,18 +177,3 @@ LPCSTR _GetItem(LPCSTR src, int index, xr_string& dst, char separator, LPCSTR de
         _Trim(dst);
     return dst.c_str();
 }
-
-//shared_str _ListToSequence(const RStringVec& lst)
-//{
-//    xr_string out;
-//    if (lst.size())
-//    {
-//        out = *lst.front();
-//        for (RStringVec::const_iterator s_it = lst.begin() + 1; s_it != lst.end(); s_it++)
-//        {
-//            out += ",";
-//            out += **s_it;
-//        }
-//    }
-//    return shared_str(out.c_str());
-//}

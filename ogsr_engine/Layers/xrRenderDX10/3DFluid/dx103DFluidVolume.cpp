@@ -1,9 +1,5 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidVolume.h"
-
 #include "dx103DFluidManager.h"
 
 dx103DFluidVolume::dx103DFluidVolume() {}
@@ -12,9 +8,6 @@ dx103DFluidVolume::~dx103DFluidVolume() {}
 
 void dx103DFluidVolume::Load(LPCSTR N, IReader* data, u32 dwFlags)
 {
-    //	Uncomment this if choose to read from OGF
-    //	dxRender_Visual::Load		(N,data,dwFlags);
-
     //	Create shader for correct sort while rendering
     //	shader name can't start from a digit
     shader.create("fluid3d_stub", "water\\water_ryaska1");
@@ -44,11 +37,6 @@ void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level O
 {
     if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
-
-    //	Render debug box
-    //	Do it BEFORE update since update resets shaders and other pipeline settings
-
-    //	FluidManager.RenderFluid( m_FluidData );
 
     u32 dwOffset, dwCount;
 
@@ -138,10 +126,7 @@ void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level O
         cmd_list.set_xform_world(Obstacles[i]);
     }
 
-    // float fTimeStep = Device.fTimeDelta*30*2.0f;
     const float fTimeStep = 2.0f;
-
-    // FluidManager.Update( m_FluidData, 2.0f);
     FluidManager.Update(cmd_list, m_FluidData, fTimeStep);
     FluidManager.RenderFluid(cmd_list, m_FluidData);
 }
@@ -149,5 +134,3 @@ void dx103DFluidVolume::Render(CBackend& cmd_list, float, bool) // LOD - Level O
 void dx103DFluidVolume::Copy(dxRender_Visual* pFrom) { dxRender_Visual::Copy(pFrom); }
 
 void dx103DFluidVolume::Release() { dxRender_Visual::Release(); }
-
-#endif

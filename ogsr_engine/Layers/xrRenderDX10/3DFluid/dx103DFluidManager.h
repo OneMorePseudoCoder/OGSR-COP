@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef DX10_FLUID_ENABLE
-
 class dx103DFluidData;
 class dx103DFluidGrid;
 class dx103DFluidObstacles;
@@ -31,7 +29,7 @@ public:
     dx103DFluidManager();
     ~dx103DFluidManager();
 
-    //		Manager setup
+    //	Manager setup
     void Initialize(int width, int height, int depth);
     void Destroy();
     void SetScreenSize(int width, int height) const
@@ -40,16 +38,15 @@ public:
             m_pRenderer->SetScreenSize(width, height);
     }
 
-    //		Interface for fluid volume
+    //	Interface for fluid volume
     void Update(CBackend& cmd_list, dx103DFluidData& FluidData, float timestep);
     void RenderFluid(CBackend& cmd_list, dx103DFluidData& FluidData);
 
-    //		Interface for blenders
+    //	Interface for blenders
     int GetTextureWidth() const { return m_iTextureWidth; }
     int GetTextureHeight() const { return m_iTextureHeight; }
     int GetTextureDepth() const { return m_iTextureDepth; }
 
-    //	float	GetDecay() { return m_fDecay; }
     float GetImpulseSize() const { return m_fImpulseSize; }
 
     static LPCSTR* GetEngineTextureNames() { return m_pEngineTextureNames; }
@@ -83,7 +80,7 @@ private:
     };
 
 private:
-    //		Initialization
+    //	Initialization
     void InitShaders();
     void DestroyShaders();
 
@@ -93,7 +90,7 @@ private:
 
     void Reset() const;
 
-    //		Simlulation data initialisation
+    //	Simlulation data initialisation
     void AttachFluidData(CBackend& cmd_list, dx103DFluidData& FluidData);
     void DetachAndSwapFluidData(CBackend& cmd_list, dx103DFluidData& FluidData);
 
@@ -119,13 +116,12 @@ private:
 
     ref_selement m_SimulationTechnique[SS_NumShaders];
 
-    //
     dx103DFluidGrid* m_pGrid;
     dx103DFluidRenderer* m_pRenderer;
     dx103DFluidObstacles* m_pObstaclesHandler;
     dx103DFluidEmitters* m_pEmittersHandler;
 
-    //	Simulation options
+    // Simulation options
     int m_nIterations;
     bool m_bUseBFECC;
     float m_fSaturation;
@@ -139,17 +135,15 @@ private:
     int m_iTextureHeight;
     int m_iTextureDepth;
 
-//	Allow real-time config reload
+    //	Allow real-time config reload
 #ifdef DEBUG
     xr_vector<xr_string> m_lstSectionNames;
     xr_vector<dx103DFluidData*> m_lstFluidData;
 #endif //	DEBUG
 
-//	Allow real-time config reload
+    //	Allow real-time config reload
 #ifdef DEBUG
 #endif //	DEBUG
 };
 
 extern dx103DFluidManager FluidManager;
-
-#endif //	dx103DFluidManager_included

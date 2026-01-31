@@ -12,9 +12,6 @@
 
 using namespace R_dsgraph;
 
-//u32 mapNormalItems::instance_cnt = 0;
-//u32 mapMatrixItems::instance_cnt = 0;
-
 // Static geometry optimization
 #define O_S_L1_S_LOW 10.f // geometry 3d volume size
 #define O_S_L1_D_LOW 150.f // distance, after which it is not rendered
@@ -59,7 +56,6 @@ using namespace R_dsgraph;
 #define O_S_L4_D_ULT 250.f
 #define O_S_L5_S_ULT 25000.f
 #define O_S_L5_D_ULT 300.f
-
 
 constexpr Fvector4 o_optimize_static_l1_dist{O_S_L1_D_LOW, O_S_L1_D_MED, O_S_L1_D_HII, O_S_L1_D_ULT};
 constexpr Fvector4 o_optimize_static_l1_size{O_S_L1_S_LOW, O_S_L1_S_MED, O_S_L1_S_HII, O_S_L1_S_ULT};
@@ -193,11 +189,13 @@ ICF float CalcSSA(float& distSQ, const Fvector& C, dxRender_Visual* V)
     distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
     return R / distSQ;
 }
+
 ICF float CalcSSA(float& distSQ, Fvector& C, float R)
 {
     distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
     return R / distSQ;
 }
+
 ICF float CalcHudSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
 {
     const float R = V->getVisData().sphere.R + 0;
@@ -210,9 +208,8 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
 {
     if (pVisual->getVisData().marker[context_id] == marker)
         return;
-    pVisual->getVisData().marker[context_id] = marker;
 
-    //ZoneScoped;
+    pVisual->getVisData().marker[context_id] = marker;
 
     float distSQ;
     float SSA;
@@ -285,7 +282,6 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     }
 
     // Shadows registering
-
     if (root && root->renderable_Invisible())
         return;
 
@@ -329,9 +325,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 {
     if (pVisual->getVisData().marker[context_id] == marker)
         return;
-    pVisual->getVisData().marker[context_id] = marker;
 
-    //ZoneScoped;
+    pVisual->getVisData().marker[context_id] = marker;
 
     float distSQ;
     const float SSA = CalcSSA(distSQ, pVisual->getVisData().sphere.P, pVisual);
@@ -373,6 +368,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     {
         mapEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh_d})); // sh_d -> L_special
     }
+
     if (sh->flags.bWmark && pmask_wmark)
     {
         mapWmark.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh}));
@@ -385,8 +381,6 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     counter_S++;
 
     {
-        //ZoneScopedN("mapNormalPasses");
-
         ASSERT_FMT(sh->passes.size() <= SHADER_PASSES_MAX, "max pass should be <= 2! shader [%s]", pVisual->shader->dbg_shader_name.c_str());
         ASSERT_FMT(sh->flags.iPriority / 2 <= 1, "sh->flags.iPriority / 2 <= 1! shader [%s]", pVisual->shader->dbg_shader_name.c_str());
 
@@ -502,11 +496,8 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
         return;
 
     {
-        // ZoneScopedN("add_leafs_static/HOM+IsValuableToRender");
-
         if (phase != CRender::PHASE_SMAP && !RImplementation.HOM.visible(pVisual->getVisData()))
         {
-            // Msg("add_leafs_static skip static model");
             return;
         }
 
@@ -548,9 +539,6 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
         {
             lstLODs.emplace_back(ssa, pVisual);
         }
-
-        //if (ssa < r_ssaDISCARD)
-        //    return;
 
         if (ssa > r_ssaLOD_B || phase == CRender::PHASE_SMAP)
         {
@@ -604,11 +592,8 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
         return;
 
     {
-        // ZoneScopedN("add_leafs_static/HOM+IsValuableToRender");
-
         if (phase != CRender::PHASE_SMAP && !RImplementation.HOM.visible(pVisual->getVisData()))
         {
-            // Msg("add_leafs_static skip static model");
             return;
         }
 
@@ -622,7 +607,6 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
         return;
 
     // If we get here visual is visible or partially visible
-
     switch (pVisual->Type)
     {
     case MT_HIERRARHY: {
@@ -650,8 +634,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
 }
 
 // sub-space rendering - main procedure
-void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& start_sector_id, CFrustum& frustum, const Fmatrix& xform, const Fvector& camera_position,
-                                         const BOOL add_dynamic)
+void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& start_sector_id, CFrustum& frustum, const Fmatrix& xform, const Fvector& camera_position, const BOOL add_dynamic)
 {
     ZoneScoped;
 
@@ -676,10 +659,7 @@ void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& star
         for (const auto& sector : sector_portals_structure.Sectors)
         {
             dxRender_Visual* root = sector->root();
-            // for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
-            {
-                add_static(root, frustum, frustum.getMask());
-            }
+            add_static(root, frustum, frustum.getMask());
         }
     }
     else
@@ -710,13 +690,6 @@ void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& star
         // Determine visibility for dynamic part of scene
         for (const auto spatial : lstRenderables)
         {
-            /*if (o.is_main_pass)
-            {
-                const auto& entity_pos = spatial->spatial_sector_point();
-                const auto sector_id = detect_sector(entity_pos);
-                spatial->spatial_updatesector(sector_id);
-            }*/
-
             const auto& sector_id = spatial->spatial.sector_id;
             if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
             {

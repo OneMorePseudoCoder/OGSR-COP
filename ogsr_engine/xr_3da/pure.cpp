@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "pure.h"
 
 void rp_Frame(void* p) { static_cast<pureFrame*>(p)->OnFrame(); };

@@ -253,6 +253,7 @@ ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, c
     minz = 0.f + z * iw;
     return FALSE;
 }
+
 ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
     float t;
@@ -275,6 +276,7 @@ ICF BOOL xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _
         minz = t;
     return FALSE;
 }
+
 IC BOOL _visible(Fbox& B, Fmatrix& m_xform_01)
 {
     // Find min/max points of xformed-box
@@ -376,10 +378,7 @@ void CHOM::OnRender()
                 pairs[(i * 6) + 5] = static_cast<u16>(T->verts[0]);
             }
 
-            DebugRenderImpl.add_lines(
-				m_pModel->get_verts(), m_pModel->get_verts_count(),
-				pairs.data(), (u32)pairs.size() / 2, 0xFFFFFFFF
-			);
+            DebugRenderImpl.add_lines(m_pModel->get_verts(), m_pModel->get_verts_count(), pairs.data(), (u32)pairs.size() / 2, 0xFFFFFFFF);
         }
     }
 }

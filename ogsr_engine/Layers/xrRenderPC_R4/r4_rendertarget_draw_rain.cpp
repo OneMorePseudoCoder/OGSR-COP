@@ -28,8 +28,6 @@ void CRenderTarget::draw_rain(CBackend& cmd_list, light& RainSetup)
     W_dirZ.normalize();
 
     // Perform masking (only once - on the first/near phase)
-    // cmd_list.set_CullMode			(CULL_NONE	);
-    // if (SE_SUN_NEAR==sub_phase)	//.
     {
         // Fill vertex buffer
         FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -82,8 +80,6 @@ void CRenderTarget::draw_rain(CBackend& cmd_list, light& RainSetup)
                                  view_dimY / 2.f + view_sy + fTexelOffs,
                                  fBias,
                                  1.0f};
-
-        // compute xforms
 
         // shadow xform
         Fmatrix m_shadow;
@@ -163,7 +159,6 @@ void CRenderTarget::draw_rain(CBackend& cmd_list, light& RainSetup)
         cmd_list.set_c("m_sunmask", m_clouds_shadow);
 
         //	It is restored automatically by a set_Element call
-        // StateManager.SetColorWriteEnable( D3Dxx_COLOR_WRITE_ENABLE_ALL );
         u_setrt(cmd_list, rt_Color, nullptr, nullptr, rt_Base_Depth->pZRT[cmd_list.context_id]);
 
         cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);

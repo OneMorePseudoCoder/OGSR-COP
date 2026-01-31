@@ -2,7 +2,6 @@
 
 namespace sun
 {
-
 struct ray
 {
     ray() = default;
@@ -14,7 +13,7 @@ struct ray
 
 struct cascade
 {
-    cascade() : reset_chain(false) {}
+    cascade() : reset_chain(false), bias(0.0f), cascade_ind(0), size(0.0f) {}
 
     u32 cascade_ind;
 

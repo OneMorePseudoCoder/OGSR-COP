@@ -362,7 +362,6 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     switch (RenderMode)
     {
     case RM_SKINNING_SOFT:
-        // Msg					("skinning: software");
         V.rm_geom.create(vertRenderFVF, RImplementation.Vertex.Buffer(), V.p_rm_Indices);
         break;
     case RM_SINGLE:
@@ -631,6 +630,7 @@ BOOL CSkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvec
 {
     return inherited2::_PickBone(r, dist, start, dir, this, bone_id, iBase, iCount);
 }
+
 BOOL CSkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
     const FSlideWindow& SW = nSWI.sw[0];

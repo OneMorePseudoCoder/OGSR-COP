@@ -227,9 +227,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 
 #pragma todo("Simp: эффект шлема багует в прицеле, надо бы придумать решение получше")
     extern bool Is3dssZoomed;
-    if (!Is3dssZoomed &&
-        ((ps_r2_ls_flags_ext.test(R2FLAGEXT_VISOR_REFL_CONTROL) && ps_r2_ls_flags_ext.test(R2FLAGEXT_VISOR_REFL)) ||
-         (ps_r2_ls_flags_ext.test(R2FLAGEXT_MASK_CONTROL) && ps_r2_ls_flags_ext.test(R2FLAGEXT_MASK))))
+    if (!Is3dssZoomed && ((ps_r2_ls_flags_ext.test(R2FLAGEXT_VISOR_REFL_CONTROL) && ps_r2_ls_flags_ext.test(R2FLAGEXT_VISOR_REFL)) || (ps_r2_ls_flags_ext.test(R2FLAGEXT_MASK_CONTROL) && ps_r2_ls_flags_ext.test(R2FLAGEXT_MASK))))
     {
         phase_gasmask_dudv(cmd_list);
     }
@@ -388,7 +386,6 @@ void CRenderTarget::phase_combine_volumetric(CBackend& cmd_list)
 
         // Draw
         cmd_list.set_Element(s_combine_volumetric->E[0]);
-        // cmd_list.set_Geometry			(g_combine_VP		);
         cmd_list.set_Geometry(g_combine);
         cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
@@ -499,7 +496,7 @@ void CRenderTarget::render_flare(CBackend& cmd_list, light* L)
 
     Fcolor color = L->color;
     color.normalize_rgb();
-    color.mul_rgba(fGradientValue /* * L->fBlend*/);
+    color.mul_rgba(fGradientValue);
     u32 c = color.get();
 
     u32 VS_Offset;

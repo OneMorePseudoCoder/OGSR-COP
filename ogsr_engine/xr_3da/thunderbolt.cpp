@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "render.h"
 #include "Thunderbolt.h"
 #include "igame_persistent.h"
@@ -55,13 +54,6 @@ void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
     m_name = pIni.r_string(sect, "lightning_model");
     m_pRender->CreateModel(m_name);
 
-    /*
-    IReader* F			= 0;
-    F					= FS.r_open("$game_meshes$",m_name); R_ASSERT2(F,"Empty 'lightning_model'.");
-    l_model				= ::Render->model_CreateDM(F);
-    FS.r_close			(F);
-    */
-
     // sound
     m_name = pIni.r_string(sect, "sound");
     if (m_name && m_name[0])
@@ -102,13 +94,6 @@ void SThunderboltDesc::load_shoc(CInifile* pIni, shared_str const& sect)
     LPCSTR m_name;
     m_name = pIni->r_string(sect, "lightning_model");
     m_pRender->CreateModel(m_name);
-
-    /*
-    IReader* F			= 0;
-    F					= FS.r_open("$game_meshes$",m_name); R_ASSERT2(F,"Empty 'lightning_model'.");
-    l_model				= ::Render->model_CreateDM(F);
-    FS.r_close			(F);
-    */
 
     // sound
     m_name = pIni->r_string(sect, "sound");
@@ -170,8 +155,6 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
     for (auto& d_it : collection)
         xr_delete(d_it);
     collection.clear();
-    // hGeom_model.destroy			();
-    // hGeom_gradient.destroy		();
 }
 
 shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect)
@@ -245,7 +228,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
     float sun_h, sun_p;
     CEnvironment& environment = g_pGamePersistent->Environment();
     environment.CurrentEnv->sun_dir.getHP(sun_h, sun_p);
-    float alt = environment.p_var_alt; // Random.randF(environment.p_var_alt.x,environment.p_var_alt.y);
+    float alt = environment.p_var_alt;
     float lng = Random.randF(sun_h - environment.p_var_long + PI, sun_h + environment.p_var_long + PI);
     float dist = Random.randF(far_plane * environment.p_min_dist, far_plane * .95f);
     current_direction.setHP(lng, alt);

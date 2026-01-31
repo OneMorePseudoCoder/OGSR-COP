@@ -3,8 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "../../xr_3da/fmesh.h"
 #include "FProgressive.h"
 

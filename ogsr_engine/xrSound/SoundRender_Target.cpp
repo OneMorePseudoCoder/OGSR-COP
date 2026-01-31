@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "soundrender_target.h"
 #include "soundrender_core.h"
 #include "soundrender_emitter.h"
@@ -29,7 +28,6 @@ void CSoundRender_Target::start(CSoundRender_Emitter* E)
     // 5. Deferred-play-signal (emitter-exist, rendering-false)
     m_pEmitter = E;
     rendering = FALSE;
-    // attach		();
 }
 
 void CSoundRender_Target::render() { rendering = TRUE; }
@@ -48,9 +46,6 @@ void CSoundRender_Target::update() { R_ASSERT(m_pEmitter); }
 void CSoundRender_Target::fill_parameters(CSoundRender_Core* core)
 {
     VERIFY(m_pEmitter);
-    //.	if (pEmitter->b2D){
-    //.		pEmitter->set_position(SoundRender->listener_position());
-    //.	}
 }
 
 extern int ov_seek_func(void* datasource, s64 offset, int whence);

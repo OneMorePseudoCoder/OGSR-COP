@@ -3,11 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "Shader.h"
 #include "ResourceManager.h"
-
 #include "dxRenderDeviceRender.h"
 
 string_unordered_map<std::string, ref_shader> g_ShadersCache;
@@ -86,7 +83,6 @@ BOOL SPass::equal(const SPass& other) const
     return TRUE;
 }
 
-//
 ShaderElement::ShaderElement()
 {
     flags.iPriority = 1;
@@ -128,7 +124,6 @@ BOOL ShaderElement::equal(ShaderElement* S)
     return equal(*S);
 }
 
-//
 BOOL Shader::equal(Shader& S) { return E[0]->equal(&*S.E[0]) && E[1]->equal(&*S.E[1]) && E[2]->equal(&*S.E[2]) && E[3]->equal(&*S.E[3]) && E[4]->equal(&*S.E[4]); }
 BOOL Shader::equal(Shader* S) { return equal(*S); }
 

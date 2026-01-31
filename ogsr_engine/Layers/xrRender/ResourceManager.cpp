@@ -231,7 +231,6 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
     return N;
 }
 
-
 void CResourceManager::Delete(const Shader* S)
 {
     if (0 == (S->dwFlags & xr_resource_flagged::RF_REGISTERED))

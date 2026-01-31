@@ -1,10 +1,8 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
-
 #include "GameMtlLib.h"
 
 CGameMtlLibrary GMLib;
-// CSound_manager_interface*	Sound = NULL;
+
 CGameMtlLibrary::CGameMtlLibrary()
 {
     material_index = 0;
@@ -101,8 +99,6 @@ void CGameMtlLibrary::Load()
         OBJ->close();
     }
 
-    //const u32 actor_material_idx = GetMaterialID(pSettings->r_string("actor", "material"));
-
     OBJ = F->open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR);
     if (OBJ)
     {
@@ -112,19 +108,6 @@ void CGameMtlLibrary::Load()
             SGameMtlPair* M = xr_new<SGameMtlPair>(this);
             M->Load(*O);
             material_pairs.push_back(M);
-
-            /*if (M->mtl0 == actor_material_idx)
-            {
-                if (!M->StepSoundNames.empty())
-                {
-                    Msg("~ MtlPair with step ID0=%d, ID1=%d [%s]", M->mtl0, M->mtl1, (*GetMaterialItByID(M->mtl1))->m_Name.c_str());
-
-                    for (const auto& step_sound_name : M->StepSoundNames)
-                    {
-                        Msg("~ MtlPair step sound [%s]", step_sound_name.c_str());
-                    }
-                }
-            }*/
         }
         OBJ->close();
         loadSounds();
@@ -152,14 +135,6 @@ void CGameMtlLibrary::Load()
         material_pairs_rt[idx1] = S;
     }
 
-    /*
-        for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
-            SGameMtlPair* S	= *p_it;
-            for (int k=0; k<S->StepSounds.size(); k++){
-                Msg("%40s - 0x%x", S->StepSounds[k].handle->file_name(), S->StepSounds[k].g_type);
-            }
-        }
-    */
     FS.r_close(F);
 }
 

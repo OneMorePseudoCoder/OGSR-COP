@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "Environment.h"
 #include "xr_efflensflare.h"
 #include "thunderbolt.h"
@@ -188,10 +187,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect)
     m_sound_period.z = config.r_s32(sect, "period2");
     m_sound_period.w = config.r_s32(sect, "period3");
 
-    //	m_sound_period			= config.r_ivector4(sect,"sound_period");
     R_ASSERT(m_sound_period.x <= m_sound_period.y && m_sound_period.z <= m_sound_period.w);
-    //	m_sound_period.mul		(1000);// now in ms
-    //	m_sound_dist			= config.r_fvector2(sect,"sound_dist");
     R_ASSERT(m_sound_dist.y > m_sound_dist.x, sect);
 
     LPCSTR snds = config.r_string(sect, "sounds");
@@ -267,7 +263,6 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
     // sounds
     LPCSTR channels = ambients_config.r_string(sect, "sound_channels");
     u32 cnt = _GetItemCount(channels);
-    //	R_ASSERT				(cnt,"sound_channels empty", sect.c_str());
     m_sound_channels.resize(cnt);
 
     for (u32 i = 0; i < cnt; ++i)
@@ -277,7 +272,6 @@ void CEnvAmbient::load(CInifile& ambients_config, CInifile& sound_channels_confi
     m_effect_period.set(iFloor(ambients_config.r_float(sect, "min_effect_period") * 1000.f), iFloor(ambients_config.r_float(sect, "max_effect_period") * 1000.f));
     LPCSTR effs = ambients_config.r_string(sect, "effects");
     cnt = _GetItemCount(effs);
-    //	R_ASSERT				(cnt,"effects empty", sect.c_str());
 
     m_effects.resize(cnt);
     for (u32 k = 0; k < cnt; ++k)
@@ -418,6 +412,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
         sky_rotation = deg2rad(config.r_float(m_identifier.c_str(), "sky_rotation"));
     else
         sky_rotation = 0;
+
     far_plane = config.r_float(m_identifier.c_str(), "far_plane");
     fog_color = config.r_fvector3(m_identifier.c_str(), "fog_color");
     fog_density = config.r_float(m_identifier.c_str(), "fog_density");
@@ -512,6 +507,7 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
         sky_rotation = deg2rad(pSettings->r_float(m_identifier.c_str(), "sky_rotation"));
     else
         sky_rotation = 0;
+
     far_plane = pSettings->r_float(m_identifier.c_str(), "far_plane");
     fog_color = pSettings->r_fvector3(m_identifier.c_str(), "fog_color");
     fog_density = pSettings->r_float(m_identifier.c_str(), "fog_density");
@@ -596,19 +592,18 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
 
     sky_rotation = (fi * A.sky_rotation + f * B.sky_rotation);
 
-    //.	far_plane				=	(fi*A.far_plane + f*B.far_plane + Mdf.far_plane)*psVisDistance*modif_power;
     if (Mdf.use_flags.test(eViewDist))
         far_plane = (fi * A.far_plane + f * B.far_plane + Mdf.far_plane) * psVisDistance * modif_power;
     else
         far_plane = (fi * A.far_plane + f * B.far_plane) * psVisDistance;
 
-    //.	fog_color.lerp			(A.fog_color,B.fog_color,f).add(Mdf.fog_color).mul(modif_power);
     fog_color.lerp(A.fog_color, B.fog_color, f);
+
     if (Mdf.use_flags.test(eFogColor))
         fog_color.add(Mdf.fog_color).mul(modif_power);
 
-    //.	fog_density				=	(fi*A.fog_density + f*B.fog_density + Mdf.fog_density)*modif_power;
     fog_density = (fi * A.fog_density + f * B.fog_density);
+
     if (Mdf.use_flags.test(eFogDensity))
     {
         fog_density += Mdf.fog_density;
@@ -844,7 +839,8 @@ void CEnvironment::load_sun()
         R_ASSERT(_valid(sun_long));
         sun_hp[i].set(sun_alt, sun_long);
         i++;
-    } while (i < 24);
+    } 
+	while (i < 24);
 }
 
 void CEnvironment::load_weathers()

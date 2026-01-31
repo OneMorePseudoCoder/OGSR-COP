@@ -57,6 +57,7 @@
 
 #include "embedded_editor/embedded_editor_main.h"
 #include "..\xr_3da\xr_ioc_cmd.h"
+#include "..\xr_3da\xrLevel.h"
 
 CPHWorld* ph_world = 0;
 
@@ -79,7 +80,7 @@ CLevel::CLevel()
     Server = NULL;
 
     game = NULL;
-    //	game						= xr_new<game_cl_GameState>();
+
     game_events = xr_new<NET_Queue_Event>();
 
     game_configured = FALSE;
@@ -131,7 +132,7 @@ CLevel::CLevel()
 CLevel::~CLevel()
 {
     xr_delete(g_player_hud);
-    //	g_pGameLevel		= NULL;
+
     Msg("- Destroying level");
 
     Engine.Event.Handler_Detach(eEntitySpawn, this);
@@ -284,31 +285,10 @@ void CLevel::CancelPrefetchManySounds(LPCSTR prefix)
 }
 
 // Game interface ////////////////////////////////////////////////////
-int CLevel::get_RPID(LPCSTR /**name/**/)
-{
-    /*
-    // Gain access to string
-    LPCSTR	params = pLevel->r_string("respawn_point",name);
-    if (0==params)	return -1;
-
-    // Read data
-    Fvector4	pos;
-    int			team;
-    sscanf		(params,"%f,%f,%f,%d,%f",&pos.x,&pos.y,&pos.z,&team,&pos.w); pos.y += 0.1f;
-
-    // Search respawn point
-    svector<Fvector4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
-    for (int i=0; i<(int)(rp.size()); ++i)
-        if (pos.similar(rp[i],EPS_L))	return i;
-    */
-    return -1;
-}
-
 BOOL g_bDebugEvents = FALSE;
 
 void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
 {
-    //			Msg				("--- event[%d] for [%d]",type,dest);
     CObject* O = Objects.net_Find(dest);
     if (0 == O)
     {
@@ -337,11 +317,6 @@ void CLevel::ProcessGameEvents()
     {
         NET_Packet P;
         u32 svT = timeServer() - NET_Latency;
-
-        /*
-        if (!game_events->queue.empty())
-            Msg("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
-        */
 
         m_just_destroyed.clear();
 
@@ -440,9 +415,7 @@ void CLevel::OnRender()
     Game().OnRender();
 
     //отрисовать трассы пуль
-    // Device.Statistic->TEST1.Begin();
     BulletManager().Render();
-    // Device.Statistic->TEST1.End();
 
     if (use_reshade)
         render_reshade_effects();
@@ -487,7 +460,6 @@ void CLevel::OnRender()
     draw_wnds_rects();
 
 #ifndef DEBUG
-
     if (psActorFlags.test(AF_ZONES_DBG))
     {
         for (u32 I = 0; I < Level().Objects.o_count(); I++)
@@ -520,22 +492,16 @@ void CLevel::OnRender()
             CObject* _O = Level().Objects.o_get_by_iterator(I);
 
             CGameObject* pGO = smart_cast<CGameObject*>(_O);
-            if (pGO /*&& pGO != Level().CurrentViewEntity()*/ && !pGO->H_Parent())
+            if (pGO && !pGO->H_Parent())
             {
                 if (pGO->Position().distance_to_sqr(Device.vCameraPosition) < 400.0f)
                 {
-                    //CPhysicObject* physic_object = smart_cast<CPhysicObject*>(_O);
-                    //if (physic_object)
-                    //    physic_object->OnRender();
-
                     pGO->dbg_DrawSkeleton();
                 }
             }
         }
     }
-
 #else
-
     ph_world->OnRender();
 
     if (ai().get_level_graph())
@@ -553,17 +519,15 @@ void CLevel::OnRender()
     {
         ObjectSpace.dbgRender();
 
-        //---------------------------------------------------------------------
         HUD().Font().pFontStat->OutSet(170, 630);
         HUD().Font().pFontStat->SetHeight(16.0f);
         HUD().Font().pFontStat->SetColor(0xffff0000);
 
         if (Server)
             HUD().Font().pFontStat->OutNext("Client Objects:      [%d]", Server->GetEntitiesNum());
+
         HUD().Font().pFontStat->OutNext("Server Objects:      [%d]", Objects.o_count());
-        HUD().Font().pFontStat->OutNext("Interpolation Steps: [%d]", Level().GetInterpolationSteps());
         HUD().Font().pFontStat->SetHeight(8.0f);
-        //---------------------------------------------------------------------
     }
 
     ScriptDebugRender();
@@ -579,7 +543,6 @@ void CLevel::OnRender()
     debug_renderer().render();
 
 #ifdef DEBUG
-
     if (psAI_Flags.is(aiVision))
     {
         for (u32 I = 0; I < Level().Objects.o_count(); I++)
@@ -604,7 +567,6 @@ void CLevel::OnRender()
             stalker->dbg_draw_visibility_rays();
         }
     }
-
 #endif
 }
 
@@ -627,17 +589,6 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
         strcat_s(RealName, ".xrdemo");
         Cameras().AddCamEffector(xr_new<CDemoPlay>(RealName, 1.3f, 0));
     }
-    else if (E == eChangeTrack && P1)
-    {
-        // int id = atoi((char*)P1);
-        // Environment->Music_Play(id);
-    }
-    else if (E == eEnvironment)
-    {
-        // int id=0; float s=1;
-        // sscanf((char*)P1,"%d,%f",&id,&s);
-        // Environment->set_EnvMode(id,s);
-    }
     else
         return;
 }
@@ -647,13 +598,11 @@ void CLevel::PhisStepsCallback(u32, u32) {}
 ALife::_TIME_ID CLevel::GetGameTime()
 {
     return (game->GetGameTime());
-    //	return			(Server->game->GetGameTime());
 }
 
 ALife::_TIME_ID CLevel::GetEnvironmentGameTime()
 {
     return (game->GetEnvironmentGameTime());
-    //	return			(Server->game->GetGameTime());
 }
 
 u8 CLevel::GetDayTime()
@@ -721,26 +670,6 @@ void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& 
     split_time(GetGameTime(), unused, unused, unused, hours, minutes, seconds, milliseconds);
 }
 
-//bool CLevel::IsServer() // always false
-//{
-//    //if (!Server)
-//    //    return false;
-//
-//    bool r = !Server ? false : (Server->client_Count() != 0);
-//    Msg("IsServer = %d", r ? 1 : 0);
-//    return r;
-//}
-//
-//bool CLevel::IsClient() // always false
-//{
-//    //if (!Server)
-//    //    return true;
-//
-//    bool r = !Server ? true : (Server->client_Count() == 0);
-//    Msg("IsClient = %d", r ? 1 : 0);
-//    return r;
-//}
-
 void CLevel::OnSessionTerminate(LPCSTR reason) { MainMenu()->OnSessionTerminate(reason); }
 
 void CLevel::OnDestroyObject(u16 id) { m_just_destroyed.push_back(id); }
@@ -756,8 +685,6 @@ void CLevel::OnChangeCurrentWeather(const char* sect)
 
 u32 GameID() { return Game().Type(); }
 
-#include "..\xr_3da\IGame_Persistent.h"
-
 GlobalFeelTouch::GlobalFeelTouch() {}
 
 GlobalFeelTouch::~GlobalFeelTouch() {}
@@ -771,6 +698,7 @@ struct delete_predicate_by_time
         return false;
     };
 };
+
 struct objects_ptrs_equal
 {
     bool operator()(Feel::Touch::DenyTouch const& left, CObject const* const right) const
@@ -791,8 +719,6 @@ void GlobalFeelTouch::update()
 
 bool GlobalFeelTouch::is_object_denied(CObject const* O)
 {
-    /*Fvector temp_vector;
-    feel_touch_update(temp_vector, 0.f);*/
     if (std::find_if(feel_touch_disable.begin(), feel_touch_disable.end(), std::bind(objects_ptrs_equal(), std::placeholders::_1, O)) == feel_touch_disable.end())
     {
         return false;
@@ -803,8 +729,6 @@ bool GlobalFeelTouch::is_object_denied(CObject const* O)
 void CLevel::script_gc() const
 {
     ZoneScoped;
-
-    //int memory_before_kb = lua_gc(ai().script_engine().lua(), LUA_GCCOUNT, 0);
 
     switch (ps_lua_gc_method)
     {
@@ -828,8 +752,29 @@ void CLevel::script_gc() const
         break;
     }
     }
+}
 
-    //int memory_after_kb = lua_gc(ai().script_engine().lua(), LUA_GCCOUNT, 0);
+void CLevel::net_Save(LPCSTR name)
+{
+    if (0 == Server)
+    {
+        Msg("KERNEL::Can't save game on pure client");
+        return;
+    }
 
-    //Msg("##[%s] script_gc [timeout: %d]: before [%d]kb after [%d]kb", __FUNCTION__, psLUA_GCTIMEOUT, memory_before_kb, memory_after_kb);
+    // 1. Create stream
+    CMemoryWriter fs;
+
+    // 2. Description
+    fs.open_chunk(fsSLS_Description);
+    fs.w_stringZ(net_SessionName());
+    fs.close_chunk();
+
+    // 3. Server state
+    fs.open_chunk(fsSLS_ServerState);
+    Server->SLS_Save(fs);
+    fs.close_chunk();
+
+    // Save it to file
+    fs.save_to(name);
 }

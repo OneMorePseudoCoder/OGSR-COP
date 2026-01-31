@@ -1,28 +1,27 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidData.h"
-
 #include "dx103DFluidManager.h"
 
 namespace
 {
-const xr_token simulation_type_token[] = {
+const xr_token simulation_type_token[] = 
+{
     {"Fog", dx103DFluidData::ST_FOG},
     {"Fire", dx103DFluidData::ST_FIRE},
+    {nullptr, 0}
+};
 
-    {nullptr, 0}};
-
-const xr_token emitter_type_token[] = {
+const xr_token emitter_type_token[] = 
+{
     {"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian},
     {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught},
-
-    {nullptr, 0}};
+    {nullptr, 0}
+};
 
 } // namespace
 
-DXGI_FORMAT dx103DFluidData::m_VPRenderTargetFormats[VP_NUM_TARGETS] = {
+DXGI_FORMAT dx103DFluidData::m_VPRenderTargetFormats[VP_NUM_TARGETS] = 
+{
     DXGI_FORMAT_R16G16B16A16_FLOAT, //	VP_VELOCITY0
     DXGI_FORMAT_R16_FLOAT, //	VP_PRESSURE
     DXGI_FORMAT_R16_FLOAT //	VP_COLOR
@@ -72,7 +71,6 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
     // Create the texture
     CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, NULL, &m_pRTTextures[rtIndex]));
     // Create the render target view
-
     D3D_RENDER_TARGET_VIEW_DESC DescRT;
     DescRT.Format = TexDesc.Format;
     DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
@@ -95,7 +93,6 @@ void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)
 void dx103DFluidData::Load(IReader* data)
 {
     //	Version 3
-
     xr_string Profile;
     data->r_string(Profile);
 
@@ -231,5 +228,3 @@ void dx103DFluidData::ReparseProfile(const xr_string& Profile)
     ParseProfile(Profile);
 }
 #endif //	DEBUG
-
-#endif

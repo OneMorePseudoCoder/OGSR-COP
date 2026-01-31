@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "../xrRender/uber_deffer.h"
 #include "Blender_deffer_model.h"
 
@@ -102,7 +100,6 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
         case 1: //
             vsname = psname = "model_def_lq";
             C.r_Pass(vsname, psname, TRUE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
-            // C.r_Sampler			("s_base",	C.L_textures[0]);
             C.r_dx10Texture("s_base", C.L_textures[0]);
             C.r_dx10Sampler("smp_base");
             C.r_End();
@@ -115,7 +112,6 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
         const BOOL bAref = oBlend.value;
         // deferred rendering
         // codepath is the same, only the shaders differ
-
         C.TessMethod = oTessellation.IDselected;
         switch (C.iElement)
         {
@@ -123,7 +119,6 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 
             if (C.HudElement)
             {
-                //Msg("--[%s] Detected hud element: [%s]", __FUNCTION__, C.L_textures[0].c_str());
                 uber_deffer(C, true, "model_hud", "base_hud", bAref, nullptr, true);
                 C.r_dx10Texture("s_hud_rain", "fx\\hud_rain");
             }

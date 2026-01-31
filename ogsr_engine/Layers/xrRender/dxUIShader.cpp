@@ -14,5 +14,3 @@ void dxUIShader::create(LPCSTR sh, LPCSTR tex, bool no_cache)
         hShader = GetCachedShader(sh, tex);
     }
 }
-
-//void dxUIShader::destroy() { hShader.destroy(); }

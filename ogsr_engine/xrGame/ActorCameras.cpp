@@ -33,6 +33,7 @@ void CActor::cam_Set(EActorCameras style)
     old_cam->OnDeactivate();
     cam_Active()->OnActivate(old_cam);
 }
+
 float CActor::f_Ladder_cam_limit = 1.f;
 void CActor::cam_SetLadder()
 {
@@ -273,11 +274,6 @@ float cam_HeightInterpolationSpeed = 8.f;
 
 void CActor::cam_Update(float dt, float fFOV)
 {
-    /* перенесено ниже
-        if(m_holder)
-            return;
-    */
-
     // HUD FOV Update --#SM+#--
     if (this == Level().CurrentControlEntity())
     {
@@ -303,7 +299,6 @@ void CActor::cam_Update(float dt, float fFOV)
         on_ladder = true;
         camUpdateLadder(dt);
     }
-    current_ik_cam_shift = 0;
 
     // Alex ADD: smooth crouch fix
     if (CurrentHeight != CameraHeight())
@@ -315,7 +310,7 @@ void CActor::cam_Update(float dt, float fFOV)
         CurrentHeight = (CurrentHeight * (1.0f - smoothK)) + (CameraHeight() * smoothK);
     }
 
-    Fvector point = {0, CurrentHeight + current_ik_cam_shift, 0}, dangle = {0, 0, 0};
+    Fvector point = {0, CurrentHeight, 0}, dangle = {0, 0, 0};
 
     Fmatrix xform, xformR;
     xform.setXYZ(0, r_torso.yaw, 0);

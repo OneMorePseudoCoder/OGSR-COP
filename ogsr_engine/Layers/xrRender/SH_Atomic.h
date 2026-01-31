@@ -2,7 +2,6 @@
 
 #include "../../xrCore/xr_resource.h"
 #include "tss_def.h"
-
 #include "../xrRenderDX10/StateManager/dx10State.h"
 
 #pragma pack(push, 4)
@@ -73,7 +72,6 @@ struct ECORE_API SCS : public xr_resource_named
     ~SCS();
 };
 typedef resptr_core<SCS, resptr_base<SCS>> ref_cs;
-
 
 //////////////////////////////////////////////////////////////////////////
 struct ECORE_API SState : public xr_resource_flagged

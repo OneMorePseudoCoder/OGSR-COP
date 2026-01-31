@@ -553,7 +553,6 @@ public:
 
 //	Allow real-time fog config reload
 #ifdef DEBUG
-
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 
 class CCC_Fog_Reload : public IConsole_Command
@@ -606,7 +605,6 @@ public:
     }
 };
 
-
 class CCC_PART_DumpTextures : public IConsole_Command
 {
 public:
@@ -658,21 +656,9 @@ public:
                         const Fsphere::ERP_Result result = sphere.intersect(pos, dir, dist2); // вот эта проверка часто косячит для большиъ объектов. надо как то сторону взгаляда по другому отсекать
                         if (result != Fsphere::rpNone)
                         {
-                            /*if (b_nearest)
-                            {
-                                switch (result)
-                                {
-                                case Fsphere::rpOriginInside: range = dist < range ? dist : range; break;
-                                case Fsphere::rpOriginOutside: range = dist; break;
-                                }
-                                range2 = range * range;
-                            }*/
-
                             dxRender_Visual* dx_vis = smart_cast<dxRender_Visual*>(vis);
 
                             list.emplace_back(dx_vis, _sqrt(distSQ));
-
-                            //break;
                         }
                     }
                 }

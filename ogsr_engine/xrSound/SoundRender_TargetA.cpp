@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "soundrender_TargetA.h"
 #include "soundrender_emitter.h"
 #include "soundrender_source.h"
@@ -103,8 +102,6 @@ void CSoundRender_TargetA::update()
 {
     inherited::update();
 
-    // Msg("--[%s] bEFX is [%d]", __FUNCTION__, this->bEFX);
-
     if (bAlSoft)
     {
         ALint processed, state;
@@ -172,13 +169,11 @@ void CSoundRender_TargetA::update()
         }
         else
         {
-            // processed == 0
             // check play status -- if stopped then queue is not being filled fast enough
             ALint state;
             A_CHK(alGetSourcei(pSource, AL_SOURCE_STATE, &state));
             if (state != AL_PLAYING)
             {
-                //			Log		("Queuing underrun detected.");
                 A_CHK(alSourcePlay(pSource));
             }
         }

@@ -16,7 +16,6 @@ void CRenderTarget::RenderScreenQuad(CBackend& cmd_list, u32 w, u32 h, const ref
     cmd_list.set_Stencil(FALSE);
 
     // Half-pixel offset (DX9 only)
-
     constexpr Fvector2 p0{0.0f, 0.0f}, p1{1.0f, 1.0f};
 
     FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -31,10 +30,6 @@ void CRenderTarget::RenderScreenQuad(CBackend& cmd_list, u32 w, u32 h, const ref
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     cmd_list.set_Element(sh);
-
-    /*if (consts)
-        for (const auto& [k, v] : *consts)
-            cmd_list.set_c(k, *v);*/
 
     lambda();
 

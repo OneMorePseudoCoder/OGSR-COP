@@ -39,8 +39,8 @@ void render_rain::init()
     if (!o.active)
         return;
 
-    o.mt_calc_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN); // RImplementation.o.mt_calculate;
-    o.mt_draw_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN); // RImplementation.o.mt_render;
+    o.mt_calc_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN);
+    o.mt_draw_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN);
 
     // pre-allocate context
     context_id = RImplementation.alloc_context();
@@ -72,7 +72,6 @@ void render_rain::calculate()
         //	Calculate view frustum were we can see dynamic rain radius
         {
             //	b^2 = 2RH, B - side enge of the pyramid, h = height
-            //	R = b^2/(2*H)
             const float H = fRainFar;
             const float a = tanf(deg2rad(Device.fFOV) / 2);
             const float c = tanf(deg2rad(Device.fFOV * Device.fASPECT) / 2);
@@ -109,7 +108,7 @@ void render_rain::calculate()
                     hull.polys.back().points.push_back(plane[pt]);
             }
         }
-        // hull.compute_caster_model	(cull_planes,fuckingsun->direction);
+
         hull.compute_caster_model(cull_planes, RainLight.direction);
 #ifdef DEBUG
         for (u32 it = 0; it < cull_planes.size(); it++)
@@ -152,14 +151,6 @@ void render_rain::calculate()
         Fbox& bb = frustum_bb;
         bb.grow(EPS);
 
-        //	HACK
-        //	TODO: DX11: Calculate bounding sphere for view frustum
-        //	TODO: DX11: Reduce resolution.
-        // bb.vMin.x = -50;
-        // bb.vMax.x = 50;
-        // bb.vMin.y = -50;
-        // bb.vMax.y = 50;
-
         //	Offset RainLight position to center rain shadowmap
         Fvector3 vRectOffset = {fBoundingSphereRadius * Device.vCameraDirection.x, 0, fBoundingSphereRadius * Device.vCameraDirection.z};
         bb.min.x = -fBoundingSphereRadius + vRectOffset.x;
@@ -167,8 +158,7 @@ void render_rain::calculate()
         bb.min.y = -fBoundingSphereRadius + vRectOffset.z;
         bb.max.y = fBoundingSphereRadius + vRectOffset.z;
 
-        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
-                        XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs, bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs));
+        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project), XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs, bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs));
 
         cull_xform.mul(mdir_Project, mdir_View);
 
@@ -206,11 +196,6 @@ void render_rain::calculate()
     {
         dsgraph.phase = CRender::PHASE_SMAP;
         dsgraph.r_pmask(true, false);
-
-        //dsgraph.o.sector_id = RImplementation.get_largest_sector();
-        //dsgraph.o.xform = cull_xform;
-        //dsgraph.o.view_frustum = cull_frustum;
-        //dsgraph.o.view_pos = cull_COP;
 
         IRender_Sector::sector_id_t id = RImplementation.get_largest_sector();
 
@@ -270,14 +255,7 @@ void render_rain::flush()
     if (o.active)
     {
         PIX_EVENT_CTX(cmd_list_imm, RainApply);
-
-        cmd_list_imm.set_pass_targets(
-            RImplementation.Target->rt_Color, /*rt_Normal*/
-            nullptr,
-            nullptr, 
-            nullptr, 
-            RImplementation.Target->rt_Base_Depth);
-
+        cmd_list_imm.set_pass_targets(RImplementation.Target->rt_Color, nullptr, nullptr, nullptr, RImplementation.Target->rt_Base_Depth);
         RImplementation.Target->draw_rain(cmd_list_imm, RainLight);
     }
 }

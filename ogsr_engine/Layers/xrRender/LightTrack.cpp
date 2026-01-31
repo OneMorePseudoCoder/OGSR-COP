@@ -70,36 +70,6 @@ IC bool pred_energy(const CROS_impl::Light& L1, const CROS_impl::Light& L2) { re
 #pragma warning(push)
 #pragma warning(disable : 4305)
 
-// const float		hdir		[lt_hemisamples][3] =
-// {
-// 	{0.00000,	1.00000,	0.00000	},
-// 	{0.52573,	0.85065,	0.00000	},
-// 	{0.16246,	0.85065,	0.50000	},
-// 	{-0.42533,	0.85065,	0.30902	},
-// 	{-0.42533,	0.85065,	-0.30902},
-// 	{0.16246,	0.85065,	-0.50000},
-// 	{0.89443,	0.44721,	0.00000	},
-// 	{0.27639,	0.44721,	0.85065	},
-// 	{-0.72361,	0.44721,	0.52573	},
-// 	{-0.72361,	0.44721,	-0.52573},
-// 	{0.27639,	0.44721,	-0.85065},
-// 	{0.68819,	0.52573,	0.50000	},
-// 	{-0.26287,	0.52573,	0.80902	},
-// 	{-0.85065,	0.52573,	-0.00000},
-// 	{-0.26287,	0.52573,	-0.80902},
-// 	{0.68819,	0.52573,	-0.50000},
-// 	{0.95106,	0.00000,	0.30902	},
-// 	{0.58779,	0.00000,	0.80902	},
-// 	{-0.00000,	0.00000,	1.00000	},
-// 	{-0.58779,	0.00000,	0.80902	},
-// 	{-0.95106,	0.00000,	0.30902	},
-// 	{-0.95106,	0.00000,	-0.30902},
-// 	{-0.58779,	0.00000,	-0.80902},
-// 	{0.00000,	0.00000,	-1.00000},
-// 	{0.58779,	0.00000,	-0.80902},
-// 	{0.95106,	0.00000,	-0.30902}
-// };
-
 const float hdir[lt_hemisamples][3] = {
     {-0.26287, 0.52573, 0.80902},  {0.27639, 0.44721, 0.85065},   {-0.95106, 0.00000, 0.30902},
     {-0.95106, 0.00000, -0.30902}, {0.58779, 0.00000, -0.80902},  {0.58779, 0.00000, 0.80902},
@@ -117,40 +87,22 @@ const float hdir[lt_hemisamples][3] = {
 };
 #pragma warning(pop)
 
-// inline CROS_impl::CubeFaces CROS_impl::get_cube_face(Fvector3& dir)
-//{
-//	float x2 = dir.x*dir.x;
-//	float y2 = dir.y*dir.y;
-//	float z2 = dir.z*dir.z;
-//
-//	if (x2 >= y2 + z2)
-//	{
-//		return (dir.x > 0) ? CUBE_FACE_POS_X : CUBE_FACE_NEG_X;
-//	}
-//	else if (y2 >= z2 + x2)
-//	{
-//		return (dir.y > 0) ? CUBE_FACE_POS_Y : CUBE_FACE_NEG_Y;
-//	}
-//	/*else*/
-//	return (dir.z > 0) ? CUBE_FACE_POS_Z : CUBE_FACE_NEG_Z;
-// }
-
 inline void CROS_impl::accum_hemi(float* hemi_cube, const Fvector3& dir, const float scale)
 {
     if (dir.x > 0)
         hemi_cube[CUBE_FACE_POS_X] += dir.x * scale;
     else
-        hemi_cube[CUBE_FACE_NEG_X] -= dir.x * scale; //	dir.x <= 0
+        hemi_cube[CUBE_FACE_NEG_X] -= dir.x * scale;
 
     if (dir.y > 0)
         hemi_cube[CUBE_FACE_POS_Y] += dir.y * scale;
     else
-        hemi_cube[CUBE_FACE_NEG_Y] -= dir.y * scale; //	dir.y <= 0
+        hemi_cube[CUBE_FACE_NEG_Y] -= dir.y * scale;
 
     if (dir.z > 0)
         hemi_cube[CUBE_FACE_POS_Z] += dir.z * scale;
     else
-        hemi_cube[CUBE_FACE_NEG_Z] -= dir.z * scale; //	dir.z <= 0
+        hemi_cube[CUBE_FACE_NEG_Z] -= dir.z * scale;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -164,7 +116,6 @@ void CROS_impl::update(IRenderable* O)
         return;
 
     // clip & verify
-
     if (nullptr == O)
         return;
     if (nullptr == O->renderable.visual)
@@ -179,9 +130,7 @@ void CROS_impl::update(IRenderable* O)
         return;
     }
 
-    if (isnan(_object->renderable.xform._41) || 
-        isnan(_object->renderable.xform._42) ||
-        isnan(_object->renderable.xform._43))
+    if (isnan(_object->renderable.xform._41) ||  isnan(_object->renderable.xform._42) || isnan(_object->renderable.xform._43))
     {
         if (!skip)
         {
@@ -224,12 +173,14 @@ void CROS_impl::update(IRenderable* O)
         hemi.mul(hemi_smooth);
     else
         hemi.mul(.2f);
+
     accum.add(hemi);
 
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
         sun_.mul(sun_smooth);
     else
         sun_.mul(.2f);
+
     accum.add(sun_);
 
     if (MODE & IRender_ObjectSpecific::TRACE_LIGHTS)
@@ -278,7 +229,6 @@ void CROS_impl::update(IRenderable* O)
     else
         accum.set(.1f, .1f, .1f);
 
-    // clamp(hemi_value, 0.0f, 1.0f); //Possibly can change hemi value
     if (bFirstTime)
     {
         hemi_smooth = hemi_value;
@@ -338,7 +288,6 @@ void CROS_impl::smart_update(IRenderable* O)
         }
     }
 }
-
 
 extern float ps_r2_lt_smooth;
 
@@ -405,14 +354,11 @@ void CROS_impl::calc_sky_hemi_value(const Fvector& position, const CObject* _obj
             // take sample
             Fvector direction;
             direction.set(hdir[sample][0], hdir[sample][1], hdir[sample][2]).normalize();
-            //.			result[sample]	=	!g_pGameLevel->ObjectSpace.RayTest(position,direction,50.f,collide::rqtBoth,&cache[sample],_object);
             result[sample] = !g_pGameLevel->ObjectSpace.RayTest(position, direction, 50.f, collide::rqtStatic, &cache[sample], _object);
-            //	Msg				("%d:-- %s",sample,result[sample]?"true":"false");
         }
     }
+
     // hemi & sun: update and smooth
-    //	float	l_f				=	dt*lt_smooth;
-    //	float	l_i				=	1.f-l_f;
     int _pass = 0;
     for (int it = 0; it < result_count; it++)
         if (result[it])
@@ -491,7 +437,6 @@ void CROS_impl::prepare_lights(const Fvector& position, IRenderable* O)
             clamp(I->test, -.5f, 1.f);
             I->energy = .9f * I->energy + .1f * I->test;
 
-            //
             const float E = I->energy * xrL->color.intensity();
             if (E > EPS)
             {

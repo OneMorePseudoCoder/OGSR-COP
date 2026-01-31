@@ -14,11 +14,6 @@ constexpr u32 cullfragments = 4;
 
 void light::vis_prepare(CBackend& cmd_list)
 {
-    //	. test is sheduled for future	= keep old result
-    //	. test time comes :)
-    //		. camera inside light volume	= visible,	shedule for 'small' interval
-    //		. perform testing				= ???,		pending
-
     const u32 frame = Device.dwFrame;
     if (frame < vis.frame2test)
         return;
@@ -31,8 +26,6 @@ void light::vis_prepare(CBackend& cmd_list)
 
     float safe_area = _max(_max(VIEWPORT_NEAR, _max(x0, x1)), c);
 
-    // Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
-    // Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);
     bool skiptest = false;
     if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)
         skiptest = true;
@@ -72,12 +65,6 @@ void light::vis_prepare(CBackend& cmd_list)
 
 void light::vis_update()
 {
-    //	. not pending	->>> return (early out)
-    //	. test-result:	visible:
-    //		. shedule for 'large' interval
-    //	. test-result:	invisible:
-    //		. shedule for 'next-frame' interval
-
     if (!vis.pending)
         return;
 

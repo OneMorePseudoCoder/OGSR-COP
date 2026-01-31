@@ -109,8 +109,6 @@ protected:
     void OnEffectorAdded(SBaseEffector* e);
     void OnEffectorReleased(SBaseEffector* e);
 
-    void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
-
 public:
 #ifdef DEBUG
     u32 dbg_upd_frame;
@@ -144,6 +142,7 @@ public:
 
     IC void camera_Matrix(Fmatrix& M) { M.set(m_cam_info.r, m_cam_info.n, m_cam_info.d, m_cam_info.p); }
     inline void SetVPNear(const float val) { m_cam_info.fNear = val; }
+    void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
 
     void UpdateFromCamera(const CCameraBase* C);
     void ApplyDevice(bool effectOnly = false);

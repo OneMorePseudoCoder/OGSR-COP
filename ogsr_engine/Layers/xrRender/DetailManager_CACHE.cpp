@@ -83,7 +83,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                     cache[z][dm_cache_line - 1] = S;
                     cache_Task(dm_cache_line - 1, z, S);
                 }
-                // R_ASSERT(cache_Validate());
             }
         }
         else
@@ -100,7 +99,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                     cache[z][0] = S;
                     cache_Task(0, z, S);
                 }
-                // R_ASSERT(cache_Validate());
             }
         }
 
@@ -118,7 +116,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                     cache[0][x] = S;
                     cache_Task(x, 0, S);
                 }
-                // R_ASSERT(cache_Validate());
             }
         }
         else
@@ -135,7 +132,6 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
                     cache[dm_cache_line - 1][x] = S;
                     cache_Task(x, dm_cache_line - 1, S);
                 }
-                // R_ASSERT (cache_Validate());
             }
         }
     }

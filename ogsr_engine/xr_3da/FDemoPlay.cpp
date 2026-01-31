@@ -17,7 +17,6 @@
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time /*,FALSE*/)
 {
     Msg("*** Playing demo: %s", name);
-    //Console->Execute("hud_weapon 0");
 
     fSpeed = ms;
     dwCyclesLeft = cycles ? cycles : 1;
@@ -30,8 +29,7 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
     if (strext(nm))
         strcpy(strext(nm), ".anm");
 
-    if (FS.exist(fn, fsgame::level, nm) 
-        || FS.exist(fn, fsgame::game_anims, nm))
+    if (FS.exist(fn, fsgame::level, nm) || FS.exist(fn, fsgame::game_anims, nm))
     {
         m_pMotion = xr_new<COMotion>();
         m_pMotion->LoadMotion(fn);
@@ -70,7 +68,6 @@ CDemoPlay::~CDemoPlay()
     stat_Stop();
     xr_delete(m_pMotion);
     xr_delete(m_MParam);
-    //Console->Execute("hud_weapon 1");
 }
 
 void CDemoPlay::stat_Start()
@@ -148,6 +145,7 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
     // skeep a few frames before counting
     if (Device.dwPrecacheFrame)
         return TRUE;
+
     stat_Start();
 
     // Per-frame statistics
@@ -195,9 +193,6 @@ BOOL CDemoPlay::ProcessCam(SCamEffectorInfo& info)
             if (0 == dwCyclesLeft)
                 return FALSE;
             fStartTime = 0;
-            // just continue
-            // stat_Stop			();
-            // stat_Start			();
         }
 
         int f1 = frame;

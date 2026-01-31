@@ -2,10 +2,8 @@
 #pragma once
 
 #include "ParticleEffectDef.h"
-
 #include "../xrRender/FBasicVisual.h"
 #include "../xrRender/dxParticleCustom.h"
-
 
 namespace PS
 {

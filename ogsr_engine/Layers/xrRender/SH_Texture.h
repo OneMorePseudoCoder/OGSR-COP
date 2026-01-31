@@ -52,8 +52,6 @@ public:
     void PostLoad();
     void Unload() override;
 
-    //	void								Apply			(u32 dwStage);
-
     void surface_set(ID3DBaseTexture* surf);
     ID3DBaseTexture* surface_get() const;
 
@@ -71,8 +69,6 @@ public:
     void video_Pause(BOOL state);
     void video_Stop();
     BOOL video_IsPlaying();
-
-    //ID3DShaderResourceView* get_SRView() const { return m_pSRView; }
 
 private:
 

@@ -100,10 +100,6 @@ public:
     void _GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
     void _DumpMemoryUsage();
 
-    // Debug
-    void DBG_VerifyGeoms();
-    void DBG_VerifyTextures();
-
     // Low level resource creation
     CTexture* _CreateTexture(LPCSTR Name);
     void _DeleteTexture(const CTexture* T);

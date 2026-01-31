@@ -180,8 +180,7 @@ public:
 
     CStats* Statistic;
 
-    CRenderDevice()
-        : m_pRender(nullptr)
+    CRenderDevice() : m_pRender(nullptr)
     {
         m_hWnd = nullptr;
         b_is_Active = FALSE;

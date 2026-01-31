@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef DX10_FLUID_ENABLE
-
 class dx103DFluidGrid;
 class dx103DFluidData;
 
@@ -52,5 +50,3 @@ private:
     xr_vector<IPhysicsShell*> m_lstShells;
     xr_vector<IPhysicsElement*> m_lstElements;
 };
-
-#endif //	dx103DFluidObstacles_included

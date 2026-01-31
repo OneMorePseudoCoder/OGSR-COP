@@ -1,9 +1,5 @@
 #include "stdafx.h"
-
 #include "blender_fluid.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidRenderer.h"
 #include "../dx10BufferUtils.h"
 #include "../../xrRender/dxRenderDeviceRender.h"
@@ -136,7 +132,8 @@ void dx103DFluidRenderer::DestroyShaders()
 
 void dx103DFluidRenderer::CreateGridBox()
 {
-    const VsInput vertices[] = {
+    const VsInput vertices[] = 
+    {
         {D3DXVECTOR3(0, 0, 0)}, {D3DXVECTOR3(0, 0, 1)}, {D3DXVECTOR3(0, 1, 0)}, {D3DXVECTOR3(0, 1, 1)},
         {D3DXVECTOR3(1, 0, 0)}, {D3DXVECTOR3(1, 0, 1)}, {D3DXVECTOR3(1, 1, 0)}, {D3DXVECTOR3(1, 1, 1)},
     };
@@ -458,9 +455,7 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData& FluidData, Fo
     box.getradius(size);
 
     // Traverse object database
-    g_SpatialSpace->q_box(m_lstRenderables,
-                          0, // ISpatial_DB::O_ORDERED,
-                          STYPE_LIGHTSOURCE, center, size);
+    g_SpatialSpace->q_box(m_lstRenderables, 0, STYPE_LIGHTSOURCE, center, size);
 
     // Determine visibility for dynamic part of scene
     for (ISpatial* spatial : m_lstRenderables)
@@ -469,7 +464,7 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData& FluidData, Fo
         const light* pLight = smart_cast<light*>(spatial->dcast_Light());
         VERIFY(pLight);
 
-        if (pLight->flags.bMoveable || pLight->flags.bHudMode /*|| pLight->flags.bStatic*/)
+        if (pLight->flags.bMoveable || pLight->flags.bHudMode)
             continue;
 
         const float d = pLight->position.distance_to(Transform.c);
@@ -542,5 +537,3 @@ void dx103DFluidRenderer::PrepareCBuffer(CBackend& cmd_list, const dx103DFluidDa
     cmd_list.set_c(strRTWidth, (float)RTWidth);
     cmd_list.set_c(strRTHeight, (float)RTHeight);
 }
-
-#endif

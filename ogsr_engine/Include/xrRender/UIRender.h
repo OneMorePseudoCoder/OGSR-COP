@@ -29,8 +29,6 @@ public:
     };
 
 public:
-    // virtual ~IUIRender() {;}
-
     virtual void CreateUIGeom() = 0;
     virtual void DestroyUIGeom() = 0;
 

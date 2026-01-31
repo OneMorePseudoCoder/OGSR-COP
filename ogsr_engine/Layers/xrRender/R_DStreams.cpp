@@ -1,10 +1,8 @@
 #include "stdafx.h"
-
-
 #include "ResourceManager.h"
 #include "R_DStreams.h"
-
 #include "../xrRender/dxRenderDeviceRender.h"
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -61,8 +59,6 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
     const u32 vl_mSize = mSize / Stride;
     const u32 vl_mPosition = mPosition / Stride + 1;
 
-    // ASSERT_FMT(Device.OnMainThread(), "!![%s] NOT ON MAIN THREAD! THREAD ID: [%u]", __FUNCTION__, _Thrd_id());
-
     // Check if there is need to flush and perform lock
     BYTE* pData = nullptr;
     if ((vl_Count + vl_mPosition) >= vl_mSize)
@@ -75,7 +71,6 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
         HW.get_context(CHW::IMM_CTX_ID)->Map(pVB, 0, D3D_MAP_WRITE_DISCARD, 0, &MappedSubRes);
         pData = (BYTE*)MappedSubRes.pData;
         pData += vOffset;
-
     }
     else
     {
@@ -104,8 +99,6 @@ void _VertexStream::Unlock(u32 Count, u32 Stride)
 
     VERIFY(pVB);
 
-    // ASSERT_FMT(Device.OnMainThread(), "!![%s] NOT ON MAIN THREAD! THREAD ID: [%u]", __FUNCTION__, _Thrd_id());
-
     HW.get_context(CHW::IMM_CTX_ID)->Unmap(pVB, 0);
 }
 
@@ -114,10 +107,10 @@ void _VertexStream::reset_begin()
     old_pVB = pVB;
     Destroy();
 }
+
 void _VertexStream::reset_end()
 {
     Create();
-    // old_pVB				= NULL;
 }
 
 _VertexStream::_VertexStream() { _clear(); };
@@ -184,8 +177,6 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
         mDiscardID++;
     }
 
-    // ASSERT_FMT(Device.OnMainThread(), "!![%s] NOT ON MAIN THREAD! THREAD ID: [%u]", __FUNCTION__, _Thrd_id());
-
     const D3D_MAP MapMode = (dwFlags == LOCKFLAGS_APPEND) ? D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;
     HW.get_context(CHW::IMM_CTX_ID)->Map(pIB, 0, MapMode, 0, &MappedSubRes);
     pLockedData = (BYTE*)MappedSubRes.pData;
@@ -204,8 +195,6 @@ void _IndexStream::Unlock(u32 RealCount)
     mPosition += RealCount;
     VERIFY(pIB);
 
-    // ASSERT_FMT(Device.OnMainThread(), "!![%s] NOT ON MAIN THREAD! THREAD ID: [%u]", __FUNCTION__, _Thrd_id());
-
     HW.get_context(CHW::IMM_CTX_ID)->Unmap(pIB, 0);
 }
 
@@ -214,8 +203,8 @@ void _IndexStream::reset_begin()
     old_pIB = pIB;
     Destroy();
 }
+
 void _IndexStream::reset_end()
 {
     Create();
-    // old_pIB				= NULL;
 }

@@ -81,11 +81,10 @@ IPureServer::EConnect IPureServer::Connect(LPCSTR options) // опции вид�
 
 void IPureServer::Disconnect() {}
 
-void IPureServer::SendTo_LL(ClientID ID /*DPNID ID*/, void* data, u32 size, u32 dwFlags, u32 dwTimeout) { FATAL(""); }
+void IPureServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout) { FATAL(""); }
 
-void IPureServer::SendTo(ClientID ID /*DPNID ID*/, NET_Packet& P, u32 dwFlags, u32 dwTimeout) //Отсюда отправляются данные в IPureClient::OnMessage
+void IPureServer::SendTo(ClientID ID, NET_Packet& P, u32 dwFlags, u32 dwTimeout) //Отсюда отправляются данные в IPureClient::OnMessage
 {
-    /// Msg("~~[%s] Send to id [%u] data: [%p], flags: [%u], dwTimeout: [%u]", __FUNCTION__, ID.value(), P.B.data, dwFlags, dwTimeout);
     SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
 }
 
@@ -102,7 +101,6 @@ void IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 d
         if (!player->flags.bConnected)
             continue;
 
-        /// Msg("~~[%s] Send to id [%u] data: [%p], size: [%u], flags: [%u]", __FUNCTION__, player->ID.value(), data, size, dwFlags);
         SendTo_LL(player->ID, data, size, dwFlags);
     }
 

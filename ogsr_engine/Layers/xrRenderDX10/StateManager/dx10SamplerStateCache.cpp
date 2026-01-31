@@ -49,8 +49,7 @@ void dx10SamplerStateCache::CreateState(const StateDecs& desc, IDeviceState** pp
     if (FAILED(hr))
     {
         const auto hr2 = HW.pDevice->GetDeviceRemovedReason();
-        FATAL("!!FAILED HW.pDevice->CreateSamplerState! Error: [%s] GetDeviceRemovedReason returns: [%s].", _com_error{hr}.ErrorMessage(),
-              FAILED(hr2) ? _com_error{hr2}.ErrorMessage() : "No device removal error detected");
+        FATAL("!!FAILED HW.pDevice->CreateSamplerState! Error: [%s] GetDeviceRemovedReason returns: [%s].", _com_error{hr}.ErrorMessage(), FAILED(hr2) ? _com_error{hr2}.ErrorMessage() : "No device removal error detected");
     }
 }
 
@@ -66,17 +65,10 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState(const StateDecs&
             StateDecs descCandidate;
             m_StateArray[i].m_pState->GetDesc(&descCandidate);
             if (descCandidate == desc)
-            // return i;
-            //	TEST
             {
-                // return i;
                 res = i;
                 break;
             }
-            // else
-            //{
-            //	VERIFY(0);
-            // }
         }
     }
 
@@ -105,7 +97,6 @@ void dx10SamplerStateCache::PrepareSamplerStates(const HArray& samplers, ID3DSam
         }
     }
 }
-
 
 void dx10SamplerStateCache::VSApplySamplers(u32 context_id, const HArray& samplers) const
 {

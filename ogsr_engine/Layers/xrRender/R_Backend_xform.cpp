@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "r_backend_xform.h"
 
 void R_xforms::set_W(const Fmatrix& m)
@@ -18,6 +17,7 @@ void R_xforms::set_W(const Fmatrix& m)
         apply_invw();
     cmd_list.stat.xforms++;
 }
+
 void R_xforms::set_V(const Fmatrix& m)
 {
     m_v.set(m);
@@ -34,6 +34,7 @@ void R_xforms::set_V(const Fmatrix& m)
         cmd_list.set_c(c_wvp, m_wvp);
     cmd_list.stat.xforms++;
 }
+
 void R_xforms::set_P(const Fmatrix& m)
 {
     m_p.set(m);
@@ -61,6 +62,7 @@ void R_xforms::set_W_old(const Fmatrix& m)
     if (c_wvp_old)
         cmd_list.set_c(c_wvp_old, m_wvp_old);
 }
+
 void R_xforms::set_V_old(const Fmatrix& m)
 {
     m_v_old.set(m);
@@ -77,6 +79,7 @@ void R_xforms::set_V_old(const Fmatrix& m)
     if (c_wvp_old)
         cmd_list.set_c(c_wvp_old, m_wvp_old);
 }
+
 void R_xforms::set_P_old(const Fmatrix& m)
 {
     m_p_old.set(m);
@@ -119,6 +122,7 @@ void R_xforms::unmap()
     c_vp_old = nullptr;
     c_wvp_old = nullptr;
 }
+
 R_xforms::R_xforms(CBackend& cmd_list_in) : cmd_list(cmd_list_in)
 {
     unmap();

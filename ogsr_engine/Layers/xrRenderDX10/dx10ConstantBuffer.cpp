@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dx10ConstantBuffer.h"
-
 #include "dx10BufferUtils.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
@@ -18,8 +17,6 @@ dx10ConstantBuffer::~dx10ConstantBuffer()
         if (!removed)
             Msg("! ERROR: Failed to find compiled dx10ConstantBuffer.");
     }
-
-    //	Flush();
 
     _RELEASE(m_pBuffer);
     xr_free(m_pBufferData);
@@ -103,10 +100,6 @@ void dx10ConstantBuffer::Flush(const u32 context_id)
         HW.get_context(context_id)->Unmap(m_pBuffer, 0);
         m_bChanged = false;
     }
-    //else
-    //{
-    //    Msg("skip buffer set [%s]", m_strBufferName.c_str());
-    //}
 }
 
 void dx10ConstantBuffer::dbg_dump() const

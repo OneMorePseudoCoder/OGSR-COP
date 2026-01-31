@@ -177,7 +177,7 @@ public:
 
     IC int Rank() { return m_rank; }
 
-    //----------------------------------------------------------------------------------
+    virtual bool can_be_seen() const { return true; }
 
     virtual void SetTurnAnimation(bool turn_left);
 

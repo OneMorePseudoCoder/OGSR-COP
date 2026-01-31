@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "dx10StateManager.h"
-
 #include "../dx10StateUtils.h"
 #include "dx10StateCache.h"
-
-//	DX10: TODO: Implement alpha referense control
 
 dx10StateManager::dx10StateManager(CBackend& cmd_list_in) : cmd_list(cmd_list_in)
 {
@@ -12,11 +9,6 @@ dx10StateManager::dx10StateManager(CBackend& cmd_list_in) : cmd_list(cmd_list_in
     //  implement correct state manager
     Reset();
 }
-
-// dx10StateManager::~dx10StateManager()
-//{
-//	Don't own any object so no release is needed
-//}
 
 //	Set all states to default
 void dx10StateManager::Reset()
@@ -273,12 +265,6 @@ void dx10StateManager::SetDepthFunc(u32 Func)
 {
     ValidateDSDesc();
 
-    // if (z_func!=_func)
-    //{
-    //	z_func = _func;
-    //	CHK_DX(HW.pDevice->SetRenderState( D3DRS_ZFUNC, _func));
-    // }
-
     const D3D_COMPARISON_FUNC DFunc = dx10StateUtils::ConvertCmpFunction(D3DCMPFUNC(Func));
     if (m_DSDesc.DepthFunc != DFunc)
     {
@@ -291,12 +277,6 @@ void dx10StateManager::SetDepthEnable(u32 Enable)
 {
     ValidateDSDesc();
 
-    // if (z_enable != _enable)
-    //{
-    //	z_enable=_enable;
-    //	CHK_DX(HW.pDevice->SetRenderState	( D3DRS_ZENABLE, _enable ));
-    // }
-
     const BOOL BEnable = (BOOL)Enable;
     if (m_DSDesc.DepthEnable != BEnable)
     {
@@ -308,14 +288,6 @@ void dx10StateManager::SetDepthEnable(u32 Enable)
 void dx10StateManager::SetColorWriteEnable(u32 WriteMask)
 {
     ValidateBDesc();
-
-    // if (colorwrite_mask		!= _mask)		{
-    //	colorwrite_mask=_mask;
-    //	CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE,	_mask	));
-    //	CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE1,	_mask	));
-    //	CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE2,	_mask	));
-    //	CHK_DX(HW.pDevice->SetRenderState	( D3DRS_COLORWRITEENABLE3,	_mask	));
-    // }
 
     const UINT8 WMask = (UINT8)WriteMask;
 

@@ -1,7 +1,5 @@
 #include "stdafx.h"
-
 #include "../../xr_3da/Render.h"
-
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/tss.h"
 #include "../xrRender/blenders/blender.h"
@@ -36,27 +34,6 @@ public:
         if (u32(-1) == m_SI)
             m_pC = nullptr;
     }
-
-    //	adopt_sampler&			_texture		(LPCSTR texture)		{ if (C) C->i_Texture	(stage,texture);											return *this;	}
-    //	adopt_sampler&			_projective		(bool _b)				{ if (C) C->i_Projective(stage,_b);													return *this;	}
-    //	adopt_sampler&			_clamp			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_CLAMP);									return *this;	}
-    //	adopt_sampler&			_wrap			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_WRAP);									return *this;	}
-    //	adopt_sampler&			_mirror			()						{ if (C) C->i_Address	(stage,D3DTADDRESS_MIRROR);									return *this;	}
-    //	adopt_sampler&			_f_anisotropic	()						{ if (C) C->i_Filter	(stage,D3DTEXF_ANISOTROPIC,D3DTEXF_LINEAR,D3DTEXF_ANISOTROPIC);	return *this;	}
-    //	adopt_sampler&			_f_trilinear	()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_LINEAR,D3DTEXF_LINEAR);		return *this;	}
-    //	adopt_sampler&			_f_bilinear		()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_POINT, D3DTEXF_LINEAR);		return *this;	}
-    //	adopt_sampler&			_f_linear		()						{ if (C) C->i_Filter	(stage,D3DTEXF_LINEAR,D3DTEXF_NONE,  D3DTEXF_LINEAR);		return *this;	}
-    //	adopt_sampler&			_f_none			()						{ if (C) C->i_Filter	(stage,D3DTEXF_POINT, D3DTEXF_NONE,  D3DTEXF_POINT);		return *this;	}
-    //	adopt_sampler&			_fmin_none		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_NONE);										return *this;	}
-    //	adopt_sampler&			_fmin_point		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_POINT);										return *this;	}
-    //	adopt_sampler&			_fmin_linear	()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_LINEAR);										return *this;	}
-    //	adopt_sampler&			_fmin_aniso		()						{ if (C) C->i_Filter_Min(stage,D3DTEXF_ANISOTROPIC);								return *this;	}
-    //	adopt_sampler&			_fmip_none		()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_NONE);										return *this;	}
-    //	adopt_sampler&			_fmip_point		()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_POINT);										return *this;	}
-    //	adopt_sampler&			_fmip_linear	()						{ if (C) C->i_Filter_Mip(stage,D3DTEXF_LINEAR);										return *this;	}
-    //	adopt_sampler&			_fmag_none		()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_NONE);										return *this;	}
-    //	adopt_sampler&			_fmag_point		()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_POINT);										return *this;	}
-    //	adopt_sampler&			_fmag_linear	()						{ if (C) C->i_Filter_Mag(stage,D3DTEXF_LINEAR);										return *this;	}
 };
 
 #pragma warning(push)
@@ -288,9 +265,6 @@ bool load_buffer(const char* caBuffer, size_t tSize, const char* caScriptName, c
     const std::string_view strbuf{caBuffer, tSize};
     const std::string script = std::format(FILE_HEADER, caNameSpaceName, strbuf);
 
-    // Log("[CResourceManager::load_buffer] Loading buffer:");
-    // Log(script.c_str());
-
     const int l_iErrorCode = luaL_loadbuffer(LSVM, script.c_str(), script.size(), caScriptName);
     if (l_iErrorCode)
     {
@@ -358,7 +332,6 @@ bool namespace_loaded(const char* name, bool remove_from_stack)
         lua_rawget(LSVM, -2);
         if (lua_isnil(LSVM, -1))
         {
-            // lua_settop(LSVM,0);
             VERIFY(lua_gettop(LSVM) >= 2);
             lua_pop(LSVM, 2);
             VERIFY(start == lua_gettop(LSVM));
@@ -366,7 +339,6 @@ bool namespace_loaded(const char* name, bool remove_from_stack)
         }
         else if (!lua_istable(LSVM, -1))
         {
-            // lua_settop(LSVM, 0);
             VERIFY(lua_gettop(LSVM) >= 1);
             lua_pop(LSVM, 1);
             VERIFY(start == lua_gettop(LSVM));
@@ -444,7 +416,6 @@ static void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
     const char* info_name = info->name();
 
     Msg("LUA error: cannot cast lua value to %s", info_name);
-    // FATAL("[%s] LUA error: cannot cast lua value to [%s]", __FUNCTION__, info_name); //KRodin: Тут наверное вылетать не надо.
 }
 #endif
 
@@ -464,8 +435,7 @@ int lua_panic(lua_State* L)
     return 0;
 }
 
-static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
-                                       size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
+static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer, size_t const size) // Раньше всего инитится здесь, поэтому пусть здесь и будет
 {
     if (!size)
     {
@@ -488,8 +458,6 @@ void ScriptLuaLog(const char* caMessage) { Log(caMessage); }
 // export
 void CResourceManager::LS_Load()
 {
-    // Msg("[CResourceManager] Starting LuaJIT");
-
     R_ASSERT(!LSVM, "! LuaJIT is already running"); //На всякий случай
 
     luabind::allocator = &luabind_allocator; // Аллокатор инитится только здесь и только один раз!
@@ -509,8 +477,6 @@ void CResourceManager::LS_Load()
 
     lua_atpanic(LSVM, lua_panic);
 
-    // Msg("[CResourceManager] LuaJIT Started!");
-
     using namespace luabind;
 
     module(LSVM)[def("log", &ScriptLuaLog),
@@ -521,30 +487,9 @@ void CResourceManager::LS_Load()
                      .def("hudElement", [](adopt_dx10options* O) { return O->HudElement(); }),
 
                  class_<adopt_dx10sampler>("_dx10sampler")
-                 //.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
-                 //.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
-                 //.def("clamp",						&adopt_sampler::_clamp			,return_reference_to(_1))
-                 //.def("wrap",						    &adopt_sampler::_wrap			,return_reference_to(_1))
-                 //.def("mirror",						&adopt_sampler::_mirror			,return_reference_to(_1))
-                 //.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to(_1))
-                 //.def("f_trilinear",					&adopt_sampler::_f_trilinear	,return_reference_to(_1))
-                 //.def("f_bilinear",					&adopt_sampler::_f_bilinear		,return_reference_to(_1))
-                 //.def("f_linear",					    &adopt_sampler::_f_linear		,return_reference_to(_1))
-                 //.def("f_none",						&adopt_sampler::_f_none			,return_reference_to(_1))
-                 //.def("fmin_none",					&adopt_sampler::_fmin_none		,return_reference_to(_1))
-                 //.def("fmin_point",					&adopt_sampler::_fmin_point		,return_reference_to(_1))
-                 //.def("fmin_linear",					&adopt_sampler::_fmin_linear	,return_reference_to(_1))
-                 //.def("fmin_aniso",					&adopt_sampler::_fmin_aniso		,return_reference_to(_1))
-                 //.def("fmip_none",					&adopt_sampler::_fmip_none		,return_reference_to(_1))
-                 //.def("fmip_point",					&adopt_sampler::_fmip_point		,return_reference_to(_1))
-                 //.def("fmip_linear",					&adopt_sampler::_fmip_linear	,return_reference_to(_1))
-                 //.def("fmag_none",					&adopt_sampler::_fmag_none		,return_reference_to(_1))
-                 //.def("fmag_point",					&adopt_sampler::_fmag_point		,return_reference_to(_1))
-                 //.def("fmag_linear",					&adopt_sampler::_fmag_linear	,return_reference_to(_1))
                  ,
 
                  class_<adopt_compiler>("_compiler")
-                     //.def(constructor<const adopt_compiler&>())
                      .def("begin", &adopt_compiler::_passCS, return_reference_to<1>())
                      .def("begin", &adopt_compiler::_pass, return_reference_to<1>())
                      .def("begin", &adopt_compiler::_passgs, return_reference_to<1>())
@@ -642,8 +587,7 @@ BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
 
     std::scoped_lock scope(ResourceEngineLock);
 
-    bool bHasShader = object(undercorated, "normal", LUA_TFUNCTION)
-        || object(undercorated, "l_special", LUA_TFUNCTION);
+    bool bHasShader = object(undercorated, "normal", LUA_TFUNCTION) || object(undercorated, "l_special", LUA_TFUNCTION);
 
     // If not found - try to find new ones
     if (!bHasShader)

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dxUIRender.h"
-
 #include "dxUIShader.h"
 
 dxUIRender UIRenderImpl;
@@ -27,7 +26,6 @@ void dxUIRender::SetShader(IUIShader& shader)
 
 void dxUIRender::SetAlphaRef(int aref)
 {
-    // CHK_DX(HW.pDevice->SetRenderState(D3DRS_ALPHAREF,aref));
     RCache.set_AlphaRef(aref);
 }
 
@@ -57,7 +55,6 @@ LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
 
 void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
 {
-    //.	VERIFY(m_PointType==pttLIT);
     switch (m_PointType)
     {
     case pttLIT:

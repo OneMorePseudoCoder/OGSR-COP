@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "render_phase_sun.h"
 #include "r4_R_sun_support.h"
 
@@ -70,10 +69,7 @@ void render_sun::calculate()
 
     // build viewport xform
     float view_dim = float(RImplementation.o.smapsize);
-    Fmatrix m_viewport = {
-        view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f,
-        -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
+    Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
     Fmatrix m_viewport_inv;
 
     XMStoreFloat4x4((XMFLOAT4X4*)&m_viewport_inv, XMMatrixInverse(nullptr, XMLoadFloat4x4((XMFLOAT4X4*)&m_viewport)));
@@ -129,9 +125,8 @@ void render_sun::calculate()
 
         float map_size = m_sun_cascades[cascade_ind].size;
 
-        XMStoreFloat4x4((XMFLOAT4X4*)&mdir_Project,
-                        XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1f,
-                                                        dist + /*sqrt(2)*/ 1.41421f * map_size));
+        XMStoreFloat4x4((XMFLOAT4X4*)&mdir_Project, XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1f, dist + 1.41421f * map_size));
+ 
         // snap view-position to pixel
         cull_xform[cascade_ind].mul(mdir_Project, mdir_View);
         Fmatrix cull_xform_inv;
@@ -185,9 +180,7 @@ void render_sun::calculate()
         {
             Fvector cam_proj = Device.vCameraPosition;
             const float align_aim_step_coef = 4.f;
-            cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2, 
-                         floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2,
-                         floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
+            cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2, floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2, floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
             cam_proj.mul(align_aim_step_coef);
             Fvector cam_pixel = wform(cull_xform[cascade_ind], cam_proj);
             cam_pixel = wform(m_viewport, cam_pixel);
@@ -226,11 +219,10 @@ void render_sun::calculate()
         sun->X.D[cascade_ind].minY = 0;
         sun->X.D[cascade_ind].maxY = limit;
         sun->X.D[cascade_ind].combine = cull_xform[cascade_ind];
-
-        // full-xform
     }
 
-    const auto process_cascade = [&](const u32 cascade_ind) {
+    const auto process_cascade = [&](const u32 cascade_ind) 
+    {
         // Begin SMAP-render
         auto& dsgraph = RImplementation.get_context(contexts_ids[cascade_ind]);
         {
@@ -271,9 +263,8 @@ void render_sun::render()
         m_sun_cascades[R__NUM_SUN_CASCADES - 1].reset_chain = last_cascade_chain_mode;
 
     // Render shadow-map
-    const auto render_cascade = [&](const u32 cascade_ind) {
-        // TracyD3D11Zone(HW.profiler_ctx, "render_sun::render_cascade");
-
+    const auto render_cascade = [&](const u32 cascade_ind) 
+    {
         auto& dsgraph = RImplementation.get_context(contexts_ids[cascade_ind]);
 
         const bool bNormal = dsgraph.mapNormalCount > 0 || dsgraph.mapMatrixCount > 0;
@@ -347,8 +338,6 @@ void render_sun::flush()
 
 void render_sun::accumulate_cascade(u32 cascade_ind)
 {
-    // TracyD3D11Zone(HW.profiler_ctx, "render_sun::accumulate_cascade");
-
     auto& dsgraph = RImplementation.get_context(contexts_ids[cascade_ind]);
 
     // Accumulate
@@ -358,23 +347,17 @@ void render_sun::accumulate_cascade(u32 cascade_ind)
         if (cascade_ind == 0)
         {
             PIX_EVENT_CTX(dsgraph.cmd_list, SE_SUN_NEAR);
-            RImplementation.Target->accum_direct_cascade(dsgraph.cmd_list, SE_SUN_NEAR, m_sun_cascades[cascade_ind].cull_xform
-                , m_sun_cascades[cascade_ind].cull_xform
-                , m_sun_cascades[cascade_ind].bias);
+            RImplementation.Target->accum_direct_cascade(dsgraph.cmd_list, SE_SUN_NEAR, m_sun_cascades[cascade_ind].cull_xform, m_sun_cascades[cascade_ind].cull_xform, m_sun_cascades[cascade_ind].bias);
         }
         else if (cascade_ind == 1)
         {
             PIX_EVENT_CTX(dsgraph.cmd_list, SE_SUN_MIDDLE);
-            RImplementation.Target->accum_direct_cascade(dsgraph.cmd_list, SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].cull_xform
-                , m_sun_cascades[cascade_ind - 1].cull_xform
-                , m_sun_cascades[cascade_ind].bias);
+            RImplementation.Target->accum_direct_cascade(dsgraph.cmd_list, SE_SUN_MIDDLE, m_sun_cascades[cascade_ind].cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, m_sun_cascades[cascade_ind].bias);
         }
         else if (cascade_ind == 2)
         {
             PIX_EVENT_CTX(dsgraph.cmd_list, SE_SUN_FAR);
-            RImplementation.Target->accum_direct_cascade(dsgraph.cmd_list, SE_SUN_FAR, m_sun_cascades[cascade_ind].cull_xform
-                , m_sun_cascades[cascade_ind - 1].cull_xform
-                , m_sun_cascades[cascade_ind].bias);
+            RImplementation.Target->accum_direct_cascade(dsgraph.cmd_list, SE_SUN_FAR, m_sun_cascades[cascade_ind].cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, m_sun_cascades[cascade_ind].bias);
         }
     }
 

@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "Blender_Particle.h"
 
 #define oBlendCount 6
@@ -97,13 +95,10 @@ void CBlender_Particle::Compile(CBlender_Compile& C)
         case 5: C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_ONE, TRUE, 0); break; // ALPHA-ADD
         };
         {
-            // C.r_Sampler			("s_base",	C.L_textures[0],false,oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
             C.r_dx10Texture("s_base", C.L_textures[0]);
             const u32 hSampler = C.r_dx10Sampler("smp_base");
             if (oClamp.value && (hSampler != (u32)-1))
                 C.i_dx10Address(hSampler, D3DTADDRESS_CLAMP);
-            //	Igor: soft particles
-            // C.r_Sampler			("s_position",	"$user$position");
             C.r_dx10Texture("s_position", "$user$position");
             C.r_dx10Sampler("smp_nofilter");
         }
@@ -124,13 +119,10 @@ void CBlender_Particle::Compile(CBlender_Compile& C)
         case 5: C.r_Pass("particle-clip", "particle_s-aadd", FALSE, TRUE, FALSE, TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, TRUE, 0); break; // ALPHA-ADD
         };
         {
-            // C.r_Sampler			("s_base",	C.L_textures[0],false,oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
             C.r_dx10Texture("s_base", C.L_textures[0]);
             const u32 hSampler = C.r_dx10Sampler("smp_base");
             if (oClamp.value && (hSampler != (u32)-1))
                 C.i_dx10Address(hSampler, D3DTADDRESS_CLAMP);
-            //	Igor: soft particles
-            // C.r_Sampler			("s_position",	"$user$position");
             C.r_dx10Texture("s_position", "$user$position");
             C.r_dx10Sampler("smp_nofilter");
         }

@@ -1,11 +1,6 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidGrid.h"
-
 #include "../dx10BufferUtils.h"
-
 #include <Utilities/FlexibleVertexFormat.h>
 
 struct VS_INPUT_FLUIDSIM_STRUCT
@@ -66,14 +61,13 @@ void dx103DFluidGrid::CreateVertexBuffers()
 {
     // Create layout
 
-    constexpr D3DVERTEXELEMENT9 layoutDesc[]{
+    constexpr D3DVERTEXELEMENT9 layoutDesc[]
+    {
         {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-        {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, D3DDECL_END()};
+        {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0}, D3DDECL_END()
+    };
 
     const u32 vSize = FVF::ComputeVertexSize(layoutDesc, 0);
-
-    // UINT numElements = sizeof(layoutDesc)/sizeof(layoutDesc[0]);
-    // CreateLayout( layoutDesc, numElements, technique, &layout);
 
     int index = 0;
     VS_INPUT_FLUIDSIM_STRUCT* renderQuad = nullptr;
@@ -251,46 +245,24 @@ void dx103DFluidGrid::InitBoundaryLines(VS_INPUT_FLUIDSIM_STRUCT** vertices, int
 
 void dx103DFluidGrid::DrawSlices(CBackend& cmd_list)
 {
-    // UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-    // UINT offset[1] = { 0 };
-    // DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_TRIANGLELIST, layout, &slicesBuffer,
-    //	stride, offset, 0, numVerticesSlices );
-
     cmd_list.set_Geometry(m_GeomSlices);
     cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesSlices / 3);
 }
 
 void dx103DFluidGrid::DrawSlicesToScreen(CBackend& cmd_list)
 {
-    // UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-    // UINT offset[1] = { 0 };
-    // DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_TRIANGLELIST, layout, &renderQuadBuffer,
-    //	stride, offset, 0, numVerticesRenderQuad );
-
     cmd_list.set_Geometry(m_GeomRenderQuad);
     cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesRenderQuad / 3);
 }
 
 void dx103DFluidGrid::DrawBoundaryQuads(CBackend& cmd_list)
 {
-    // UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-    // UINT offset[1] = { 0 };
-    // DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_TRIANGLELIST, layout, &boundarySlicesBuffer,
-    //	stride, offset, 0, numVerticesBoundarySlices );
-
     cmd_list.set_Geometry(m_GeomBoundarySlices);
     cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundarySlices / 3);
 }
 
 void dx103DFluidGrid::DrawBoundaryLines(CBackend& cmd_list)
 {
-    //	UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-    //	UINT offset[1] = { 0 };
-    //	DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_LINELIST, layout, &boundaryLinesBuffer,
-    //		stride, offset, 0, numVerticesBoundaryLines  );
-
     cmd_list.set_Geometry(m_GeomBoundaryLines);
     cmd_list.Render(D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines / 3);
 }
-
-#endif

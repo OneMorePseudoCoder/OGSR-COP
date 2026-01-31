@@ -1,7 +1,5 @@
 #pragma once
 
-//#define RBackend_PGO
-
 #ifdef RBackend_PGO
 #define PGO(a) a
 #else
@@ -257,8 +255,6 @@ public:
     ID3DVertexBuffer* GetFloraVbuff(u32& size);
 
 protected:
-    //	In DX10 we need input shader signature which is stored in ref_vs
-
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = nullptr);
     ICF void set_GS(ID3DGeometryShader* _gs, LPCSTR _n = nullptr);
     ICF void set_HS(ID3D11HullShader* _hs, LPCSTR _n = nullptr);
@@ -290,7 +286,7 @@ public:
     IC void SetViewport(const D3D_VIEWPORT& viewport) const;
 
     float o_hemi;
-    float o_hemi_cube[6/*CROS_impl::NUM_FACES*/];
+    float o_hemi_cube[6];
     float o_sun;
 
     void apply_lmaterial();
@@ -587,14 +583,11 @@ public:
         else
         {
             const auto hr2 = HW.pDevice->GetDeviceRemovedReason();
-            FATAL("!!FAILED HW.get_context(%u)->FinishCommandList! Error: [%s]; GetDeviceRemovedReason returns: [%s]", context_id, _com_error{hr}.ErrorMessage(),
-                FAILED(hr2) ? _com_error{hr2}.ErrorMessage() : "No device removal error detected");
+            FATAL("!!FAILED HW.get_context(%u)->FinishCommandList! Error: [%s]; GetDeviceRemovedReason returns: [%s]", context_id, _com_error{hr}.ErrorMessage(), FAILED(hr2) ? _com_error{hr2}.ErrorMessage() : "No device removal error detected");
         }
 
         _RELEASE(pCommandList);
     }
-
-    //ICF void Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 
     void gpu_mark_begin(const wchar_t* name);
     void gpu_mark_end();
@@ -632,26 +625,6 @@ public:
 
     CBackend();
 
-    // debug
-
-    //BOOL m_bNearer{};
-
-    //void SetNearer(BOOL enabled)
-    //{
-    //    Fmatrix mProject = Device.mProject;
-    //    if (enabled && !m_bNearer)
-    //    {
-    //        m_bNearer = TRUE;
-    //        mProject._43 -= EPS_L;
-    //    }
-    //    else if (!enabled && m_bNearer)
-    //    {
-    //        m_bNearer = FALSE;
-    //        mProject._43 += EPS_L;
-    //    }
-    //    set_xform_project(mProject);
-    //}
-    
 private:
     // Debug Draw
     void InitializeDebugDraw();

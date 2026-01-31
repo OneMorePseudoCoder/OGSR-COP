@@ -34,10 +34,6 @@ void _initialize_cpu()
 {
     Msg("* Detected CPU: %s [%s], F%d/M%d/S%d", CPU::ID.brand, CPU::ID.vendor, CPU::ID.family, CPU::ID.model, CPU::ID.stepping);
 
-    // WTF???
-    // if (strstr(Core.Params, "-x86"))
-    //	CPU::ID.clearFeatures();
-
     string256 features;
     strcpy_s(features, sizeof(features), "RDTSC");
     if (CPU::ID.hasMMX())
@@ -96,7 +92,8 @@ typedef struct
     LPCSTR szName; // Pointer to name (in user addr space).
     DWORD dwThreadID; // Thread ID (-1=caller thread).
     DWORD dwFlags; // Reserved for future use, must be zero.
-} THREADNAME_INFO;
+} 
+THREADNAME_INFO;
 #pragma pack(pop)
 
 static void set_thread_name(HANDLE ThreadHandle, const char* threadName)

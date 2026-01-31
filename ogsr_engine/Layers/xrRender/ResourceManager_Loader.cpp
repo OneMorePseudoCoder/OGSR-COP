@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "ResourceManager.h"
 #include "blenders/blender.h"
 
@@ -117,8 +116,6 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
                     B->SaveIni(&ini, desc.cName);
                 }
 
-                //Msg("Loading shader: [%s]", desc.cName);
-
                 const auto I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
                 ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", desc.cName);
             }
@@ -159,8 +156,6 @@ void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
             }
 
             B->LoadIni(&ini, name.c_str());
-
-            // Msg("Loading shader: [%s]", desc.cName);
 
             const std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(name.c_str()), B);
             ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", name.c_str());

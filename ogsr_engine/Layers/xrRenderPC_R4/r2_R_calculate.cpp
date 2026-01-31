@@ -14,8 +14,7 @@ extern float r_ssaLOD_B;
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
 
 void render_main::init()
-{
-}
+{}
 
 void render_main::calculate_static()
 {
@@ -49,7 +48,8 @@ void render_main::ensure_calculate_static()
 
 void render_main::calculate_dynamic()
 {
-    dynamic_waiter = TTAPI->submit([] {
+    dynamic_waiter = TTAPI->submit([] 
+    {
         ZoneScoped;
 
         // ждем партиклы тут
@@ -81,19 +81,9 @@ void render_main::wait_dynamic() const
 void render_main::sync() const
 {
     // just to be safe
-
     wait_static();
-
     wait_dynamic();
 }
-
-
-// IC bool pred_sp_sort(ISpatial* _1, ISpatial* _2)
-//{
-//     float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-//     float d2 = _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-//     return d1 < d2;
-// }
 
 constexpr u32 batch_size = 5;
 
@@ -106,17 +96,12 @@ void CRender::calculate_particles_async()
 
         g_SpatialSpace->q_frustum(lstParticlesCalculation, 0, STYPE_RENDERABLE | STYPE_PARTICLE, v);
 
-        //Msg("Particles calculation: %d objects", lstParticlesCalculation.size());
-
         auto calculate_particles = [this] {
             ZoneScoped;
 
             CTimer t_total;
 
             t_total.Start();
-
-            // (almost) Exact sorting order (front-to-back)
-            // std::sort(lstParticlesCalculation.begin(), lstParticlesCalculation.end(), pred_sp_sort);
 
             xr_vector<CPS_Instance*> batch;
 
@@ -125,16 +110,6 @@ void CRender::calculate_particles_async()
             {
                 if (const auto ps = smart_cast<CPS_Instance*>(spatial))
                 {
-                    // is it correct ???
-
-                    // vis_data& v_orig = ps->renderable.visual->getVisData();
-
-                    // Fvector pos;
-                    // ps->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
-
-                    // if (!ps->renderable.visual->ignore_optimization && !InFieldOfViewR(pos, ps_r__opt_dist, false))
-                    //    continue;
-
                     batch.emplace_back(ps);
 
                     if (batch.size() > batch_size)
@@ -267,7 +242,7 @@ bool CRender::ShouldSkipRender()
     IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : nullptr;
     const bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
 
-    if (!(g_pGameLevel && g_hud) || bMenu /*|| (!ps_r2_ls_flags_ext.test(R2FLAGEXT_RENDER_ON_PREFETCH) && Device.dwPrecacheFrame > 0)*/)
+    if (!(g_pGameLevel && g_hud) || bMenu)
     {
         return true;
     }
@@ -296,11 +271,7 @@ void CRender::ExportLights()
         light* L = smart_cast<light*>(spatial->dcast_Light());
         R_ASSERT(L);
 
-        //const float lod = L->get_LOD();
-        //if (lod > EPS_L)
-        {
-            Lights.add_light(L);
-        }
+        Lights.add_light(L);
     }
 
     g_SpatialSpace->q_frustum(lstLights, 0, STYPE_LIGHTSOURCE, ViewBase);
@@ -379,14 +350,6 @@ void CRender::Calculate()
 
     ZoneScopedN("r2_calculate");
 
-    //IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
-    //bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
-
-    //if (!(g_pGameLevel && g_hud) || bMenu)
-    //{
-    //    return;
-    //}
-
     // Transfer to global space to avoid deep pointer access
     IRender_Target* T = getTarget();
     const float fov_factor = _sqr(90.f / Device.fFOV);
@@ -410,7 +373,6 @@ void CRender::Calculate()
     std::copy(std::begin(grass_shader_data.pos), std::end(grass_shader_data.pos), std::begin(grass_shader_data_old.pos));
     std::copy(std::begin(grass_shader_data.dir), std::end(grass_shader_data.dir), std::begin(grass_shader_data_old.dir));
 
-    //
     Lights.UpdateSun();
 
     // Clear selection
@@ -438,7 +400,6 @@ void CRender::Calculate()
     r_rain.run();
     r_sun.run();
 }
-
 
 IRender_Sector::sector_id_t CRender::detect_sector(xrXRC& Sectors_xrc, const Fvector& P) const
 {

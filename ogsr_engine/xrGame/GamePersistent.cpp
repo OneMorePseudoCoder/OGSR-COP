@@ -22,10 +22,7 @@
 #include "HUDManager.h"
 #include "..\xr_3da\DiscordRPC.hpp"
 
-#ifndef MASTER_GOLD
 #include "custommonster.h"
-#endif // MASTER_GOLD
-
 #include "ai_debug.h"
 
 static void* ode_alloc(size_t size) { return xr_malloc(size); }
@@ -563,7 +560,6 @@ void CGamePersistent::OnFrame()
 
     if (Device.Paused())
     {
-#ifndef MASTER_GOLD
         if (Level().CurrentViewEntity())
         {
             if (!g_actor || (g_actor->ID() != Level().CurrentViewEntity()->ID()))
@@ -587,19 +583,6 @@ void CGamePersistent::OnFrame()
                 }
             }
         }
-#else // MASTER_GOLD
-        if (g_actor)
-        {
-            CCameraBase* C = NULL;
-            if (!Actor()->Holder())
-                C = Actor()->cam_Active();
-            else
-                C = Actor()->Holder()->Camera();
-
-            Actor()->Cameras().UpdateFromCamera(C);
-            Actor()->Cameras().ApplyDevice();
-        }
-#endif // MASTER_GOLD
     }
     __super::OnFrame();
 

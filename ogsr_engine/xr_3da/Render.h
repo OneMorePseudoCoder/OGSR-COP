@@ -76,10 +76,12 @@ public:
 
     virtual ~IRender_Light();
 };
+
 struct ENGINE_API resptrcode_light : public resptr_base<IRender_Light>
 {
     void destroy() { _set(nullptr); }
 };
+
 typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 
 //////////////////////////////////////////////////////////////////////////
@@ -214,11 +216,6 @@ public:
     virtual void models_Clear(BOOL b_complete) = 0;
     virtual void models_savePrefetch() = 0;
     virtual void models_begin_prefetch1(bool val) = 0;
-
-    // Occlusion culling
-    //virtual BOOL occ_visible(vis_data& V) = 0;
-    //virtual BOOL occ_visible(Fbox& B) = 0;
-    //virtual BOOL occ_visible(sPoly& P) = 0;
 
     // Main
     virtual void Calculate() = 0;
@@ -359,7 +356,6 @@ struct GRASS_SHADER_DATA
     float fade[GRASS_SHADER_DATA_COUNT]{};
     float speed[GRASS_SHADER_DATA_COUNT]{};
 };
-
 
 struct GRASS_SHADER_DATA_OLD
 {

@@ -25,5 +25,4 @@ public:
 
 private:
     FProgressive(const FProgressive& other);
-    void operator=(const FProgressive& other);
 };

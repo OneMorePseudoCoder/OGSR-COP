@@ -12,7 +12,7 @@
 
 BOOL bSenvironmentXrExport{};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
-Flags32 psSoundFlags = {/*ss_Hardware*/};
+Flags32 psSoundFlags = {};
 float psSoundOcclusionScale = 0.5f;
 float psSoundLinearFadeFactor = 0.4f; //--#SM+#--
 float psSoundCull = 0.01f;
@@ -29,7 +29,6 @@ BOOL snd_enable_float_pcm{TRUE};
 CSoundRender_Core* SoundRender = 0;
 CSound_manager_interface* Sound = 0;
 
-//////////////////////////////////////////////////
 #include <efx.h>
 #define LOAD_PROC(x, type) ((x) = (type)alGetProcAddress(#x))
 static LPALEFFECTF alEffectf;
@@ -41,7 +40,6 @@ static LPALISAUXILIARYEFFECTSLOT alIsAuxiliaryEffectSlot;
 static LPALDELETEAUXILIARYEFFECTSLOTS alDeleteAuxiliaryEffectSlots;
 static LPALGENAUXILIARYEFFECTSLOTS alGenAuxiliaryEffectSlots;
 static LPALAUXILIARYEFFECTSLOTI alAuxiliaryEffectSloti;
-//////////////////////////////////////////////////
 
 CSoundRender_Core::CSoundRender_Core()
 {
@@ -81,11 +79,6 @@ void CSoundRender_Core::release_efx_objects() const
 
 CSoundRender_Core::~CSoundRender_Core()
 {
-    // if (bEFX)
-    {
-        //release_efx_objects();
-    }
-
     xr_delete(geom_ENV);
     xr_delete(geom_SOM);
 }
@@ -175,10 +168,6 @@ void CSoundRender_Core::env_load()
             Msg("~ env id=[%d] name=[%s]", chunk, name.c_str());
         }
     }
-
-    // Load geometry
-
-    // Assosiate geometry
 }
 
 void CSoundRender_Core::env_unload()
@@ -195,8 +184,6 @@ void CSoundRender_Core::env_unload()
     }
 
     xr_delete(s_environment);
-
-    // Unload geometry
 }
 
 void CSoundRender_Core::env_save_all() const
@@ -419,6 +406,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
     if (flags & sm_2D || S._handle()->channels_num() == 2)
         S._feedback()->switch_to_2D();
 }
+
 void CSoundRender_Core::destroy(ref_sound& S)
 {
     if (S._feedback())
@@ -444,6 +432,7 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
     S.dwBytesTotal = S.handle->bytes_total();
     S.fTimeTotal = S.handle->length_sec();
 }
+
 void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 {
     if (S.feedback)
@@ -470,25 +459,10 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
     {
         Fvector dir = {0, -1, 0};
 
-        // хитрый способ для проверки звуковых зон в 2х направлениях от камеры. но что то он хуже работает. часто не та зона выбираеться. пока убрал
-
-        // CDB::COLLIDER geom_DB1;
-        // geom_DB1.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
-
-        // CDB::COLLIDER geom_DB2;
-        // geom_DB2.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, Fvector(dir).invert(), 1000.f);
-
         geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
 
-        // if (geom_DB1.r_count() && geom_DB2.r_count())
         if (geom_DB.r_count())
         {
-            // CDB::RESULT* r = geom_DB1.r_begin();
-            // CDB::RESULT* r2 = geom_DB2.r_begin();
-
-            // if (r2->range < r->range)
-            //     r = r2;
-
             CDB::RESULT* r = geom_DB.r_begin();
 
             CDB::TRI* T = geom_ENV->get_tris() + r->id;
@@ -518,22 +492,11 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 
 void CSoundRender_Core::env_apply()
 {
-    /*
-        // Force all sounds to change their environment
-        // (set their positions to signal changes in environment)
-        for (u32 it=0; it<s_emitters.size(); it++)
-        {
-            CSoundRender_Emitter*	pEmitter	= s_emitters[it];
-            const CSound_params*	pParams		= pEmitter->get_params	();
-            pEmitter->set_position	(pParams->position);
-        }
-    */
     bListenerMoved = TRUE;
 }
 
 void CSoundRender_Core::update_listener(const Fvector& P, const Fvector& D, const Fvector& N, float dt) {}
 
-//////////////////////////////////////////////////
 void CSoundRender_Core::InitAlEFXAPI()
 {
     LOAD_PROC(alDeleteAuxiliaryEffectSlots, LPALDELETEAUXILIARYEFFECTSLOTS);
@@ -641,8 +604,6 @@ void CSoundRender_Core::i_eax_listener_set(CSound_environment* _E)
     ep.flReflectionsDelay = E->ReflectionsDelay; // initial reflection delay time
     ep.lReverb = iFloor(E->Reverb); // late reverberation level relative to room effect
     ep.flReverbDelay = E->ReverbDelay; // late reverberation delay time relative to initial reflection
-    //ep.dwEnvironment = EAXLISTENER_DEFAULTENVIRONMENT; // sets all listener properties
-    //ep.flEnvironmentSize = E->EnvironmentSize; // environment size in meters
     ep.flEnvironmentDiffusion = E->EnvironmentDiffusion; // environment diffusion
     ep.flAirAbsorptionHF = E->AirAbsorptionHF; // change in level per meter at 5 kHz
     ep.dwFlags = EAXLISTENER_DEFAULTFLAGS; // modifies the behavior of properties

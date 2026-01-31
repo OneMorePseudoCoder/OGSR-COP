@@ -82,7 +82,6 @@ void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* 
     Render(T, vBase, 0, vcnt, iBase, pcnt);
 }
 
-
 void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
 {
     u32 vBase;

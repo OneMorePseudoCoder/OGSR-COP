@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "igame_level.h"
 #include "x_ray.h"
 #include "gamefont.h"
@@ -105,52 +104,46 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
         _unlink(name);
         file = FS.w_open(name);
     }
-    //if (file)
-    {
-        //g_position.set_position = false;
-        IR_Capture(); // capture input
-        m_Camera.invert(Device.mView);
 
-        // parse yaw
-        Fvector& dir = m_Camera.k;
-        Fvector DYaw;
-        DYaw.set(dir.x, 0.f, dir.z);
-        DYaw.normalize_safe();
-        if (DYaw.x < 0)
-            m_HPB.x = acosf(DYaw.z);
-        else
-            m_HPB.x = 2 * PI - acosf(DYaw.z);
+    IR_Capture(); // capture input
+    m_Camera.invert(Device.mView);
 
-        // parse pitch
-        dir.normalize_safe();
-        m_HPB.y = asinf(dir.y);
-        m_HPB.z = 0;
+    // parse yaw
+    Fvector& dir = m_Camera.k;
+    Fvector DYaw;
+    DYaw.set(dir.x, 0.f, dir.z);
+    DYaw.normalize_safe();
+    if (DYaw.x < 0)
+        m_HPB.x = acosf(DYaw.z);
+    else
+        m_HPB.x = 2 * PI - acosf(DYaw.z);
 
-        m_Position.set(m_Camera.c);
+     // parse pitch
+    dir.normalize_safe();
+    m_HPB.y = asinf(dir.y);
+    m_HPB.z = 0;
 
-        m_vVelocity.set(0, 0, 0);
-        m_vAngularVelocity.set(0, 0, 0);
-        iCount = 0;
+    m_Position.set(m_Camera.c);
 
-        m_vT.set(0, 0, 0);
-        m_vR.set(0, 0, 0);
-        m_bMakeCubeMap = false;
-        m_bMakeScreenshot = false;
-        m_bMakeLevelMap = false;
+    m_vVelocity.set(0, 0, 0);
+    m_vAngularVelocity.set(0, 0, 0);
+    iCount = 0;
 
-        m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
-        m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
-        m_fSpeed2 = pSettings->r_float("demo_record", "speed2");
-        m_fSpeed3 = pSettings->r_float("demo_record", "speed3");
-        m_fAngSpeed0 = pSettings->r_float("demo_record", "ang_speed0");
-        m_fAngSpeed1 = pSettings->r_float("demo_record", "ang_speed1");
-        m_fAngSpeed2 = pSettings->r_float("demo_record", "ang_speed2");
-        m_fAngSpeed3 = pSettings->r_float("demo_record", "ang_speed3");
-    }
-    //else
-    //{
-    //    fLifeTime = -1;
-    //}
+    m_vT.set(0, 0, 0);
+    m_vR.set(0, 0, 0);
+    m_bMakeCubeMap = false;
+    m_bMakeScreenshot = false;
+    m_bMakeLevelMap = false;
+    m_Stage = u32(0);
+
+    m_fSpeed0 = pSettings->r_float("demo_record", "speed0");
+    m_fSpeed1 = pSettings->r_float("demo_record", "speed1");
+    m_fSpeed2 = pSettings->r_float("demo_record", "speed2");
+    m_fSpeed3 = pSettings->r_float("demo_record", "speed3");
+    m_fAngSpeed0 = pSettings->r_float("demo_record", "ang_speed0");
+    m_fAngSpeed1 = pSettings->r_float("demo_record", "ang_speed1");
+    m_fAngSpeed2 = pSettings->r_float("demo_record", "ang_speed2");
+    m_fAngSpeed3 = pSettings->r_float("demo_record", "ang_speed3");
 }
 
 CDemoRecord::~CDemoRecord()
@@ -186,15 +179,16 @@ void CDemoRecord::MakeLevelMapProcess()
 {
     switch (m_Stage)
     {
-    case 0: {
+    case 0: 
+    {
         s_dev_flags = psDeviceFlags;
         s_hud_flag.assign(psHUD_Flags);
         psDeviceFlags.zero();
-        psDeviceFlags.set(rsClearBB /*| rsFullscreen | rsDrawStatic*/, true);
+        psDeviceFlags.set(rsClearBB, true);
     }
     break;
-
-    case DEVICE_RESET_PRECACHE_FRAME_COUNT + 30: {
+    case DEVICE_RESET_PRECACHE_FRAME_COUNT + 30: 
+    {
         setup_lm_screenshot_matrices();
 
         string_path tmp;
@@ -228,7 +222,8 @@ void CDemoRecord::MakeLevelMapProcess()
         }
     }
     break;
-    default: {
+    default: 
+    {
         setup_lm_screenshot_matrices();
     }
     break;
@@ -250,14 +245,16 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
     case 2:
     case 3:
     case 4:
-    case 5: {
+    case 5: 
+    {
         N.set(cmNorm[m_Stage]);
         D.set(cmDir[m_Stage]);
         string32 buf;
         Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
         break;
     }
-    case 6: {
+    case 6: 
+    {
         string32 buf;
         Render->Screenshot(IRender_interface::SM_FOR_CUBEMAP, _itoa(m_Stage, buf, 10));
         N.set(m_Camera.j);
@@ -273,8 +270,6 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
 BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
     info.dont_apply = false;
-    //if (!file)
-    //    return TRUE;
 
     if (m_bMakeScreenshot)
     {
@@ -351,21 +346,9 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
         m_vT.mul(m_vVelocity, Device.fTimeDelta * speed);
         m_vR.mul(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
 
-        // m_vR.x Up\Down
-        // m_vR.y Left\Right
-        // m_vR.z Rotate Left\Rotate Right
-
         m_HPB.x -= m_vR.y;
         m_HPB.y -= m_vR.x;
         m_HPB.z += m_vR.z;
-
-        //if (g_position.set_position)
-        //{
-        //    m_Position.set(g_position.p);
-        //    g_position.set_position = false;
-        //}
-        //else
-        //    g_position.p.set(m_Position);
 
         // move
         Fvector vmove;
@@ -544,7 +527,6 @@ void CDemoRecord::IR_OnMouseRelease(int btn)
     }
 }
 
-
 void CDemoRecord::RecordKey()
 {
     Fmatrix g_matView;
@@ -568,9 +550,6 @@ void CDemoRecord::MakeScreenshot()
 
 void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 {
-    // KRodin: луа ещё и в консоли мне точно не нужен.
-    // Console->Execute("run_string level.set_weather(\"map\",true)");
-
     if (!bHQ)
         m_iLMScreenshotFragment = -1;
     else

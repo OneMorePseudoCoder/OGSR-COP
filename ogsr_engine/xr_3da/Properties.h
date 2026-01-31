@@ -4,11 +4,6 @@
 
 // Parameter/Property specifications
 
-// *** FORMAT ***
-// u32	type
-// stringZ	name
-// []		data
-
 enum xrProperties
 {
     xrPID_MARKER = 0,
@@ -75,6 +70,7 @@ IC void xrPWRITE(IWriter& fs, u32 ID, LPCSTR name, LPCVOID data, u32 size)
     if (data && size)
         fs.w(data, size);
 }
+
 IC void xrPWRITE_MARKER(IWriter& fs, LPCSTR name) { xrPWRITE(fs, xrPID_MARKER, name, nullptr, 0); }
 
 #define xrPWRITE_PROP(FS, name, ID, data) \
@@ -89,6 +85,7 @@ IC u32 xrPREAD(IReader& fs)
     fs.skip_stringZ();
     return T;
 }
+
 IC void xrPREAD_MARKER(IReader& fs) { R_ASSERT(xrPID_MARKER == xrPREAD(fs)); }
 
 #define xrPREAD_PROP(fs, ID, data) \

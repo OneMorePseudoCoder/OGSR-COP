@@ -65,7 +65,7 @@ extern BOOL g_show_wnd_rect;
 extern BOOL g_show_wnd_rect2;
 extern BOOL g_show_wnd_rect_text;
 extern BOOL g_console_show_always;
-    //-----------------------------------------------------------
+//-----------------------------------------------------------
 extern float g_fTimeFactor;
 extern BOOL g_bCopDeathAnim;
 extern int g_bHudAdjustMode;
@@ -129,15 +129,12 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
     FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
 }
 
-
 class CCC_MemStats : public IConsole_Command
 {
 public:
     CCC_MemStats(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args)
     {
-        //Memory.mem_compact();
-
         u32 m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
 
         //	Resource check moved to m_pRender
@@ -153,8 +150,7 @@ public:
             memCounters.FreePhysicalMemory / (1024 * 1024), 
             memCounters.MemoryLoad);
 
-        Msg("PageFile total: [%I64dMB], free~ [%I64dMB]", 
-            memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
+        Msg("PageFile total: [%I64dMB], free~ [%I64dMB]", memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
 
         //PeakWorkingSetSize
         //
@@ -164,8 +160,7 @@ public:
         //
         //The current working set size, in bytes.
 
-        Msg("Engine memory usage (Working Set): [%I64dMB], peak: [%I64dMB]",
-            memCounters.WorkingSetSize / (1024 * 1024), memCounters.PeakWorkingSetSize / (1024 * 1024));
+        Msg("Engine memory usage (Working Set): [%I64dMB], peak: [%I64dMB]", memCounters.WorkingSetSize / (1024 * 1024), memCounters.PeakWorkingSetSize / (1024 * 1024));
 
         //PagefileUsage
         //
@@ -296,15 +291,6 @@ public:
                     Msg("! there are only %d vertexes!", ai().game_graph().header().vertex_count());
                 else if (_min(id1, id2) < 0)
                     Msg("! invalid vertex number (%d)!", _min(id1, id2));
-                else
-                {
-                    //						Sleep				(1);
-                    //						CTimer				timer;
-                    //						timer.Start			();
-                    //						float				fValue = ai().m_tpAStar->ffFindMinimalPath(id1,id2);
-                    //						Msg					("* %7.2f[%d] : %11I64u cycles (%.3f
-                    //microseconds)",fValue,ai().m_tpAStar->m_tpaNodes.size(),timer.GetElapsed_ticks(),timer.GetElapsed_ms()*1000.f);
-                }
             else
                 Msg("! not enough parameters!");
         }
@@ -415,7 +401,6 @@ public:
     }
 };
 
-//#ifndef MASTER_GOLD
 class CCC_TimeFactor : public IConsole_Command
 {
 public:
@@ -427,7 +412,6 @@ public:
         Device.time_factor(time_factor);
     }
 };
-//#endif // MASTER_GOLD
 
 //-----------------------------------------------------------------------
 class CCC_DemoRecord : public IConsole_Command
@@ -500,7 +484,6 @@ bool valid_file_name(LPCSTR file_name)
 }
 
 #include "UIGameCustom.h"
-#include "HUDManager.h"
 
 class CCC_ALifeSave : public IConsole_Command
 {
@@ -516,7 +499,6 @@ public:
 
         string_path S, S1;
         S[0] = 0;
-        //.		sscanf					(args ,"%s",S);
         strcpy_s(S, args);
 
 #ifdef DEBUG
@@ -830,18 +812,7 @@ public:
     {
         ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, TRUE);
         PH_DBG_SetTrackObject(args);
-        // CObject* O= Level().Objects.FindObjectByName(args);
-        // if(O)
-        //{
-        //	PH_DBG_SetTrackObject(*(O->cName()));
-        //	ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,TRUE);
-        // }
     }
-
-    // virtual void	Info	(TInfo& I)
-    //{
-    //	strcpy_s(I,"restart game fast");
-    // }
 };
 #endif
 
@@ -899,7 +870,6 @@ struct CCC_LuaHelp : public IConsole_Command
     virtual void Execute(LPCSTR args) { print_help(ai().script_engine().lua()); }
 };
 
-//#ifndef MASTER_GOLD
 #include "game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command
 {
@@ -982,11 +952,8 @@ public:
         }
 
         std::sort(tips.begin(), tips.end());
-
-        // tips.push_back((*itb).second.name());
     }
 };
-//#endif // MASTER_GOLD
 
 class CCC_SpawnToInventory : public IConsole_Command
 {
@@ -1045,8 +1012,6 @@ public:
         }
 
         std::sort(tips.begin(), tips.end());
-
-        // tips.push_back((*itb).second.name());
     }
 };
 
@@ -1201,7 +1166,6 @@ struct CCC_DbgBullets : public CCC_Integer
 #include "attachment_owner.h"
 #include "InventoryOwner.h"
 #include "Inventory.h"
-#include "HUDManager.h"
 #include "HUDTarget.h"
 class CCC_TuneAttachableItem : public IConsole_Command
 {
@@ -1413,7 +1377,6 @@ public:
 };
 
 #ifdef USE_MEMORY_VALIDATOR
-
 class CCC_DbgMemoryDump : public IConsole_Command
 {
 public:
@@ -1485,13 +1448,11 @@ void CCC_RegisterCommands()
     CMD1(CCC_ALifeLoadFrom, "load"); // load game from ...
     CMD1(CCC_LoadLastSave, "load_last_save"); // load last saved game from ...
 
-#ifndef MASTER_GOLD
     CMD1(CCC_ALifeTimeFactor, "al_time_factor"); // set time factor
     CMD1(CCC_ALifeSwitchDistance, "al_switch_distance"); // set switch distance
     CMD1(CCC_ALifeProcessTime, "al_process_time"); // set process time
     CMD1(CCC_ALifeObjectsPerUpdate, "al_objects_per_update"); // set process time
     CMD1(CCC_ALifeSwitchFactor, "al_switch_factor"); // set switch factor
-#endif // MASTER_GOLD
 
     CMD3(CCC_Mask, "hud_info", &psHUD_Flags, HUD_INFO);
     CMD3(CCC_Mask, "hud_draw", &psHUD_Flags, HUD_DRAW);
@@ -1516,7 +1477,6 @@ void CCC_RegisterCommands()
     CMD1(CCC_DemoPlay, "demo_play");
     CMD1(CCC_DemoRecord, "demo_record");
 
-#ifndef MASTER_GOLD
     // ai
     CMD3(CCC_Mask, "mt_ai_vision", &g_mt_config, mtAiVision);
     CMD3(CCC_Mask, "mt_level_path", &g_mt_config, mtLevelPath);
@@ -1526,7 +1486,6 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "mt_bullets", &g_mt_config, mtBullets);
     CMD3(CCC_Mask, "mt_level_sounds", &g_mt_config, mtLevelSounds);
     CMD3(CCC_Mask, "mt_alife", &g_mt_config, mtALife);
-#endif // MASTER_GOLD
 
 #ifdef DEBUG
     CMD3(CCC_Mask, "ai_debug", &psAI_Flags, aiDebug);
@@ -1586,9 +1545,7 @@ void CCC_RegisterCommands()
     CMD1(CCC_ShowAnimationStats, "ai_show_animation_stats");
 #endif // DEBUG
 
-#ifndef MASTER_GOLD
     CMD3(CCC_Mask, "ai_ignore_actor", &psAI_Flags, aiIgnoreActor);
-#endif // MASTER_GOLD
 
     // Physics
     CMD1(CCC_PHFps, "ph_frequency");
@@ -1604,7 +1561,6 @@ void CCC_RegisterCommands()
     CMD4(CCC_FloatBlock, "ph_tri_query_ex_aabb_rate", &ph_tri_query_ex_aabb_rate, 1.01f, 3.f);
 #endif // DEBUG
 
-    //#ifndef MASTER_GOLD
     CMD1(CCC_JumpToLevel, "jump_to_level");
     CMD1(CCC_Spawn, "g_spawn");
     CMD1(CCC_SpawnToInventory, "g_spawn_to_inventory");
@@ -1626,7 +1582,6 @@ void CCC_RegisterCommands()
 
     CMD1(CCC_TimeFactor, "time_factor")
     CMD1(CCC_SetWeather, "set_weather");
-    //#endif // MASTER_GOLD
 
     CMD3(CCC_Mask, "g_music_tracks", &psActorFlags, AF_MUSIC_TRACKS);
 
@@ -1701,16 +1656,12 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
     CMD1(CCC_MainMenu, "main_menu");
 
-#ifndef MASTER_GOLD
     CMD1(CCC_StartTimeSingle, "start_time_single");
     CMD4(CCC_TimeFactorSingle, "time_factor_single", &g_fTimeFactor, 0.f, flt_max);
-#endif // MASTER_GOLD
 
     CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &psActorFlags, AF_AI_VOLUMETRIC_LIGHTS);
 
-#ifndef MASTER_GOLD
     CMD4(CCC_Vector3, "psp_cam_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
-#endif // MASTER_GOLD
 
 #ifdef DEBUG
     CMD1(CCC_DumpObjects, "dump_all_objects");

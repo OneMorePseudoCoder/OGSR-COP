@@ -2,8 +2,7 @@
 
 #include "HUDInitializer.h"
 
-CHUDTransformHelper::CHUDTransformHelper(CBackend& cmd_list, const bool setup, const bool hud_zero_pos)
-    : m_cmd_list(cmd_list)
+CHUDTransformHelper::CHUDTransformHelper(CBackend& cmd_list, const bool setup, const bool hud_zero_pos) : m_cmd_list(cmd_list)
 {
     b_auto_setup = setup;
     b_hud_zero_pos = hud_zero_pos;

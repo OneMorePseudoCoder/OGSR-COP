@@ -12,9 +12,7 @@ void CDetailManager::SetupCBuffer(CBackend& cmd_list, const ref_pass& pass, bool
     cmd_list.set_c("m_taa_jitter_disable", shadows ? 1.f : 0.f);
     cmd_list.set_c("grass_align", ps_ssfx_terrain_grass_align);
 
-    cmd_list.set_c("benders_setup",
-                   Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
-                            ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
+    cmd_list.set_c("benders_setup", Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS))
     {
@@ -81,7 +79,8 @@ u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, cons
     D3D11_MAPPED_SUBRESOURCE pSubRes{};
     FloraVertData* c_storage{};
 
-    auto update_vertex_buffer = [&] {
+    auto update_vertex_buffer = [&] 
+    {
         sizeof_vbuffer = all_items_size;
         current_vbuffer = cmd_list.GetFloraVbuff(sizeof_vbuffer);
 
@@ -94,7 +93,8 @@ u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, cons
         cmd_list.set_Indices(object.DetailIb);
     };
 
-    auto render_call = [&] {
+    auto render_call = [&] 
+    {
         ZoneScopedN("render_call");
 
         if (c_storage)
@@ -106,7 +106,6 @@ u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, cons
         {
             dwBatchTotal += details_count;
 
-            //Msg("--Called rendering [%u] grass instances", details_count);
             cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, object.number_vertices, 0, object.number_indices / 3, details_count);
             cmd_list.stat.r.s_details.add(details_count);
 
@@ -137,7 +136,6 @@ u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, cons
 
                 if (!c_storage)
                 {
-                    //Msg("~~Called mapping buffer with size [%u]", sizeof_vbuffer);
                     R_CHK(HW.get_context(cmd_list.context_id)->Map(current_vbuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
                     c_storage = reinterpret_cast<FloraVertData*>(pSubRes.pData);
                 }
@@ -156,7 +154,6 @@ u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, cons
                         cmd_list.GetFloraVbuff(temp_buff_size);
                         if (temp_buff_size != sizeof_vbuffer)
                         {
-                            //Msg("--Updated buff from [%u] to [%u]", sizeof_vbuffer, temp_buff_size);
                             update_vertex_buffer();
                         }
                     }

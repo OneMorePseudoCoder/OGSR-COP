@@ -189,7 +189,8 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
     string4096 str;
     string4096 str2;
 
-    auto AddOrOverride = [&]() {
+    auto AddOrOverride = [&]() 
+    {
         auto I = DATA.find(Current->Name);
         if (I != DATA.end())
         {
@@ -420,7 +421,8 @@ bool CInifile::save_as(LPCSTR new_fname)
         struct
         {
             bool operator()(Sect* a, Sect* b) const { return a->Index < b->Index; }
-        } pred;
+        } 
+        pred;
 
         std::sort(sorted_List.begin(), sorted_List.end(), pred);
 
@@ -876,8 +878,6 @@ void CInifile::w_bool(LPCSTR S, LPCSTR L, bool V) { w_string(S, L, V ? "true" : 
 
 void CInifile::remove_line(LPCSTR S, LPCSTR L)
 {
-    // R_ASSERT(!bReadOnly);
-
     if (line_exist(S, L))
     {
         Sect& data = r_section(S);
@@ -894,8 +894,6 @@ void CInifile::remove_line(LPCSTR S, LPCSTR L)
 
 void CInifile::remove_section(LPCSTR S)
 {
-    // R_ASSERT(!bReadOnly);
-
     if (section_exist(S))
     {
         const auto I = DATA.find(S);

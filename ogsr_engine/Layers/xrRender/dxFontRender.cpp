@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "dxFontRender.h"
-
 #include "../../xr_3da/GameFont.h"
 
 dxFontRender::dxFontRender() {}
@@ -22,8 +21,6 @@ extern ENGINE_API Fvector2 g_current_font_scale;
 
 void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, float dX, float dY, u32 length, u32 last)
 {
-    // fill vertices
-
     // lock AGP memory
     u32 vOffset;
     FVF::TL* v = (FVF::TL*)RImplementation.Vertex.Lock(length * 4, pGeom.stride(), vOffset);

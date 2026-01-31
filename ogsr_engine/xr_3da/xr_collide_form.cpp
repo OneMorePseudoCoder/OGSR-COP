@@ -101,9 +101,6 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O, cftObject)
     // getVisData
     IRenderVisual* pVisual = O->Visual();
     ASSERT_FMT(pVisual, "pVisual is null! section [%s]", O->cNameSect().c_str());
-    // IKinematics* K	= PKinematics(pVisual); VERIFY(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
-    // IKinematics* K	= PKinematics(pVisual); VERIFY(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
-    // bv_box.set		(K->vis.box);
     bv_box.set(pVisual->getVisData().box);
     bv_box.getsphere(bv_sphere.P, bv_sphere.R);
     vis_mask.zero();
@@ -115,9 +112,6 @@ void CCF_Skeleton::BuildState()
 
     IRenderVisual* pVisual = owner->Visual();
     IKinematics* K = PKinematics(pVisual);
-
-    //K->CalculateBones_InvalidateSkeleton();
-    //K->CalculateBones(TRUE);
 
     const Fmatrix& L2W = owner->XFORM();
 
@@ -157,9 +151,6 @@ void CCF_Skeleton::BuildState()
         case SBoneShape::stBox: {
             const Fobb& B = shape.box;
             B.xform_get(ME);
-
-            // VERIFY( DET(ME)>EPS, ( make_string("0 scale bone matrix, %d \n", I->elem_id ) + dbg_object_full_dump_string( owner ) ).c_str()  );
-
             element.b_hsize.set(B.m_halfsize);
             // prepare matrix World to Element
             T.mul_43(Mbone, ME); // model space
@@ -285,7 +276,6 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
     temp.transform_tiny(dS, Q.start);
     temp.transform_dir(dD, Q.dir);
 
-    //
     if (!bv_sphere.intersect(dS, dD))
         return FALSE;
 

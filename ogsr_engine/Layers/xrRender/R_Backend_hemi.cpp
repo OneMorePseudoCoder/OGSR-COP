@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "r_backend_hemi.h"
 
 R_hemi::R_hemi(CBackend& cmd_list_in) : cmd_list(cmd_list_in) { unmap(); }

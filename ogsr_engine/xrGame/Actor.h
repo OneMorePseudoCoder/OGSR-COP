@@ -1,5 +1,4 @@
 #pragma once
-
 #include "..\xr_3da\feel_touch.h"
 #include "..\xr_3da\feel_sound.h"
 #include "..\xr_3da\iinputreceiver.h"
@@ -26,6 +25,7 @@ class CEncyclopediaRegistryWrapper;
 class CGameTaskRegistryWrapper;
 class CGameNewsRegistryWrapper;
 class CCharacterPhysicsSupport;
+
 // refs
 class ENGINE_API CCameraBase;
 class ENGINE_API CBoneInstance;
@@ -368,7 +368,6 @@ protected:
     CCameraBase* cameras[eacMaxCam];
     EActorCameras cam_active;
     float fPrevCamPos;
-    float current_ik_cam_shift;
     Fvector vPrevCamDir;
     float fCurAVelocity;
     CEffectorBobbing* pCamBobbing;

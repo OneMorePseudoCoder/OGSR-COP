@@ -1,11 +1,8 @@
 #include "stdafx.h"
-
 #include "../xrRender/uber_deffer.h"
-
 #include "blender_deffer_flat.h"
 #include "blender_deffer_model.h"
 #include "blender_deffer_aref.h"
-
 #include "../xrRender/blender_BmmD.h"
 #include "../xrRender/blender_screen_set.h"
 #include "../xrRender/blender_tree.h"

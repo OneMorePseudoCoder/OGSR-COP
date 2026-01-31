@@ -77,6 +77,4 @@ void FLOD::Copy(dxRender_Visual* pFrom)
 }
 
 void FLOD::Render(CBackend& cmd_list, float lod, bool use_fast_geo)
-{
-   
-}
+{}

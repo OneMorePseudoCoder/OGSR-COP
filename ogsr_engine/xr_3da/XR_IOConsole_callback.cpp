@@ -6,14 +6,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-//#include "igame_persistent.h"
 #include "XR_IOConsole.h"
-
 #include "line_editor.h"
 #include "xr_input.h"
 #include "xr_ioc_cmd.h"
-
 #include "Render.h"
 
 void CConsole::Register_callbacks()
@@ -50,9 +46,6 @@ void CConsole::Register_callbacks()
 void CConsole::Screenshot()
 {
 	Render->Screenshot();
-#pragma todo("Simp: ?")
-    //if (g_pGamePersistent)
-    //    g_pGamePersistent->m_pMainMenu->Screenshot();
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
@@ -215,5 +208,4 @@ void CConsole::Hide_cmd_esc()
 }
 
 void CConsole::GamePause()
-{
-}
+{}

@@ -6,7 +6,6 @@ class CRT : public xr_resource_named
 public:
     enum : u32 // extends xr_resource_flagged flags
     {
-        /*RF_REGISTERED = xr_resource_flagged::RF_REGISTERED,*/
         CreateUAV = 1 << 1, // Self descriptive. DX11-specific.
         CreateBase = 1 << 2,
     };

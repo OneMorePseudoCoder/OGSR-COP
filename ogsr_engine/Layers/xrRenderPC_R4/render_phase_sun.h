@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../xrRender/r_sun_cascades.h"
 #include "../xrRender/Light_DB.h"
 

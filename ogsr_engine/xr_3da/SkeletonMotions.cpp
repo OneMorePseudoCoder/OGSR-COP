@@ -1,8 +1,5 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
-
 #include "SkeletonMotions.h"
-//#include 	"SkeletonAnimated.h"
 #include "Fmesh.h"
 #include "motion.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -98,8 +95,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
         }
 
-        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![%s] Different bone count for [%s]! part_bone_cnt: [%u], bones->size(): [%u]", __FUNCTION__, N, part_bone_cnt,
-                       bones->size());
+        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![%s] Different bone count for [%s]! part_bone_cnt: [%u], bones->size(): [%u]", __FUNCTION__, N, part_bone_cnt, bones->size());
 
         if (bRes)
         {
@@ -115,8 +111,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             {
                 MP->r_stringZ(buf, sizeof(buf));
                 shared_str nm = _strlwr(buf);
-                R_ASSERT(MP->elapsed() >= static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
-                         "[%s] Something strange with file [%s]. This file broken!", __FUNCTION__, N);
+                R_ASSERT(MP->elapsed() >= static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)), "[%s] Something strange with file [%s]. This file broken!", __FUNCTION__, N);
                 u32 dwFlags = MP->r_u32();
                 CMotionDef& D = m_mdefs[mot_i];
                 D.Load(MP, dwFlags, vers);
@@ -181,13 +176,12 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             if (M.test_flag(flRKeyAbsent))
             {
                 CKeyQR* r = (CKeyQR*)MS->pointer();
-                //u32 crc_q = crc32(r, sizeof(CKeyQR));
                 M._keysR.create(1, r);
                 MS->advance(1 * sizeof(CKeyQR));
             }
             else
             {
-                /*u32 crc_q = */MS->r_u32();
+                MS->r_u32();
                 M._keysR.create(dwLen, (CKeyQR*)MS->pointer());
                 MS->advance(dwLen * sizeof(CKeyQR));
             }
@@ -214,7 +208,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             }
         }
     }
-    //	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);
+
     MS->close();
 
     return bRes;
@@ -233,9 +227,6 @@ motions_container::motions_container() {}
 
 motions_container::~motions_container()
 {
-    //	clean	(false);
-    //	clean	(true);
-    //	dump	();
     VERIFY(container.empty());
 }
 
@@ -261,6 +252,7 @@ motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* 
     }
     return result;
 }
+
 void motions_container::clean(bool force_destroy)
 {
     auto it = container.begin();
@@ -294,6 +286,7 @@ void motions_container::clean(bool force_destroy)
         }
     }
 }
+
 void motions_container::dump()
 {
     auto it = container.begin();
@@ -314,33 +307,21 @@ void motions_container::dump()
 void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
 {
     // params
-    bone_or_part = MP->r_u16(); // bCycle?part_id:bone_id;
-    motion = MP->r_u16(); // motion_id
+    bone_or_part = MP->r_u16();
+    motion = MP->r_u16();
     speed = MP->r_float();
     power = MP->r_float();
     accrue = MP->r_float();
     falloff = MP->r_float();
     flags = (u16)fl;
     constexpr float fQuantizerRangeExt = 1.5f; //Какое-то магическое число
-    /*//Dbg
-        Log("############################################################################");
-        constexpr auto Dequantize = [](u16 V) { return  float(V) / 655.35f; };
-        auto Quantize = [](float V) { s32 t = iFloor(V * 655.35f); clamp(t, 0, 65535); return u16(t); };
-        Msg("!![%s] speed: [%f], power: [%f], accrue: [%f], fallof: [%f]", __FUNCTION__, Dequantize(Quantize(speed)), Dequantize(Quantize(power)), fQuantizerRangeExt *
-       Dequantize(Quantize(accrue)), fQuantizerRangeExt * Dequantize(Quantize(falloff))); Msg("--[%s] speed: [%f], power: [%f], accrue: [%f], fallof: [%f]", __FUNCTION__, speed,
-       power, fQuantizerRangeExt * accrue, fQuantizerRangeExt * falloff); if (!(flags & esmFX) && (Quantize(falloff) >= Quantize(accrue))) Msg("!![%s] fallof set to [%f]",
-       __FUNCTION__, fQuantizerRangeExt * Dequantize(u16(Quantize(accrue) - 1)));
-    */
     if (!(flags & esmFX) && (falloff >= accrue))
     {
-        falloff = accrue /* - 0.003f*/; // KRodin: 0.003f наиболее приближённо к тому что было до этого. Разница в результате буквально в тысячных долях. При Quantize/Dequantize
-                                        // точность в любом случае терялась, так что это не сильно важно.
-        if (/*negative(falloff)*/ negative(accrue - 0.003f))
-            falloff = 100.f; //И вообще это были какие-то костыли от ПЫС. Если при вычитании falloff становился меньше нуля (при том что он был unsigned!!!), то после
-                             //Quantize/Dequantize всегда получалось 100.
-        // Msg("--[%s] fallof set to [%f]", __FUNCTION__, fQuantizerRangeExt * falloff);
+        falloff = accrue;
+        if (negative(accrue - 0.003f))
+            falloff = 100.f;
     }
-    // Log("############################################################################");
+
     accrue *= fQuantizerRangeExt;
     falloff *= fQuantizerRangeExt;
 

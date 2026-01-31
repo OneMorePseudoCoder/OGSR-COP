@@ -3,8 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "blender_Lm(EbB).h"
 
 //////////////////////////////////////////////////////////////////////
@@ -48,21 +46,16 @@ void CBlender_LmEbB::Load(IReader& fs, u16 version)
 void CBlender_LmEbB::SaveIni(CInifile* ini_file, LPCSTR section)
 {
     IBlenderXr::SaveIni(ini_file, section);
-
     ini_file->w_string(section, "detail_name", oT2_Name);
-
     WriteBool(ini_file, section, "alpha_blend", oBlend);
 }
 
 void CBlender_LmEbB::LoadIni(CInifile* ini_file, LPCSTR section)
 {
     IBlenderXr::LoadIni(ini_file, section);
-
     strcpy_s(oT2_Name, ini_file->r_string(section, "detail_name"));
-
     ReadBool(ini_file, section, "alpha_blend", oBlend);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // R3

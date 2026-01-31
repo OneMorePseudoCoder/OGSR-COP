@@ -36,11 +36,7 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
         // *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
         // *** thus can cope without stencil clear with 127 lights
         // *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-        //	Done in blender!
-        // cmd_list.set_ColorWriteEnable		(FALSE);
         cmd_list.set_Element(s_accum_mask->E[SE_MASK_SPOT]); // masker
-
-        // backfaces: if (stencil>=1 && zfail)			stencil = light_id
         cmd_list.set_CullMode(CULL_CW);
         cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
         draw_volume(cmd_list, L);
@@ -169,7 +165,6 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
         draw_volume(cmd_list, L);
     }
 
-    // dwLightMarkerID					+=	2;	// keep lowest bit always setted up
     increment_light_marker(cmd_list);
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_LENS_FLARE) && L->flags.bFlare)
@@ -178,7 +173,6 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
 
 void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
 {
-    // if (L->flags.type != IRender_Light::SPOT) return;
     if (!L->flags.bVolumetric || !(ps_ssfx_volumetric.x > 0))
         return;
 
@@ -205,12 +199,6 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
 
     cmd_list.set_ColorWriteEnable();
     cmd_list.set_CullMode(CULL_NONE); // back
-
-    // 2D texgens
-    /*Fmatrix m_Texgen;
-    u_compute_texgen_screen(cmd_list, m_Texgen);
-    Fmatrix m_Texgen_J;
-    u_compute_texgen_jitter(cmd_list, m_Texgen_J);*/
 
     // Shadow xform (+texture adjustment matrix)
     Fmatrix m_Shadow, m_Lmap;
@@ -285,28 +273,21 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
     //	Calculate camera space AABB
     //	Adjust AABB according to the adjusted distance for the light volume
     Fbox aabb;
-
-    // float	scaledRadius = L->spatial.sphere.R * (1+L->m_volumetric_distance)*0.5f;
     float scaledRadius = L->spatial.sphere.R * L->m_volumetric_distance;
     Fvector rr = Fvector().set(scaledRadius, scaledRadius, scaledRadius);
     Fvector pt = L->spatial.sphere.P;
     pt.sub(L->position);
     pt.mul(L->m_volumetric_distance);
     pt.add(L->position);
-    //	Don't adjust AABB
-    // float	scaledRadius = L->spatial.sphere.R;
-    // Fvector	rr = Fvector().set(scaledRadius,scaledRadius,scaledRadius);
-    // Fvector pt = L->spatial.sphere.P;
     Device.mView.transform(pt);
     aabb.setb(pt, rr);
 
     // Common constants
     float fQuality = L->m_volumetric_quality;
-    int iNumSlises = 24; // (int)(VOLUMETRIC_SLICES* fQuality);
+    int iNumSlises = 24;
     //			min 10 surfaces
     if (L->flags.type == IRender_Light::OMNIPART)
         iNumSlises = 8;
-    // iNumSlises = _max(1, iNumSlises);
     //	Adjust slice intensity
     fQuality = ((float)iNumSlises) / 24;
     Fvector L_clr, L_pos;
@@ -328,8 +309,6 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
         float att_factor = 1.f / (att_R * att_R);
         cmd_list.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
         cmd_list.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
-        //cmd_list.set_c("m_texgen", m_Texgen);
-        //cmd_list.set_c("m_texgen_J", m_Texgen_J);
         cmd_list.set_c("m_shadow", m_Shadow);
         cmd_list.set_ca("m_lmap", 0, m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
         cmd_list.set_ca("m_lmap", 1, m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
@@ -340,13 +319,10 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
         //	Set up user clip planes
         {
             constexpr const char* strFrustumClipPlane = "FrustumClipPlane";
-            //	TODO: DX10: Check if it's equivalent to the previouse code.
-            // cmd_list.set_ClipPlanes (TRUE,ClipFrustum.planes,ClipFrustum.p_count);
 
             //	Transform frustum to clip space
             Fmatrix PlaneTransform;
             PlaneTransform.transpose(Device.mInvFullTransform);
-            // HW.pDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0x3F);
 
             for (int i = 0; i < 6; ++i)
             {
@@ -355,7 +331,6 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
                 PlaneTransform.transform(TransformedPlane, ClipPlane);
                 TransformedPlane.mul(-1.0f);
                 cmd_list.set_ca(strFrustumClipPlane, i, TransformedPlane);
-                // HW.pDevice->SetClipPlane( i, &TransformedPlane.x);
             }
         }
 

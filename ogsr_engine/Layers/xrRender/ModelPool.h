@@ -60,7 +60,6 @@ private:
     dxRender_Visual* CreatePE(PS::CPEDef* source);
     dxRender_Visual* CreatePG(PS::CPGDef* source);
 
-
 public:
     CModelPool();
     virtual ~CModelPool();

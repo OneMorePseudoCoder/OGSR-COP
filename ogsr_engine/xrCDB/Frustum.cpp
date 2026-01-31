@@ -1,8 +1,6 @@
 #include "stdafx.h"
-
 #include "Frustum.h"
 
-//////////////////////////////////////////////////////////////////////
 void CFrustum::fplane::cache()
 {
     if (positive(n.x))
@@ -40,6 +38,7 @@ void CFrustum::fplane::cache()
         }
     }
 }
+
 void CFrustum::_add(Fplane& P)
 {
     VERIFY(p_count < FRUSTUM_MAXPLANES);
@@ -47,6 +46,7 @@ void CFrustum::_add(Fplane& P)
     planes[p_count].cache();
     p_count++;
 }
+
 void CFrustum::_add(Fvector& P1, Fvector& P2, Fvector& P3)
 {
     VERIFY(p_count < FRUSTUM_MAXPLANES);
@@ -61,10 +61,9 @@ void CFrustum::_add(Fvector& P1, Fvector& P2, Fvector& P3)
 #define Mx 3
 #define My 4
 #define Mz 5
-u32 frustum_aabb_remap[8][6] = {{Mx, My, Mz, mx, my, mz}, {Mx, My, mz, mx, my, Mz}, {Mx, my, Mz, mx, My, mz}, {Mx, my, mz, mx, My, Mz},
-                                {mx, My, Mz, Mx, my, mz}, {mx, My, mz, Mx, my, Mz}, {mx, my, Mz, Mx, My, mz}, {mx, my, mz, Mx, My, Mz}};
 
-//////////////////////////////////////////////////////////////////////
+u32 frustum_aabb_remap[8][6] = {{Mx, My, Mz, mx, my, mz}, {Mx, My, mz, mx, my, Mz}, {Mx, my, Mz, mx, My, mz}, {Mx, my, mz, mx, My, Mz}, {mx, My, Mz, Mx, my, mz}, {mx, My, mz, Mx, my, Mz}, {mx, my, Mz, Mx, My, mz}, {mx, my, mz, Mx, My, Mz}};
+
 EFC_Visible CFrustum::testSphere(const Fvector& c, float r, u32& test_mask) const
 {
     u32 bit = 1;
@@ -197,7 +196,6 @@ BOOL CFrustum::testPolyInside_dirty(Fvector* p, int count) const
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////
 void CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
 {
     VERIFY(count < FRUSTUM_MAXPLANES);
