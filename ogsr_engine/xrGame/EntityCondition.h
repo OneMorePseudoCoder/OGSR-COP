@@ -9,6 +9,87 @@ class CLevel;
 #include "Hit.h"
 #include "Level.h"
 
+enum EBoostParams 
+{
+    eBoostHpRestore = 0,
+    eBoostPowerRestore,
+    eBoostRadiationRestore,
+    eBoostBleedingRestore,
+    eBoostSatietyRestore,
+    eBoostThirstRestore,
+    eBoostPsyHealthRestore,
+    eBoostAlcoholRestore,
+    eBoostMaxWeight,
+    eBoostRadiationProtection,
+    eBoostTelepaticProtection,
+    eBoostChemicalBurnProtection,
+    eBoostBurnImmunity,
+    eBoostShockImmunity,
+    eBoostRadiationImmunity,
+    eBoostTelepaticImmunity,
+    eBoostChemicalBurnImmunity,
+    eBoostExplImmunity,
+    eBoostStrikeImmunity,
+    eBoostFireWoundImmunity,
+    eBoostWoundImmunity,
+    eBoostTimeFactor,
+    eBoostMaxCount,
+};
+
+static const LPCSTR ef_boosters_section_names[] =
+{
+    "boost_health_restore",
+    "boost_power_restore",
+    "boost_radiation_restore",
+    "boost_bleeding_restore",
+    "boost_satiety_restore",
+    "boost_thirst_restore",
+    "boost_psy_health_restore",
+    "boost_alcohol_restore",
+    "boost_max_weight",
+    "boost_radiation_protection",
+    "boost_telepat_protection",
+    "boost_chemburn_protection",
+    "boost_burn_immunity",
+    "boost_shock_immunity",
+    "boost_radiation_immunity",
+    "boost_telepat_immunity",
+    "boost_chemburn_immunity",
+    "boost_explosion_immunity",
+    "boost_strike_immunity",
+    "boost_fire_wound_immunity",
+    "boost_wound_immunity",
+    "boost_time_factor"
+};
+
+struct SBooster 
+{
+    float fBoostTime;
+    float fBoostValue;
+    EBoostParams m_type;
+    SBooster() :fBoostTime(-1.0f) {};
+    void Load(const shared_str& sect, EBoostParams type);
+};
+
+struct SMedicineInfluenceValues 
+{
+    float fHealth;
+    float fPower;
+    float fSatiety;
+    float fThirst;
+    float fRadiation;
+    float fPsyHealth;
+    float fWoundsHeal;
+    float fMaxPowerUp;
+    float fAlcohol;
+    float fTimeTotal;
+    float fTimeCurrent;
+
+    SMedicineInfluenceValues() :fTimeCurrent(-1.0f) {}
+    bool InProcess() { return fTimeCurrent > 0.0f; }
+    void Load(const shared_str& sect);
+};
+
 class CEntityCondition;
 class CEntityConditionSimple
 {
@@ -96,7 +177,13 @@ public:
     IC void SetCanBeHarmedState(bool CanBeHarmed) { m_bCanBeHarmed = CanBeHarmed; }
     IC bool CanBeHarmed() const { return m_bCanBeHarmed; };
 
+    virtual bool ApplyInfluence(const SMedicineInfluenceValues& V, const shared_str& sect);
+    virtual bool ApplyBooster(const SBooster& B, const shared_str& sect);
     void ClearWounds();
+
+    IC float GetBoostRadiationImmunity() const { return m_fBoostRadiationImmunity; };
+
+    typedef xr_map<EBoostParams, SBooster> BOOSTER_MAP;
 
 protected:
     void UpdateHealth();
@@ -167,6 +254,20 @@ protected:
     //потеря здоровья от последнего хита
     float m_fHealthLost;
 
+    float m_fBoostBurnImmunity;
+    float m_fBoostShockImmunity;
+    float m_fBoostRadiationImmunity;
+    float m_fBoostTelepaticImmunity;
+    float m_fBoostChemicalBurnImmunity;
+    float m_fBoostExplImmunity;
+    float m_fBoostStrikeImmunity;
+    float m_fBoostFireWoundImmunity;
+    float m_fBoostWoundImmunity;
+    float m_fBoostRadiationProtection;
+    float m_fBoostTelepaticProtection;
+    float m_fBoostChemicalBurnProtection;
+    float m_fBoostTimeFactor;
+
     //для отслеживания времени
     u64 m_iLastTimeCalled;
     float m_fDeltaTime{};
@@ -182,6 +283,8 @@ protected:
 
     bool m_bTimeValid;
     bool m_bCanBeHarmed;
+
+    BOOSTER_MAP	m_booster_influences;
 
 public:
     virtual void reinit();

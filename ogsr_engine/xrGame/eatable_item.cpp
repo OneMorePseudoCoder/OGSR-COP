@@ -89,17 +89,25 @@ void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 
 void CEatableItem::UseBy(CEntityAlive* entity_alive)
 {
+    SMedicineInfluenceValues V;
+    V.Load(m_physic_item->cNameSect());
+
     CInventoryOwner* IO = smart_cast<CInventoryOwner*>(entity_alive);
     R_ASSERT(IO);
     R_ASSERT(m_pCurrentInventory == IO->m_inventory);
     R_ASSERT(object().H_Parent()->ID() == entity_alive->ID());
-    entity_alive->conditions().ChangeHealth(m_fHealthInfluence);
-    entity_alive->conditions().ChangePower(m_fPowerInfluence);
-    entity_alive->conditions().ChangeSatiety(m_fSatietyInfluence);
-    entity_alive->conditions().ChangeRadiation(m_fRadiationInfluence);
-    entity_alive->conditions().ChangeBleeding(m_fWoundsHealPerc);
-    entity_alive->conditions().ChangePsyHealth(m_fPsyHealthInfluence);
-    entity_alive->conditions().ChangeThirst(m_fThirstInfluence);
+
+    entity_alive->conditions().ApplyInfluence(V, m_physic_item->cNameSect());
+
+    for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
+    {
+        if (pSettings->line_exist(m_physic_item->cNameSect().c_str(), ef_boosters_section_names[i]))
+        {
+            SBooster B;
+            B.Load(m_physic_item->cNameSect(), (EBoostParams)i);
+            entity_alive->conditions().ApplyBooster(B, m_physic_item->cNameSect());
+        }
+    }
 
     entity_alive->conditions().SetMaxPower(entity_alive->conditions().GetMaxPower() + m_fMaxPowerUpInfluence);
 
@@ -109,6 +117,7 @@ void CEatableItem::UseBy(CEntityAlive* entity_alive)
     else
         m_iPortionsNum = 0;
 }
+
 void CEatableItem::ZeroAllEffects()
 {
     m_fHealthInfluence = 0.f;
@@ -120,4 +129,5 @@ void CEatableItem::ZeroAllEffects()
     m_fWoundsHealPerc = 0.f;
     m_fThirstInfluence = 0.f;
 }
+
 void CEatableItem::SetRadiation(float _rad) { m_fRadiationInfluence = _rad; }
