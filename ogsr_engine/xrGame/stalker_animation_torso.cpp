@@ -84,7 +84,8 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
     case ObjectHandlerSpace::eWorldOperatorAimingReady1:
     case ObjectHandlerSpace::eWorldOperatorAimingReady2:
     case ObjectHandlerSpace::eWorldOperatorQueueWait1:
-    case ObjectHandlerSpace::eWorldOperatorQueueWait2: {
+    case ObjectHandlerSpace::eWorldOperatorQueueWait2: 
+    {
         if (standing())
             return (animation[6].A[0]);
 
@@ -154,7 +155,8 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
     case CWeapon::eHiding: return (torso().select(animation[3].A));
     case CWeapon::eHidden: return (no_object_animation(body_state));
     case CWeapon::eFire:
-    case CWeapon::eFire2: {
+    case CWeapon::eFire2:
+    {
         CAI_Stalker& stalker = object();
         CStalkerMovementManager& movement = stalker.movement();
         if (standing())
@@ -163,9 +165,9 @@ MotionID CStalkerAnimationManager::weapon_animation(u32 slot, const EBodyState& 
         if (eMovementTypeWalk == movement.movement_type())
         {
             if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
-                return (animation[13 + m_looking_back - 1].A[1 /**1/**/]);
+                return (animation[13 + m_looking_back - 1].A[1]);
             else
-                return (animation[1].A[0 /**2/**/]);
+                return (animation[1].A[0]);
         }
 
         if ((body_state == eBodyStateStand) && (slot == 2) && need_look_back())
@@ -183,9 +185,6 @@ MotionID CStalkerAnimationManager::missile_animation(u32 slot, const EBodyState&
 {
     VERIFY(m_missile);
 
-    if (body_state == eBodyStateCrouch)
-        slot = 0;
-
     const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[slot].A;
 
     switch (m_missile->GetState())
@@ -195,11 +194,26 @@ MotionID CStalkerAnimationManager::missile_animation(u32 slot, const EBodyState&
     case CMissile::eThrowStart: return (animation[1].A[0]);
     case CMissile::eReady: return (animation[1].A[1]);
     case CMissile::eThrow: return (animation[1].A[2]);
-    case CMissile::eThrowEnd: return (animation[1].A[2]);
-    case CMissile::eBore: return (animation[1].A[2]);
+    case CMissile::eThrowEnd: return (animation[6].A[0]);
+    case CMissile::eBore:
     case CMissile::eIdle:
-    case CMissile::eHidden:
-    default: return (torso().select(animation[6].A));
+    case CMissile::eHidden: return (animation[6].A[0]);
+    default: 
+    {
+        CAI_Stalker &stalker = object();
+        CStalkerMovementManager	&movement = stalker.movement();
+        if (standing()) 
+        {
+            return (animation[6].A[0]);
+        }
+
+        if (eMovementTypeWalk == movement.movement_type()) 
+        {
+            return (animation[6].A[2]);
+        }
+
+        return (animation[6].A[3]);
+    }
     }
 }
 

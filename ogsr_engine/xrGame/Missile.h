@@ -83,7 +83,6 @@ protected:
     CMissile* m_fake_missile;
 
     //параметры броска
-
     float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
     
     bool m_constpower;
@@ -126,5 +125,6 @@ protected:
 public:
     virtual u32 ef_weapon_type() const;
     IC u32 destroy_time() const { return m_dwDestroyTime; };
+    IC int time_from_begin_throw() const { return (Device.dwTimeGlobal + m_dwDestroyTimeMax - m_dwDestroyTime); };
     static void ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 };

@@ -27,7 +27,6 @@
 // breakpoints
 #include "../xr_3da/xr_input.h"
 
-//
 #include "Actor.h"
 #include "actor_anim_defs.h"
 #include "HudItem.h"
@@ -137,6 +136,9 @@ CActor::CActor() : CEntityAlive()
 
     m_pPhysicsShell = NULL;
 
+    m_fFeelGrenadeRadius = 10.0f;
+    m_fFeelGrenadeTime = 1.0f;
+
     m_holder = NULL;
     m_holderID = u16(-1);
 
@@ -200,7 +202,7 @@ CActor::~CActor()
 #ifdef DEBUG
     Device.seqRender.Remove(this);
 #endif
-    // xr_delete(Weapons);
+
     for (int i = 0; i < eacMaxCam; ++i)
         xr_delete(cameras[i]);
 
@@ -343,10 +345,14 @@ void CActor::Load(LPCSTR section)
 
     m_fPickupInfoRadius = pSettings->r_float(section, "pickup_info_radius");
 
+    m_fFeelGrenadeRadius = pSettings->r_float(section, "feel_grenade_radius");
+    m_fFeelGrenadeTime = pSettings->r_float(section, "feel_grenade_time");
+    m_fFeelGrenadeTime *= 1000.0f;
+
     character_physics_support()->in_Load(section);
 
     //загрузить параметры эффектора
-    //	LoadShootingEffector	("shooting_effector");
+    //	LoadShootingEffector("shooting_effector");
     LoadSleepEffector("sleep_effector");
 
     //загрузить параметры смещения firepoint
@@ -395,7 +401,6 @@ void CActor::Load(LPCSTR section)
     LPCSTR default_outfit = READ_IF_EXISTS(pSettings, r_string, section, "default_outfit", 0);
     SetDefaultVisualOutfit(default_outfit);
 
-    //-----------------------------------------
     if (pSettings->line_exist(section, "lookout_angle"))
     {
         m_fLookoutAngle = pSettings->r_float(section, "lookout_angle");
@@ -440,6 +445,7 @@ void CActor::Hit(SHit* pHDS)
 #endif // DEBUG
 
     callback(GameObject::entity_alive_before_hit)(&HDS);
+
     if (HDS.ignore_flag)
         return;
 
@@ -518,7 +524,7 @@ void CActor::Hit(SHit* pHDS)
 void CActor::HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector position_in_bone_space, float impulse, ALife::EHitType hit_type)
 {
     // hit marker
-    if ((hit_type == ALife::eHitTypeFireWound || hit_type == ALife::eHitTypeWound_2) && g_Alive() && Local() && /*(this!=who) && */ (Level().CurrentEntity() == this))
+    if ((hit_type == ALife::eHitTypeFireWound || hit_type == ALife::eHitTypeWound_2) && g_Alive() && Local() && Level().CurrentEntity() == this)
     {
         HUD().Hit(0, P, dir);
 
@@ -584,8 +590,7 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
     if (g_Alive())
     {
         // stop-motion
-        if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
-            character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
+        if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround || character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
         {
             Fvector zeroV;
             zeroV.set(0, 0, 0);
@@ -651,6 +656,7 @@ void CActor::Die(CObject* who)
     {
         cam_Set(eacFreeLook);
     }
+
     mstate_wishful &= ~mcAnyMove;
     mstate_real &= ~mcAnyMove;
 
@@ -722,7 +728,6 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
                 HDS.whoID = di->DamageInitiator()->ID();
                 HDS.weaponID = di->DamageInitiator()->ID();
                 HDS.Write_Packet(l_P);
-
                 u_EventSend(l_P);
             }
         }
@@ -882,6 +887,7 @@ void CActor::UpdateCL()
     }
     else
         grass_shader_data.pos[0].set(0.f, 0.f, 0.f, -1.f);
+
     grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
 
     if (m_pending_car)
@@ -989,6 +995,7 @@ void CActor::shedule_Update(u32 DT)
         Center(C);
         R = Radius();
         feel_touch_update(C, R);
+        Feel_Grenade_Update(m_fFeelGrenadeRadius);
 
         // Dropping
         if (b_DropActivated)
@@ -1002,7 +1009,6 @@ void CActor::shedule_Update(u32 DT)
         }
 
         {
-            //-----------------------------------------------------
             mstate_wishful &= ~mcAccel;
             mstate_wishful &= ~mcLStrafe;
             mstate_wishful &= ~mcRStrafe;
@@ -1013,7 +1019,6 @@ void CActor::shedule_Update(u32 DT)
             extern bool g_bAutoClearCrouch;
             if (g_bAutoClearCrouch)
                 mstate_wishful &= ~mcCrouch;
-            //-----------------------------------------------------
         }
     }
     else if (!m_holder)
@@ -1703,9 +1708,7 @@ bool CActor::is_actor_running()
 
 bool CActor::is_actor_sprinting()
 {
-    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcAccel | mcClimb) ? false :
-        (mstate_real & (mcFwd | mcLStrafe | mcRStrafe) && mstate_real & mcSprint)                              ? true :
-                                                                                                                 false;
+    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcAccel | mcClimb) ? false : (mstate_real & (mcFwd | mcLStrafe | mcRStrafe) && mstate_real & mcSprint) ? true : false;
 }
 
 bool CActor::is_actor_crouching()

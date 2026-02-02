@@ -37,6 +37,8 @@
 #include "Torch.h"
 #include "customoutfit.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "agent_manager.h"
+#include "agent_member_manager.h"
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
@@ -949,6 +951,78 @@ bool CScriptGameObject::movement_enabled()
     }
 
     return (monster->movement().enabled());
+}
+
+bool CScriptGameObject::can_throw_grenades() const
+{
+    CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+    if (!stalker)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member can_throw_grenades!");
+        return (false);
+    }
+
+    return (stalker->can_throw_grenades());
+}
+
+void CScriptGameObject::can_throw_grenades(bool can_throw_grenades)
+{
+    CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+    if (!stalker)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member can_throw_grenades!");
+        return;
+    }
+
+    stalker->can_throw_grenades(can_throw_grenades);
+}
+
+u32 CScriptGameObject::throw_time_interval() const
+{
+    CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+    if (!stalker)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member throw_time_interval!");
+        return (0);
+    }
+
+    return (stalker->throw_time_interval());
+}
+
+void CScriptGameObject::throw_time_interval(u32 throw_time_interval)
+{
+    CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+    if (!stalker)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member throw_time_interval!");
+        return;
+    }
+
+    stalker->throw_time_interval(throw_time_interval);
+}
+
+u32 CScriptGameObject::group_throw_time_interval() const
+{
+    CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+    if (!stalker)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member group_throw_time_interval!");
+        return (0);
+    }
+
+    return (stalker->agent_manager().member().throw_time_interval());
+}
+
+void CScriptGameObject::group_throw_time_interval(u32 throw_time_interval)
+{
+    CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+    if (!stalker)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member group_throw_time_interval!");
+        return;
+    }
+
+    stalker->agent_manager().member().throw_time_interval(throw_time_interval);
 }
 
 /************************************************** added by Ray Twitty (aka Shadows) START **************************************************/

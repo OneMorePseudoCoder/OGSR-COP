@@ -24,9 +24,7 @@ class CPropertyEvaluator;
 template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, typename _condition_evaluator_ptr>
 class CActionPlanner;
 
-typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*,
-                       CPropertyEvaluator<CScriptGameObject>*>
-    script_planner;
+typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*, CPropertyEvaluator<CScriptGameObject>*> script_planner;
 #endif
 
 namespace MonsterSpace
@@ -206,13 +204,11 @@ public:
     virtual bool useful(const CEnemyManager* manager, const CEntityAlive* object) const;
 
     // PDA && Dialogs
-    //	virtual void						ReceivePdaMessage					(u16 who, EPdaMsg msg, shared_str info_id);
     virtual void UpdateAvailableDialogs(CPhraseDialogManager* partner);
 
     // scripts
     virtual CWeapon* GetCurrentWeapon() const;
     virtual u32 GetWeaponAmmo() const;
-    //	virtual CInventoryItem				*GetCurrentEquipment	() const; <- moved to InventoryOwner::GetCurrentOutfit
     virtual CInventoryItem* GetMedikit() const;
     virtual CInventoryItem* GetFood() const;
     virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
@@ -323,7 +319,7 @@ protected:
     void choose_food();
     void choose_weapon(ALife::EWeaponPriorityType weapon_priority_type);
     void choose_medikit();
-    // void						choose_detector					();
+    // void choose_detector();
     void choose_equipment();
 
     void select_items();

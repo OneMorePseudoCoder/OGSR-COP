@@ -141,13 +141,11 @@ public:
     // information receive & dialogs
     virtual bool OnReceiveInfo(shared_str info_id) const;
     virtual void OnDisableInfo(shared_str info_id) const;
-    //	virtual void ReceivePdaMessage	(u16 who, EPdaMsg msg, shared_str info_id);
 
     virtual void NewPdaContact(CInventoryOwner*);
     virtual void LostPdaContact(CInventoryOwner*);
 
 protected:
-    //	virtual void AddMapLocationsFromInfo (const CInfoPortion* info_portion) const;
     virtual void AddEncyclopediaArticle(const CInfoPortion*, bool = false) const;
     virtual void AddGameTask(const CInfoPortion* info_portion) const;
 
@@ -210,6 +208,8 @@ public:
     virtual void HitSignal(float P, Fvector& vLocalDir, CObject* who, s16 element);
     void HitSector(CObject* who, CObject* weapon);
     void HitMark(float P, Fvector dir, CObject* who, s16 element, Fvector position_in_bone_space, float impulse, ALife::EHitType hit_type);
+
+    void Feel_Grenade_Update(float rad);
 
     virtual float GetMass();
     virtual float GetCarryWeight() const;
@@ -414,6 +414,9 @@ protected:
 
     //режим подбирания предметов
     bool m_bPickupMode;
+    //расстояние (в метрах) на котором актер чувствует гранату (любую)
+    float m_fFeelGrenadeRadius;
+    float m_fFeelGrenadeTime; //время гранаты (сек) после которого актер чувствует гранату
     //расстояние подсветки предметов
     float m_fPickupInfoRadius;
 
@@ -553,7 +556,7 @@ public:
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Export(CSE_Abstract* E);
     virtual void net_Destroy();
-    virtual BOOL net_Relevant(); //	{ return getSVU() | getLocal(); };		// relevant for export to server
+    virtual BOOL net_Relevant();
     virtual void net_Relcase(CObject* O); //
     virtual void on_requested_spawn(CObject* object);
     // object serialization
@@ -568,8 +571,6 @@ protected:
     ////////////////////////////////////////////////////////////////////////////
     virtual bool can_validate_position_on_spawn() { return false; }
 
-    //---------------------------------------------
-    //	bool					m_bHasUpdate;
     /// spline coeff /////////////////////
     float SCoeff[3][4]; //коэффициэнты для сплайна Бизье
     float HCoeff[3][4]; //коэффициэнты для сплайна Эрмита
@@ -593,7 +594,6 @@ public:
     void ForceTransform(const Fmatrix& m) override;
     void ForceTransformAndDirection(const Fmatrix& m) override;
 
-    //	virtual void			UpdatePosStack	( u32 Time0, u32 Time1 );
     virtual void MoveActor(Fvector NewPos, Fvector NewDir);
 
     virtual void spawn_supplies();

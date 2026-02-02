@@ -15,7 +15,6 @@
 #include "Level.h"
 
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
-// AAAAAA
 
 void CActor::feel_touch_new(CObject* O) {}
 
@@ -127,7 +126,7 @@ void CActor::PickupModeUpdate()
         return;
 
     //. ????? GetNearest ?????
-    feel_touch_update(Position(), /*inventory().GetTakeDist()*/ m_fPickupInfoRadius);
+    feel_touch_update(Position(), m_fPickupInfoRadius);
 
     CFrustum frustum;
     frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
@@ -153,11 +152,7 @@ void CActor::PickupModeUpdate_COD()
     }
 
     //подбирание объекта
-    if (inventory().m_pTarget 
-        && inventory().m_pTarget->Useful() 
-        && m_pUsableObject 
-        && m_pUsableObject->nonscript_usable() &&
-        !Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)))
+    if (inventory().m_pTarget && inventory().m_pTarget->Useful() && m_pUsableObject && m_pUsableObject->nonscript_usable() && !Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)))
     {
         CInventoryItem* pNearestItem = inventory().m_pTarget;
         if (m_bPickupMode)
@@ -295,8 +290,6 @@ void CActor::PickupInfoDraw(CObject* object)
     LPCSTR draw_str = NULL;
 
     CInventoryItem* item = smart_cast<CInventoryItem*>(object);
-    //.	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(object);
-    //.	VERIFY(item || inventory_owner);
     if (!item)
         return;
 
@@ -305,13 +298,14 @@ void CActor::PickupInfoDraw(CObject* object)
     Fvector4 v_res;
     Fvector shift;
 
-    draw_str = item->Name /*Complex*/ ();
+    draw_str = item->Name();
     shift.set(0, 0, 0);
 
     res.transform(v_res, shift);
 
     if (v_res.z < 0 || v_res.w < 0)
         return;
+
     if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y > 1.f)
         return;
 
@@ -327,4 +321,42 @@ void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data
 {
     if (who == this)
         m_snd_noise = _max(m_snd_noise, power);
+}
+
+void CActor::Feel_Grenade_Update(float rad)
+{
+    // Find all nearest objects
+    Fvector pos_actor;
+    Center(pos_actor);
+
+    q_nearest.clear();
+    g_pGameLevel->ObjectSpace.GetNearest(q_nearest, pos_actor, rad, NULL);
+
+    xr_vector<CObject*>::iterator it_b = q_nearest.begin();
+    xr_vector<CObject*>::iterator it_e = q_nearest.end();
+
+    // select only grenade
+    for (; it_b != it_e; ++it_b)
+    {
+        if ((*it_b)->getDestroy()) // Don't touch candidates for destroy
+            continue;
+
+        CGrenade* grn = smart_cast<CGrenade*>(*it_b);
+        if (!grn || grn->Initiator() == ID() || grn->Useful())
+        {
+            continue;
+        }
+        if (grn->time_from_begin_throw() < m_fFeelGrenadeTime)
+        {
+            continue;
+        }
+        if (HUD().AddGrenade_ForMark(grn))
+        {
+#ifdef DEBUG
+            Msg("Add new grenade! id = %d ", grn->ID());
+#endif
+        }
+    }
+
+    HUD().Update_GrenadeView(pos_actor);
 }

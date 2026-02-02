@@ -38,6 +38,7 @@ enum EStalkerSounds
     eStalkerSoundKillWounded,
     eStalkerSoundEnemyCriticallyWounded,
     eStalkerSoundEnemyKilledOrWounded,
+    eStalkerSoundThrowGrenade,
 
     eStalkerSoundScript,
     eStalkerSoundDummy = u32(-1),

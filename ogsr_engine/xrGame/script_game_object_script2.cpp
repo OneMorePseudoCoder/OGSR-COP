@@ -125,8 +125,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 
         .def("set_patrol_extrapolate_callback", (void(CScriptGameObject::*)())(&CScriptGameObject::set_patrol_extrapolate_callback))
         .def("set_patrol_extrapolate_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&))(&CScriptGameObject::set_patrol_extrapolate_callback))
-        .def("set_patrol_extrapolate_callback",
-             (void(CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(&CScriptGameObject::set_patrol_extrapolate_callback))
+        .def("set_patrol_extrapolate_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&, const luabind::object&))(&CScriptGameObject::set_patrol_extrapolate_callback))
 
         .def("set_enemy_callback", (void(CScriptGameObject::*)())(&CScriptGameObject::set_enemy_callback))
         .def("set_enemy_callback", (void(CScriptGameObject::*)(const luabind::functor<bool>&))(&CScriptGameObject::set_enemy_callback))
@@ -277,6 +276,12 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 #ifdef DEBUG
         .def("debug_planner", &CScriptGameObject::debug_planner)
 #endif // DEBUG
-        .def("invulnerable", (bool(CScriptGameObject::*)() const) & CScriptGameObject::invulnerable)
-        .def("invulnerable", (void(CScriptGameObject::*)(bool)) & CScriptGameObject::invulnerable);
+        .def("invulnerable", (bool(CScriptGameObject::*)() const) &CScriptGameObject::invulnerable)
+        .def("invulnerable", (void(CScriptGameObject::*)(bool)) &CScriptGameObject::invulnerable)
+		
+        .def("can_throw_grenades", (bool(CScriptGameObject::*)() const) &CScriptGameObject::can_throw_grenades)
+        .def("can_throw_grenades", (void(CScriptGameObject::*)(bool)) &CScriptGameObject::can_throw_grenades)
+
+        .def("group_throw_time_interval", (u32(CScriptGameObject::*)() const) &CScriptGameObject::group_throw_time_interval)
+        .def("group_throw_time_interval", (void(CScriptGameObject::*)(u32)) &CScriptGameObject::group_throw_time_interval);
 }

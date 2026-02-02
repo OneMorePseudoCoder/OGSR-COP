@@ -14,6 +14,7 @@
 #include "DamageSource.h"
 #include "wallmark_manager.h"
 #include "ParticlesObject.h"
+
 class IRender_Light;
 DEFINE_VECTOR(CPhysicsShellHolder*, BLASTED_OBJECTS_V, BLASTED_OBJECTS_I);
 class CExplosive : public IDamageSource
@@ -42,7 +43,7 @@ public:
 
     static float ExplosionEffect(collide::rq_results& storage, CExplosive* exp_obj, CPhysicsShellHolder* blasted_obj, const Fvector& expl_centre, const float expl_radius);
 
-    virtual void OnEvent(NET_Packet& P, u16 type); //{inherited::OnEvent( P, type);}
+    virtual void OnEvent(NET_Packet& P, u16 type);
     virtual void OnAfterExplosion();
     virtual void OnBeforeExplosion();
     virtual void SetCurrentParentID(u16 parent_id) { m_iCurrentParentID = parent_id; }
@@ -67,6 +68,7 @@ public:
     virtual bool Useful() const;
     bool IsExploded() { return !!m_explosion_flags.test(flExploded); }
     bool IsReadyToExplode() { return !!m_explosion_flags.test(flReadyToExplode); };
+    bool IsExploding() { return !!m_explosion_flags.test(flExploding); }
 
 protected:
     bool IsSoundPlaying() { return !!sndExplode._feedback(); }
@@ -86,7 +88,6 @@ protected:
     // ID персонажа который иницировал действие
     u16 m_iCurrentParentID;
 
-    // bool						m_bReadyToExplode;
     Fvector m_vExplodePos;
     Fvector m_vExplodeSize;
     Fvector m_vExplodeDir;
@@ -132,10 +133,7 @@ protected:
     BOOL m_bHideInExplosion;
     bool m_bAlreadyHidden;
     virtual void HideExplosive();
-    // bool						m_bExploding;
-    // bool						m_bExplodeEventSent;
 
-    //////////////////////////////////////////////
     //для разлета осколков
     float m_fFragmentSpeed;
 
@@ -165,12 +163,9 @@ protected:
     // эффектор
     struct
     {
-        /*		float 					time;
-                float 					amplitude;
-                float 					period_number;
-                shared_str				file_name;*/
         shared_str effect_sect_name;
-    } effector;
+    } 
+    effector;
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
@@ -178,7 +173,7 @@ add_to_type_list(CExplosive)
 #undef script_type_list
 #define script_type_list save_type_list(CExplosive)
 
-    IC void random_point_in_object_box(Fvector& out_pos, CObject* obj)
+IC void random_point_in_object_box(Fvector& out_pos, CObject* obj)
 {
     const Fbox& l_b1 = obj->BoundingBox();
     Fvector l_c, l_d;

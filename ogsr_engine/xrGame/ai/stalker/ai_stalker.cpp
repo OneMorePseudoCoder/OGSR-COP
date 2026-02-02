@@ -171,7 +171,6 @@ void CAI_Stalker::reinit()
 
     {
         m_critical_wound_weights.clear();
-        //		LPCSTR							weights = pSettings->r_string(cNameSect(),"critical_wound_weights");
         LPCSTR weights = SpecificCharacter().critical_wound_weights();
         string16 temp;
         for (int i = 0, n = _GetItemCount(weights); i < n; ++i)
@@ -212,21 +211,20 @@ void CAI_Stalker::LoadSounds(LPCSTR section)
     sound().add_deferred(pSettings->r_string(section, "sound_kill_wounded"), 100, SOUND_TYPE_MONSTER_TALKING, 5, u32(eStalkerSoundMaskKillWounded), eStalkerSoundKillWounded, head_bone_name, xr_new<CStalkerSoundData>(this));
     sound().add_deferred(pSettings->r_string(section, "sound_enemy_critically_wounded"), 100, SOUND_TYPE_MONSTER_TALKING, 4, u32(eStalkerSoundMaskEnemyCriticallyWounded), eStalkerSoundEnemyCriticallyWounded, head_bone_name, xr_new<CStalkerSoundData>(this));
     sound().add_deferred(pSettings->r_string(section, "sound_enemy_killed_or_wounded"), 100, SOUND_TYPE_MONSTER_TALKING, 4, u32(eStalkerSoundMaskEnemyKilledOrWounded), eStalkerSoundEnemyKilledOrWounded, head_bone_name, xr_new<CStalkerSoundData>(this));
+    sound().add_deferred(pSettings->r_string(section, "sound_throw_grenade"), 100, SOUND_TYPE_MONSTER_TALKING, 5, u32(eStalkerSoundMaskKillWounded), eStalkerSoundThrowGrenade, head_bone_name, xr_new<CStalkerSoundData>(this));
 }
 
 void CAI_Stalker::reload(LPCSTR section)
 {
-	if ( Ready() )
-	  brain().setup( this );
+    if (Ready())
+        brain().setup(this);
 
     CCustomMonster::reload(section);
+
     if (!already_dead())
         CStepManager::reload(section);
 
-    //	if (!already_dead())
     CObjectHandler::reload(section);
-
-    //	inventory().m_slots[OUTFIT_SLOT].m_bUsable = false;
 
     if (!already_dead())
         sight().reload(section);
@@ -273,8 +271,6 @@ void CAI_Stalker::Die(CObject* who)
 
     sound().clear_playing_sounds();
 
-    //sound().set_sound_mask((u32)eStalkerSoundMaskDie);
-
     if (is_special_killer(who))
         sound().play(eStalkerSoundDieInAnomaly);
     else if (!m_headshot)
@@ -286,32 +282,6 @@ void CAI_Stalker::Die(CObject* who)
 
     //запретить использование слотов в инвенторе
     inventory().SetSlotsUseful(false);
-
-#pragma todo("KD: Поскольку весь лут непися пока обрабатывается в скриптах, в этом месте отключено удаление лута")
-#if 0
-	if (inventory().GetActiveSlot() >= inventory().m_slots.size())
-		return;
-
-	CInventoryItem					*active_item = inventory().m_slots[inventory().GetActiveSlot()].m_pIItem;
-	if (!active_item)
-		return;
-
-	CWeapon							*weapon = smart_cast<CWeapon*>(active_item);
-	if (!weapon)
-		return;
-	{
-		TIItemContainer::iterator	I = inventory().m_all.begin();
-		TIItemContainer::iterator	E = inventory().m_all.end();
-		for ( ; I != E; ++I) {
-			if (std::find(weapon->m_ammoTypes.begin(),weapon->m_ammoTypes.end(),(*I)->object().cNameSect()) == weapon->m_ammoTypes.end())
-				continue;
-
-			NET_Packet				packet;
-			u_EventGen				(packet,GE_DESTROY,(*I)->object().ID());
-			u_EventSend				(packet);
-		}
-	}
-#endif
 }
 
 void CAI_Stalker::Load(LPCSTR section)
@@ -325,6 +295,7 @@ void CAI_Stalker::Load(LPCSTR section)
     m_pPhysics_support->in_Load(section);
 
     m_can_select_items = !!pSettings->r_bool(section, "can_select_items");
+    m_can_throw_grenades = !!READ_IF_EXISTS(pSettings, r_bool, section, "can_throw_grenades", TRUE);
 }
 
 BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
@@ -350,8 +321,7 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
     if (ai().game_graph().valid_vertex_id(tpHuman->m_tNextGraphID) && movement().restrictions().accessible(ai().game_graph().vertex(tpHuman->m_tNextGraphID)->level_point()))
         movement().set_game_dest_vertex(tpHuman->m_tNextGraphID);
 
-    R_ASSERT2(ai().get_game_graph() && ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)),
-              "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
+    R_ASSERT2(ai().get_game_graph() && ai().get_level_graph() && ai().get_cross_table() && (ai().level_graph().level_id() != u32(-1)), "There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!");
 
     setEnabled(TRUE);
 
@@ -495,35 +465,7 @@ void CAI_Stalker::update_object_handler()
     if (!g_Alive())
         return;
 
-    /*try
-    {
-        try
-        {*/
-            CObjectHandler::update();
-        /*}
-#ifndef LUABIND_NO_EXCEPTIONS
-        catch (luabind::cast_failed& message)
-        {
-            Msg("! Expression \"%s\" from luabind::object to %s", message.what(), message.info()->name());
-            throw;
-        }
-#endif
-        catch (std::exception& message)
-        {
-            Msg("! Expression \"%s\"", message.what());
-            throw;
-        }
-        catch (...)
-        {
-            throw;
-        }
-    }
-    catch (...)
-    {
-        Msg("!![CAI_Stalker::update_object_handler] Error in function CObjectHandler::update()");
-        CObjectHandler::set_goal(eObjectActionIdle);
-        CObjectHandler::update();
-    }*/
+    CObjectHandler::update();
 }
 
 void CAI_Stalker::create_anim_mov_ctrl(CBlend* b)
@@ -690,9 +632,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
     CEntityAlive::shedule_Update(DT); // https://github.com/OpenXRay/xray-16/commit/30add3fdf05472faaa954f1c18783783fb5dc5bb
     STOP_PROFILE
 
-    if (Remote())
-    {}
-    else
+    if (!Remote())
     {
         // here is monster AI call
         VERIFY(_valid(Position()));
@@ -750,12 +690,6 @@ void CAI_Stalker::shedule_Update(u32 DT)
     UpdateInventoryOwner(DT);
     STOP_PROFILE
 
-    //#ifdef DEBUG
-    //	if (psAI_Flags.test(aiALife)) {
-    //		smart_cast<CSE_ALifeHumanStalker*>(ai().alife().objects().object(ID()))->check_inventory_consistency();
-    //	}
-    //#endif
-
     START_PROFILE("stalker/schedule_update/physics")
     VERIFY(_valid(Position()));
     m_pPhysics_support->in_shedule_Update(DT);
@@ -786,62 +720,14 @@ void CAI_Stalker::Think()
     u32 update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
 
     START_PROFILE("stalker/schedule_update/think/brain")
-    //	try {
-    //		try {
     brain().update(update_delta);
-//		}
-#ifndef LUABIND_NO_EXCEPTIONS
-//		catch (luabind::cast_failed &message) {
-//			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-//			throw;
-//		}
-#endif
-//		catch (std::exception &message) {
-//			Msg						("! Expression \"%s\"",message.what());
-//			throw;
-//		}
-//		catch (...) {
-//			Msg						("! unknown exception occured");
-//			throw;
-//		}
-//	}
-//	catch(...) {
-#ifdef DEBUG
-//		Msg						("! Last action being executed : %s",brain().current_action().m_action_name);
-#endif
-    //		brain().setup			(this);
-    //		brain().update			(update_delta);
-    //	}
     STOP_PROFILE
 
     START_PROFILE("stalker/schedule_update/think/movement")
     if (!g_Alive())
         return;
 
-    //	try {
     movement().update(update_delta);
-//	}
-#if 0 // ndef LUABIND_NO_EXCEPTIONS
-	catch (luabind::cast_failed &message) {
-		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (std::exception &message) {
-		Msg						("! Expression \"%s\"",message.what());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (...) {
-		Msg						("! unknown exception occured");
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-#endif // DEBUG
-
     STOP_PROFILE
     STOP_PROFILE
 }

@@ -46,10 +46,6 @@
 #include "../../stalker_animation_names.h"
 #include "../../agent_corpse_manager.h"
 #include "../../CharacterPhysicsSupport.h"
-#include "../../stalker_planner.h"
-#include "../../stalker_decision_space.h"
-#include "../../script_game_object.h"
-#include "../../inventory.h"
 #include "../../game_object_space.h"
 #include "../../holder_custom.h"
 
@@ -101,7 +97,6 @@ float CAI_Stalker::GetWeaponAccuracy() const
 
 void CAI_Stalker::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
 {
-    //.	VERIFY				(inventory().ActiveItem());
     if (!inventory().ActiveItem())
     {
 #ifdef DEBUG
@@ -140,50 +135,11 @@ void CAI_Stalker::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const
         return;
     }
 
-    /* dsh:
-    switch (movement().body_state())
-    {
-    case eBodyStateStand: {
-        if (movement().movement_type() == eMovementTypeStand)
-        {
-            P = eye_matrix.c;
-            D = eye_matrix.k;
-            if (weapon_shot_effector().IsActive())
-                D = weapon_shot_effector_direction(D);
-            VERIFY(!fis_zero(D.square_magnitude()));
-        }
-        else
-        {
-            D.setHP(-movement().m_head.current.yaw, -movement().m_head.current.pitch);
-            if (weapon_shot_effector().IsActive())
-                D = weapon_shot_effector_direction(D);
-            Center(P);
-            P.mad(D, .5f);
-            P.y += .50f;
-            //				P		= weapon->get_LastFP();
-            //				D		= weapon->get_LastFD();
-            VERIFY(!fis_zero(D.square_magnitude()));
-        }
-        return;
-    }
-    case eBodyStateCrouch: {
-        P = eye_matrix.c;
-        D = eye_matrix.k;
-        if (weapon_shot_effector().IsActive())
-            D = weapon_shot_effector_direction(D);
-        VERIFY(!fis_zero(D.square_magnitude()));
-        return;
-    }
-    default: NODEFAULT;
-    }
-    */
-
 #ifdef DEBUG
     P = weapon->get_LastFP();
     D = weapon->get_LastFD();
     VERIFY(!fis_zero(D.square_magnitude()));
 #else
-
     P = eye_matrix.c;
     D = eye_matrix.k;
     if (weapon_shot_effector().IsActive())
@@ -209,8 +165,6 @@ void CAI_Stalker::Hit(SHit* pHDS)
 {
     if (invulnerable())
         return;
-
-    //	pHDS->power						*= .1f;
 
     SHit HDS = *pHDS;
     callback(GameObject::entity_alive_before_hit)(&HDS);
@@ -281,8 +235,6 @@ void CAI_Stalker::Hit(SHit* pHDS)
                     pHDS->_dump();
                 }
 #endif
-                //				int						fx_index = iFloor(tpKinematics->LL_GetBoneInstance(pHDS->bone()).get_param(1) + (angle_difference(movement().m_body.current.yaw,-yaw) <=
-                //PI_DIV_2 ? 0 : 1)); 				if (fx_index != -1) 					animation().play_fx	(power_factor,fx_index);
             }
             else
             {
@@ -338,8 +290,6 @@ void CAI_Stalker::OnItemDrop(CInventoryItem* inventory_item)
 
     if (!critically_wounded())
         return;
-
-    //	VERIFY						(inventory().ActiveItem());
 
     if (inventory().ActiveItem() && (inventory().ActiveItem() != inventory_item))
         return;
@@ -514,8 +464,7 @@ bool CAI_Stalker::remember_ammo()
 
 bool CAI_Stalker::ready_to_kill()
 {
-    return (m_best_item_to_kill && inventory().ActiveItem() && (inventory().ActiveItem()->object().ID() == m_best_item_to_kill->object().ID()) &&
-            m_best_item_to_kill->ready_to_kill());
+    return (m_best_item_to_kill && inventory().ActiveItem() && (inventory().ActiveItem()->object().ID() == m_best_item_to_kill->object().ID()) && m_best_item_to_kill->ready_to_kill());
 }
 
 bool CAI_Stalker::ready_to_detour()
@@ -557,11 +506,6 @@ IC BOOL ray_query_callback(collide::rq_result& result, LPVOID params)
     ray_query_param* param = (ray_query_param*)params;
     float power = param->m_holder->feel_vision_mtl_transp(result.O, result.element);
     param->m_power *= power;
-
-    //	if (power >= .05f) {
-    //		param->m_pick_distance			= result.range;
-    //		return							(true);
-    //	}
 
     if (!result.O)
     {
@@ -910,7 +854,6 @@ void CAI_Stalker::throw_target(const Fvector& position, u32 const vertex_id, COb
 
 static void throw_position(Fvector& result, const Fvector& start_position, const Fvector& velocity, const Fvector& gravity, const float& time)
 {
-    // result = start_position + velocity*t + gravity*t^2/2
     result.mad(start_position, velocity, time).mad(gravity, _sqr(time) * .5f);
 }
 
@@ -1074,45 +1017,56 @@ void CAI_Stalker::update_throw_params()
     m_computed_object_position = Position();
     m_computed_object_direction = Direction();
 
-#if 0
-	m_throw_position		= eye_matrix.c;
-#else
     m_throw_position = Position();
-    m_throw_position.y += 2.f;
-#endif
 
-    /*
-        static float const distances[] = {
-            30.f, 40.f, 50.f, 60.f
-        };
-        VERIFY					(g_SingleGameDifficulty < sizeof(distances)/sizeof(distances[0]));
-        float const max_distance= distances[g_SingleGameDifficulty];
-    */
+    CMissile* const pMissile = dynamic_cast<CMissile*>(inventory().ActiveItem());
+    if (pMissile)
+    {
+        static const LPCSTR third_person_offset_id = "third_person_throw_point_offset";
+
+        if (!pSettings->line_exist(pMissile->cNameSect(), third_person_offset_id))
+        {
+            m_throw_position.y += 2.f;
+
+            if (pMissile)
+            {
+                Fvector offset;
+                XFORM().transform_dir(offset, pMissile->throw_point_offset());
+                m_throw_position.add(offset);
+            }
+        }
+        else
+            m_throw_position.add(pSettings->r_fvector3(pMissile->cNameSect(), third_person_offset_id));
+    }
+    
+    static float const distances[] = { 30.f, 40.f, 50.f, 60.f };
+    VERIFY(g_SingleGameDifficulty < sizeof(distances) / sizeof(distances[0]));
+    float const max_distance = distances[g_SingleGameDifficulty];
 
     // computing velocity with minimum magnitude
     m_throw_velocity.sub(m_throw_target_position, m_throw_position);
-    /*
-        if (m_throw_velocity.magnitude() > max_distance) {
-            m_throw_enabled		= false;
+    
+    if (m_throw_velocity.magnitude() > max_distance) 
+    {
+        m_throw_enabled	= false;
 
-    #ifdef DEBUG
-            m_throw_picks.clear	();
-    #endif // DEBUG
-            return;
-        }
-    */
+#ifdef DEBUG
+        m_throw_picks.clear();
+#endif // DEBUG
+        return;
+    }
 
     float time = ThrowMinVelTime(m_throw_velocity, ph_world->Gravity());
     TransferenceToThrowVel(m_throw_velocity, time, ph_world->Gravity());
 
     check_throw_trajectory(time);
 
-    // m_throw_velocity.mul(::Random.randF(.99f,1.01f));
+    m_throw_velocity.mul(::Random.randF(.99f, 1.01f));
 }
 
 void CAI_Stalker::on_throw_completed()
 {
-    // agent_manager().member().on_throw_completed	();
+    agent_manager().member().on_throw_completed();
     m_last_throw_time = Device.dwTimeGlobal;
 }
 
@@ -1154,7 +1108,6 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
     if (!agent_manager().member().registered_in_combat(this))
         return (false);
 
-    //	Msg								("%6d executing critical hit",Device.dwTimeGlobal);
     animation().global().make_inactual();
     return (true);
 }
@@ -1162,14 +1115,12 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
 void CAI_Stalker::remove_critical_hit()
 {
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, false);
-
     animation().global().remove_callback(fastdelegate::MakeDelegate(this, &CAI_Stalker::remove_critical_hit));
 }
 
 void CAI_Stalker::critical_wounded_state_start()
 {
     brain().CStalkerPlanner::m_storage.set_property(StalkerDecisionSpace::eWorldPropertyCriticallyWounded, true);
-
     animation().global().add_callback(fastdelegate::MakeDelegate(this, &CAI_Stalker::remove_critical_hit));
 }
 
@@ -1196,7 +1147,9 @@ bool CAI_Stalker::can_cry_enemy_is_wounded() const
     case StalkerDecisionSpace::eWorldOperatorDetourEnemy:
     case StalkerDecisionSpace::eWorldOperatorSearchEnemy:
     case StalkerDecisionSpace::eWorldOperatorKillEnemyIfNotVisible:
-    case StalkerDecisionSpace::eWorldOperatorKillEnemyIfCriticallyWounded: return (true);
+    case StalkerDecisionSpace::eWorldOperatorKillEnemyIfCriticallyWounded:
+    case StalkerDecisionSpace::eWorldOperatorThrowGrenade:
+        return (true);
     case StalkerDecisionSpace::eWorldOperatorGetItemToKill:
     case StalkerDecisionSpace::eWorldOperatorRetreatFromEnemy:
     case StalkerDecisionSpace::eWorldOperatorPostCombatWait:
@@ -1204,7 +1157,8 @@ bool CAI_Stalker::can_cry_enemy_is_wounded() const
     case StalkerDecisionSpace::eWorldOperatorSuddenAttack:
     case StalkerDecisionSpace::eWorldOperatorKillEnemyIfPlayerOnThePath:
     case StalkerDecisionSpace::eWorldOperatorKillWoundedEnemy:
-    case StalkerDecisionSpace::eWorldOperatorCriticallyWounded: return (false);
+    case StalkerDecisionSpace::eWorldOperatorCriticallyWounded: 
+        return (false);
     default: NODEFAULT;
     }
 #ifdef DEBUG

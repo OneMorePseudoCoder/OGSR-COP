@@ -4,6 +4,7 @@
 
 class CUIStaticItem;
 class CLAItem;
+class CGrenade;
 
 struct SHitMark
 {
@@ -19,13 +20,35 @@ struct SHitMark
     void Draw(float dir);
 };
 
+struct SGrenadeMark
+{
+    CGrenade* p_grenade;
+    bool removed_grenade;
+
+    CUIStaticItem* m_UIStaticItem;
+    float m_LastTime;
+    float m_Angle;
+    CLAItem* m_LightAnim;
+
+    SGrenadeMark(const ui_shader& sh, CGrenade* grn);
+    ~SGrenadeMark();
+
+    bool IsActive() const;
+    void Draw(float cam_dir);
+    void Update(float angle);
+};
+
 class CHitMarker
 {
 public:
     FactoryPtr<IUIShader> hShader2;
+    FactoryPtr<IUIShader> hShader_Grenade;
 
     typedef xr_deque<SHitMark*> HITMARKS;
+    typedef xr_deque<SGrenadeMark*> GRENADEMARKS;
+
     HITMARKS m_HitMarks;
+    GRENADEMARKS m_GrenadeMarks;
 
 public:
     CHitMarker();
@@ -33,5 +56,11 @@ public:
 
     void Render();
     void Hit(int id, const Fvector& dir);
+    virtual bool AddGrenade_ForMark(CGrenade* grn);
+    virtual void Update_GrenadeView(Fvector& pos_actor);
+
     void InitShader(LPCSTR tex_name);
+    void InitShader_Grenade(LPCSTR tex_name);
+
+    virtual void net_Relcase(CObject* obj);
 };

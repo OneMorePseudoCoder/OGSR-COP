@@ -29,11 +29,6 @@ u32 CAI_Stalker::GetWeaponAmmo() const
     return (GetCurrentWeapon()->GetAmmoCurrent(true));
 }
 
-// CInventoryItem *CAI_Stalker::GetCurrentEquipment() const
-//{
-//     return inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-// }
-
 CInventoryItem* CAI_Stalker::GetMedikit() const
 {
 #pragma todo("Dima to Dima : Return correct medikit")
@@ -78,8 +73,6 @@ bool CAI_Stalker::bfAssignWatch(CScriptEntityAction* tpEntityAction)
         return (false);
 
     CScriptWatchAction& l_tWatchAction = tpEntityAction->m_tWatchAction;
-
-    //	float			&yaw = movement().m_head.target.yaw, &pitch = movement().m_head.target.pitch;
 
     switch (l_tWatchAction.m_tGoalType)
     {
@@ -322,9 +315,6 @@ bool CAI_Stalker::bfAssignAnimation(CScriptEntityAction* tpEntityAction)
 
     if (xr_strlen(tpEntityAction->m_tAnimationAction.m_caAnimationToPlay))
     {
-#ifdef DEBUG
-//		Msg				("%6d Assigning animation : %s",Device.dwTimeGlobal,*tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
         animation().torso().reset();
         animation().legs().reset();
     }

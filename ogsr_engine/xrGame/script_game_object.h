@@ -121,9 +121,7 @@ class CPropertyEvaluator;
 template <typename _object_type, bool _reverse_search, typename _world_operator, typename _condition_evaluator, typename _world_operator_ptr, typename _condition_evaluator_ptr>
 class CActionPlanner;
 
-typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*,
-                       CPropertyEvaluator<CScriptGameObject>*>
-    script_planner;
+typedef CActionPlanner<CScriptGameObject, false, CActionBase<CScriptGameObject>, CPropertyEvaluator<CScriptGameObject>, CActionBase<CScriptGameObject>*, CPropertyEvaluator<CScriptGameObject>*> script_planner;
 #endif
 
 class CScriptGameObject;
@@ -217,7 +215,6 @@ public:
     bool IsRelationEnemy(CScriptGameObject*);
 
     // CScriptEntity
-
     _DECLARE_FUNCTION12(SetScriptControl, void, bool, LPCSTR);
     _DECLARE_FUNCTION10(GetScriptControl, bool);
     _DECLARE_FUNCTION10(GetScriptControlName, LPCSTR);
@@ -513,8 +510,7 @@ public:
     int active_sound_count();
     int active_sound_count(bool only_playing);
     const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
-    const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_enemy_distance, float max_enemy_distance,
-                                  const luabind::functor<bool>&);
+    const CCoverPoint* best_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_enemy_distance, float max_enemy_distance, const luabind::functor<bool>&);
     const CCoverPoint* safe_cover(const Fvector& position, float radius, float min_distance);
     const CCoverPoint* safe_cover(const Fvector& position, float radius, float min_distance, const luabind::functor<bool>&);
     const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_distance);
@@ -524,7 +520,6 @@ public:
     CInifile* spawn_ini() const;
     bool active_zone_contact(u16 id);
 
-    ///
     void add_restrictions(LPCSTR out, LPCSTR in);
     void remove_restrictions(LPCSTR out, LPCSTR in);
     void remove_all_restrictions();
@@ -619,6 +614,15 @@ public:
 
     void enable_movement(bool enable);
     bool movement_enabled();
+
+    bool can_throw_grenades() const;
+    void can_throw_grenades(bool can_throw_grenades);
+
+    u32 throw_time_interval() const;
+    void throw_time_interval(u32 throw_time_interval);
+
+    u32 group_throw_time_interval() const;
+    void group_throw_time_interval(u32 throw_time_interval);
 
     bool critically_wounded();
 
@@ -833,7 +837,7 @@ add_to_type_list(CScriptGameObject)
 #undef script_type_list
 #define script_type_list save_type_list(CScriptGameObject)
 
-    extern void sell_condition(CInifile* ini_file, LPCSTR section);
+extern void sell_condition(CInifile* ini_file, LPCSTR section);
 extern void sell_condition(float friend_factor, float enemy_factor);
 extern void buy_condition(CInifile* ini_file, LPCSTR section);
 extern void buy_condition(float friend_factor, float enemy_factor);

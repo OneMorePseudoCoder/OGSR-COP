@@ -14,6 +14,8 @@
 #include "agent_memory_manager.h"
 #include "explosive.h"
 #include "sound_player.h"
+#include "cover_point.h"
+#include "Grenade.h"
 
 class CMemberPredicate2
 {
@@ -34,8 +36,7 @@ void CAgentMemberManager::add(CEntity* member)
     if (!stalker || !stalker->g_Alive())
         return;
 
-    ASSERT_FMT(sizeof(squad_mask_type) * 8 > members().size(), "[%s]: too many stalkers in group [team:%u][squad:%u][group:%u]!", __FUNCTION__,
-               m_members.front()->object().g_Team(), m_members.front()->object().g_Squad(), m_members.front()->object().g_Group());
+    ASSERT_FMT(sizeof(squad_mask_type) * 8 > members().size(), "[%s]: too many stalkers in group [team:%u][squad:%u][group:%u]!", __FUNCTION__, m_members.front()->object().g_Team(), m_members.front()->object().g_Squad(), m_members.front()->object().g_Group());
 
     VERIFY(std::find_if(m_members.begin(), m_members.end(), CMemberPredicate(stalker)) == m_members.end());
     m_members.push_back(xr_new<CMemberOrder>(stalker));
@@ -88,19 +89,6 @@ void CAgentMemberManager::remove_links(CObject* object)
 
 void CAgentMemberManager::register_in_combat(const CAI_Stalker* object)
 {
-    //	if (!object->group_behaviour())
-    //		return;
-
-#if 0 // def DEBUG
-	Msg							(
-		"%6d registering stalker %s in combat: 0x%08x -> 0x%08x",
-		Device.dwTimeGlobal,
-		*object->cName(),
-		m_combat_mask,
-		m_combat_mask | mask(object)
-	);
-#endif // DEBUG
-
     squad_mask_type m = mask(object);
     m_actuality = m_actuality && ((m_combat_mask | m) == m_combat_mask);
     m_combat_mask |= m;
@@ -108,21 +96,6 @@ void CAgentMemberManager::register_in_combat(const CAI_Stalker* object)
 
 void CAgentMemberManager::unregister_in_combat(const CAI_Stalker* object)
 {
-    //	if (!object->group_behaviour()) {
-    //		VERIFY					(!registered_in_combat(object));
-    //		return;
-    //	}
-
-#if 0 // def DEBUG
-	Msg							(
-		"%6d UNregistering stalker %s in combat: 0x%08x -> 0x%08x",
-		Device.dwTimeGlobal,
-		*object->cName(),
-		m_combat_mask,
-		(m_combat_mask & (squad_mask_type(-1) ^ mask(object)))
-	);
-#endif // DEBUG
-
     squad_mask_type m = mask(object);
     m_actuality = m_actuality && ((m_combat_mask & (squad_mask_type(-1) ^ m)) == m_combat_mask);
     m_combat_mask &= squad_mask_type(-1) ^ m;
@@ -223,3 +196,30 @@ CMemberOrder* CAgentMemberManager::get_member(const ALife::_OBJECT_ID& object_id
 
     return (&**I);
 }
+
+bool CAgentMemberManager::can_throw_grenade(const Fvector& location) const
+{
+    if (Device.dwTimeGlobal <= m_last_throw_time + m_throw_time_interval)
+        return (false);
+
+    typedef CAgentMemberManager::MEMBER_STORAGE MEMBER_STORAGE;
+    const float member_danger_radius_sqr = _sqr(5.f);
+    const float cover_danger_radius_sqr = _sqr(5.f);
+    MEMBER_STORAGE::const_iterator I = members().begin();
+    MEMBER_STORAGE::const_iterator E = members().end();
+    for (; I != E; ++I)
+    {
+        if ((*I)->object().Position().distance_to_sqr(location) <= member_danger_radius_sqr)
+            return (false);
+
+        if (!(*I)->cover())
+            continue;
+
+        if ((*I)->cover()->m_position.distance_to_sqr(location) <= cover_danger_radius_sqr)
+            return (false);
+    }
+
+    return (true);
+}
+
+void CAgentMemberManager::on_throw_completed() { m_last_throw_time = Device.dwTimeGlobal; }

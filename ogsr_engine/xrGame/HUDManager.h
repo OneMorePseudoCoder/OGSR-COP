@@ -88,6 +88,9 @@ public:
 
     virtual void net_Relcase(CObject* object);
 
+    bool AddGrenade_ForMark(CGrenade* grn);
+    void Update_GrenadeView(Fvector& pos_actor);
+
     CHUDTarget* GetTarget() const { return m_pHUDTarget; }
 
 private:

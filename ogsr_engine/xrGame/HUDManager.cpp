@@ -10,6 +10,7 @@
 #include "torch.h"
 #include "weapon.h"
 #include "ui/UIMessagesWindow.h"
+#include "ui/UIMainInGameWnd.h"
 
 CFontManager::CFontManager()
 {
@@ -314,7 +315,6 @@ void CHUDManager::RenderUI()
 
     Font().Render();
 
-
     if (Device.Paused() && bShowPauseString)
     {
         CGameFont* pFont = Font().pFontGraffiti50Russian;
@@ -342,7 +342,6 @@ void CHUDManager::Hit(int idx, float power, const Fvector& dir) { HitMarker.Hit(
 
 void CHUDManager::SetHitmarkType(LPCSTR tex_name) { HitMarker.InitShader(tex_name); }
 
-#include "ui\UIMainInGameWnd.h"
 void CHUDManager::OnScreenRatioChanged()
 {
     xr_delete(pUI->UIMainIngameWnd);
@@ -376,6 +375,7 @@ void CHUDManager::OnConnected()
 
 void CHUDManager::net_Relcase(CObject* object)
 {
+    HitMarker.net_Relcase(object);
     VERIFY(m_pHUDTarget);
     m_pHUDTarget->net_Relcase(object);
 }
@@ -390,3 +390,7 @@ bool CHUDManager::RenderActiveItemUIQuery()
 }
 
 void CHUDManager::RenderActiveItemUI() { g_player_hud->render_item_ui(); }
+
+bool CHUDManager::AddGrenade_ForMark(CGrenade* grn) { return HitMarker.AddGrenade_ForMark(grn); }
+
+void CHUDManager::Update_GrenadeView(Fvector& pos_actor) { HitMarker.Update_GrenadeView(pos_actor); }
