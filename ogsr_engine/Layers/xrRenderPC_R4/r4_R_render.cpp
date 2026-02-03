@@ -402,8 +402,6 @@ void CRender::Render()
         r_main.wait_dynamic();
 
         dsgraph.r_dsgraph_render_graph_dynamic(0);
-
-        Target->phase_scene_end(cmd_list);
     }
 
     // wait light export
@@ -455,7 +453,6 @@ void CRender::Render()
             }
             dsgraph.r_dsgraph_render_hud_scope_depth();
         }
-        Target->phase_scene_end(cmd_list);
     }
 
     {
@@ -550,6 +547,9 @@ void CRender::Render()
         Target->phase_accumulator(cmd_list); // init accum here
         render_lights(LP_normal_copy);
     }
+
+    // Volumetric Blur
+    Target->phase_volumetric_blur(cmd_list);
 
     // Postprocess
     {

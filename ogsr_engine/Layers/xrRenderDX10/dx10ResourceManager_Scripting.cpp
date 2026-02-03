@@ -203,6 +203,11 @@ class adopt_stencil_op
 public:
 };
 
+class adopt_adress
+{
+public:
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "../../xr_3da/ai_script_space.h"
 
@@ -551,7 +556,14 @@ void CResourceManager::LS_Load()
                         value("decrsat", int(D3DSTENCILOP_DECRSAT)), 
                         value("invert", int(D3DSTENCILOP_INVERT)),
                         value("incr", int(D3DSTENCILOP_INCR)), 
-                        value("decr", int(D3DSTENCILOP_DECR))]];
+                        value("decr", int(D3DSTENCILOP_DECR))],
+    
+                 class_<adopt_adress>("adress").enum_("adress")[
+                        value("wrap", int(D3DTADDRESS_WRAP)), 
+                        value("mirror", int(D3DTADDRESS_MIRROR)), 
+                        value("clamp", int(D3DTADDRESS_CLAMP)),
+                        value("border", int(D3DTADDRESS_BORDER)), 
+                        value("mirroronce", int(D3DTADDRESS_MIRRORONCE))]];
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open(fsgame::game_shaders, RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);

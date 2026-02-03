@@ -279,6 +279,7 @@ public:
     IC void set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
 
     IC void set_CullMode(u32 _mode);
+
     IC void set_FillMode(u32 _mode);
 
     IC void set_Scissor(Irect* rect = nullptr);

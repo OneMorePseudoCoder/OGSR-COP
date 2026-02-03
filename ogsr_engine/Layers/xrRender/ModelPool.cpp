@@ -655,7 +655,6 @@ dxRender_Visual* CModelPool::CreateParticles(LPCSTR name, BOOL bNoPool)
 
 dxRender_Visual* CModelPool::CreateParticleEffect(LPCSTR name)
 {
-    // disabled polling for direct effects
     ZoneScoped;
 
     string_path low_name;

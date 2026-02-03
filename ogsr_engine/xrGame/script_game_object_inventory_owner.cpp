@@ -39,6 +39,7 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
+#include "encyclopedia_article.h"
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
@@ -129,6 +130,15 @@ xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
     else
         return xrTime(0);
 }
+
+LPCSTR CScriptGameObject::GetArticleText(LPCSTR article_id)
+{
+    CEncyclopediaArticle A;
+    A.Load(article_id);
+
+    return A.data()->text.c_str();
+}
+
 
 bool CScriptGameObject::IsTalking()
 {

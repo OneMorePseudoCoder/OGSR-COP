@@ -36,7 +36,6 @@ CROS_impl::CROS_impl()
         hemi_cube[i] = hemi_cube_smooth[i] = 0;
     }
 
-
     last_position.set(0.0f, 0.0f, 0.0f);
     ticks_to_update = 0;
     sky_rays_uptodate = 0;
@@ -115,10 +114,7 @@ void CROS_impl::update(IRenderable* O)
     if (!dwFrame.compare_exchange_strong(expected_frame, Device.dwFrame) || expected_frame == Device.dwFrame)
         return;
 
-    // clip & verify
-    if (nullptr == O)
-        return;
-    if (nullptr == O->renderable.visual)
+    if (!O || !O->renderable.visual)
         return;
 
     VERIFY(smart_cast<CROS_impl*>(O->renderable_ROS()));
