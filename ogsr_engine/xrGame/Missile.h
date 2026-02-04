@@ -127,6 +127,7 @@ public:
     virtual bool g_ThrowPointParams(Fvector& FirePos, Fvector& FireDir);
 
 public:
+    Fvector const& throw_point_offset() const { return m_vThrowPoint; }
     virtual void activate_physic_shell();
     virtual void setup_physic_shell();
     virtual void create_physic_shell();
