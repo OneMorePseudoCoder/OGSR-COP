@@ -35,15 +35,12 @@ CAI_Trader::~CAI_Trader()
 
 void CAI_Trader::Load(LPCSTR section)
 {
-    //	setEnabled						(FALSE);
     inherited::Load(section);
 
-    // fHealth							= pSettings->r_float	(section,"Health");
     SetfHealth(pSettings->r_float(section, "Health"));
 
     float max_weight = pSettings->r_float(section, "max_item_mass");
     inventory().SetMaxWeight(max_weight * 1000);
-    //	inventory().SetMaxRuck(1000000);
     inventory().CalcTotalWeight();
 }
 
@@ -85,14 +82,19 @@ bool CAI_Trader::bfAssignSound(CScriptEntityAction* tpEntityAction)
 void CAI_Trader::BoneCallback(CBoneInstance* B)
 {
     CAI_Trader* this_class = static_cast<CAI_Trader*>(B->callback_param());
-
     this_class->LookAtActor(B);
 }
 
 void CAI_Trader::LookAtActor(CBoneInstance* B)
 {
     Fvector dir;
-    dir.sub(Level().CurrentEntity()->Position(), Position());
+    Fvector actor_pos = Level().CurrentEntity()->Position();
+    Fvector this_pos = Position();
+
+    if (actor_pos.distance_to(this_pos) > 20.f)
+        return;
+
+    dir.sub(actor_pos, this_pos);
 
     float yaw, pitch;
     dir.getHP(yaw, pitch);
@@ -101,6 +103,7 @@ void CAI_Trader::LookAtActor(CBoneInstance* B)
     XFORM().getHPB(h, p, b);
     float cur_yaw = h;
     float dy = _abs(angle_normalize_signed(yaw - cur_yaw));
+    clamp(dy, 0.f, 1.f);
 
     if (angle_normalize_signed(yaw - cur_yaw) > 0)
         dy *= -1.f;
@@ -131,11 +134,11 @@ BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
     set_money(l_tpTrader->m_dwMoney, false);
 
     // Установка callback на кости
-    // CBoneInstance			*bone_head =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-    // bone_head->set_callback	(bctCustom,BoneCallback,this);
+    CBoneInstance *bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
+    bone_head->set_callback(bctCustom, BoneCallback, this);
 
     shedule.t_min = 100;
-    shedule.t_max = 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
+    shedule.t_max = 2500;
 
     return (TRUE);
 }
@@ -172,7 +175,8 @@ void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
         break;
     case GE_TRADE_SELL:
     case GE_OWNERSHIP_REJECT:
-    case GE_TRANSFER_REJECT: {
+    case GE_TRANSFER_REJECT: 
+    {
         P.r_u16(id);
         Obj = Level().Objects.net_Find(id);
 
@@ -297,8 +301,6 @@ void CAI_Trader::OnStopTrade()
     callback(GameObject::eTradeStop)();
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-
 bool CAI_Trader::can_attach(const CInventoryItem* inventory_item) const { return (false); }
 
 bool CAI_Trader::use_bolts() const { return (false); }
@@ -314,6 +316,7 @@ void CAI_Trader::save(NET_Packet& output_packet)
     inherited::save(output_packet);
     CInventoryOwner::save(output_packet);
 }
+
 void CAI_Trader::load(IReader& input_packet)
 {
     inherited::load(input_packet);

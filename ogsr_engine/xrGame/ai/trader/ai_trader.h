@@ -69,12 +69,10 @@ public:
 
     virtual BOOL UsedAI_Locations();
 
-    ///////////////////////////////////////////////////////////////////////
     virtual u16 PHGetSyncItemsNumber() { return inherited ::PHGetSyncItemsNumber(); }
     virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited ::PHGetSyncItem(item); }
     virtual void PHUnFreeze() { return inherited ::PHUnFreeze(); }
     virtual void PHFreeze() { return inherited ::PHFreeze(); }
-    ///////////////////////////////////////////////////////////////////////
 
     virtual void reinit();
     virtual void reload(LPCSTR section);
@@ -111,6 +109,7 @@ public:
     virtual bool natural_weapon() const { return false; }
     virtual bool natural_detector() const { return false; }
     virtual bool AllowItemToTrade(CInventoryItem const* item, EItemPlace place) const;
+    virtual bool CanPutInSlot(PIItem item, u32 slot) { return (slot == PDA_SLOT); }
 
     void dialog_sound_start(LPCSTR phrase);
     void dialog_sound_stop();
