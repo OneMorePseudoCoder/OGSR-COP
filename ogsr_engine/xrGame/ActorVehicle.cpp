@@ -31,6 +31,9 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
     if (m_holder)
         return;
+
+    StopAnyMove();
+
     PickupModeOff();
     m_holder = vehicle;
 
@@ -42,6 +45,7 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
         m_holder = NULL;
         return;
     }
+
     // temp play animation
     CCar* car = smart_cast<CCar*>(m_holder);
     u16 anim_type = car->DriverAnimationType();
@@ -67,21 +71,26 @@ void CActor::detach_Vehicle()
 {
     if (!m_holder)
         return;
+
     CCar* car = smart_cast<CCar*>(m_holder);
     if (!car)
         return;
+
     CPHShellSplitterHolder* sh = car->PPhysicsShell()->SplitterHolder();
     if (sh)
         sh->Deactivate();
+
     if (!character_physics_support()->movement()->ActivateBoxDynamic(0))
     {
         if (sh)
             sh->Activate();
         return;
     }
+
     if (sh)
         sh->Activate();
-    m_holder->detach_Actor(); //
+
+    m_holder->detach_Actor();
 
     character_physics_support()->movement()->SetPosition(m_holder->ExitPosition());
     character_physics_support()->movement()->SetVelocity(m_holder->ExitVelocity());
@@ -97,7 +106,6 @@ void CActor::detach_Vehicle()
     V->PlayCycle(m_anims->m_normal.m_torso_idle);
     m_holderID = u16(-1);
 
-    //.	SetWeaponHideState(whs_CAR, FALSE);
     SetWeaponHideState(INV_STATE_CAR, false);
 
     this->callback(GameObject::eDetachVehicle)(car->lua_game_object());
@@ -105,7 +113,6 @@ void CActor::detach_Vehicle()
 
 bool CActor::use_Vehicle(CHolderCustom* object)
 {
-    //	CHolderCustom* vehicle=smart_cast<CHolderCustom*>(object);
     CHolderCustom* vehicle = object;
     Fvector center;
     Center(center);
@@ -150,10 +157,6 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 void CActor::on_requested_spawn(CObject* object)
 {
     CCar* car = smart_cast<CCar*>(object);
-    //attach_Vehicle(car);
-
-    // insead of immediate attach, we set a pending car to be attached in Actor::UpdateCl after 10 frames
-
     m_pending_car = car;
     m_pending_car_frames = 10;
 }

@@ -92,7 +92,6 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
             }
 
             // CActor_on_land
-
             this->callback(GameObject::eOnActorLand)(this->lua_game_object(), character_physics_support()->movement()->GetContactSpeed());
         }
         m_bJumpKeyPressed = TRUE;
@@ -109,8 +108,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
     "KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия. Код этот не сильно важен, я думаю если актор застрянет - он все равно не будет двигаться.")
         // mstate_real &=~ mcAnyMove;
     }
-    if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround ||
-        character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
+    if (character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround || character_physics_support()->movement()->Environment() == CPHMovementControl::peAtWall)
     {
         // если на земле гарантированно снимать флажок Jump
         if (((s_fJumpTime - m_fJumpTime) > s_fJumpGroundTime) && (mstate_real & mcJump))
@@ -195,8 +193,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
             mstate_wf &= ~mcAnyMove;
             mstate_wf &= ~mcJump;
         }
-        // character_physics_support()->movement()->EnableCharacter();
-        // return;
     }
 
     // update player accel
@@ -259,11 +255,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
                 }
             }
         }
-
-        /*
-        if(m_bJumpKeyPressed)
-        Jump				= m_fJumpSpeed;
-        */
 
         // mask input into "real" state
         u32 move = mcAnyMove | mcAccel;
@@ -427,7 +418,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector& vControlAccel, float& Ju
                     const auto e = xr_new<CAnimatorCamLerpEffectorConst>();
                     constexpr float max_scale = 70.0f;
                     float factor = cam_eff_factor / max_scale;
-                    // Msg("--[%s] adding cam effector [%s], cam_eff_factor: [%f], factor: [%f]", __FUNCTION__, anm_name, cam_eff_factor, factor);
                     e->SetFactor(factor);
                     e->SetType(eCEActorMoving);
                     e->SetHudAffect(false);
@@ -470,22 +460,22 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
     switch (mstate_rl & mcAnyMove)
     {
     case mcFwd + mcLStrafe:
-        calc_yaw = +fwd_l_strafe_yaw; //+PI_DIV_4;
+        calc_yaw = +fwd_l_strafe_yaw;
         break;
     case mcBack + mcRStrafe:
-        calc_yaw = +back_r_strafe_yaw; //+PI_DIV_4;
+        calc_yaw = +back_r_strafe_yaw;
         break;
     case mcFwd + mcRStrafe:
-        calc_yaw = -fwd_r_strafe_yaw; //-PI_DIV_4;
+        calc_yaw = -fwd_r_strafe_yaw;
         break;
     case mcBack + mcLStrafe:
-        calc_yaw = -back_l_strafe_yaw; //-PI_DIV_4;
+        calc_yaw = -back_l_strafe_yaw;
         break;
     case mcLStrafe:
-        calc_yaw = +l_strafe_yaw; //+PI_DIV_3-EPS_L;
+        calc_yaw = +l_strafe_yaw;
         break;
     case mcRStrafe:
-        calc_yaw = -r_strafe_yaw; //-PI_DIV_4+EPS_L;
+        calc_yaw = -r_strafe_yaw;
         break;
     }
 
@@ -497,8 +487,6 @@ void CActor::g_Orientate(u32 mstate_rl, float dt)
     mXFORM.rotateY(-(r_model_yaw + r_model_yaw_delta));
     mXFORM.c.set(Position());
     XFORM().set(mXFORM);
-
-    //-------------------------------------------------
 
     float tgt_roll = 0.f;
     if (mstate_rl & mcLookout)
@@ -520,7 +508,6 @@ bool CActor::g_LadderOrient()
     character_physics_support()->movement()->GroundNormal(leader_norm);
     if (_abs(leader_norm.y) > M_SQRT1_2)
         return false;
-    // leader_norm.y=0.f;
     float mag = leader_norm.magnitude();
     if (mag < EPS_L)
         return false;
@@ -532,27 +519,9 @@ bool CActor::g_LadderOrient()
     M.j.set(0.f, 1.f, 0.f);
     generate_orthonormal_basis1(M.k, M.j, M.i);
     M.i.invert();
-    // M.j.invert();
 
-    // Fquaternion q1,q2,q3;
-    // q1.set(XFORM());
-    // q2.set(M);
-    // q3.slerp(q1,q2,dt);
-    // Fvector angles1,angles2,angles3;
-    // XFORM().getHPB(angles1.x,angles1.y,angles1.z);
-    // M.getHPB(angles2.x,angles2.y,angles2.z);
-    ////angle_lerp(angles3.x,angles1.x,angles2.x,dt);
-    ////angle_lerp(angles3.y,angles1.y,angles2.y,dt);
-    ////angle_lerp(angles3.z,angles1.z,angles2.z,dt);
-
-    // angles3.lerp(angles1,angles2,dt);
-    ////angle_lerp(angles3.y,angles1.y,angles2.y,dt);
-    ////angle_lerp(angles3.z,angles1.z,angles2.z,dt);
-    // angle_lerp(angles3.x,angles1.x,angles2.x,dt);
-    // XFORM().setHPB(angles3.x,angles3.y,angles3.z);
     Fvector position;
     position.set(Position());
-    // XFORM().rotation(q3);
     VERIFY2(_valid(M), "Invalide matrix in g_LadderOrient");
     XFORM().set(M);
     VERIFY2(_valid(position), "Invalide position in g_LadderOrient");
@@ -578,8 +547,7 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
     unaffected_r_torso.pitch = r_torso.pitch;
     unaffected_r_torso.roll = r_torso.roll;
 
-    CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(
-        inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? inventory().ItemFromSlot(inventory().GetActiveSlot()) /*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ : NULL);
+    CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? inventory().ItemFromSlot(inventory().GetActiveSlot()) : NULL);
     if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
     {
         Fvector dangle = weapon_recoil_last_delta();
@@ -600,7 +568,6 @@ void CActor::g_cl_Orientate(u32 mstate_rl, float dt)
         if (_abs(r_model_yaw - ty) > PI_DIV_4)
         {
             r_model_yaw_dest = ty;
-            //
             mstate_real |= mcTurn;
         }
         if (_abs(r_model_yaw - r_model_yaw_dest) < EPS_L)
@@ -630,35 +597,22 @@ bool isActorAccelerated(u32 mstate, bool ZoomMode)
 
 bool CActor::CanAccelerate()
 {
-    bool can_accel = !conditions().IsLimping() && !character_physics_support()->movement()->PHCapture() &&
-        //		&& !m_bZoomAimingMode
-        //		&& !(mstate_real&mcLookout)
-        (m_time_lock_accel < Device.dwTimeGlobal);
-
-    return can_accel;
+    return !conditions().IsLimping() && !character_physics_support()->movement()->PHCapture() && (m_time_lock_accel < Device.dwTimeGlobal);
 }
 
 bool CActor::CanRun()
 {
-    bool can_run = !m_bZoomAimingMode && !(mstate_real & mcLookout);
-    return can_run;
+    return !m_bZoomAimingMode && !(mstate_real & mcLookout);
 }
 
 bool CActor::CanSprint()
 {
-    bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && CanRun() && InventoryAllowSprint();
-
-    return can_Sprint;
+    return CanAccelerate() && !conditions().IsCantSprint() && CanRun() && InventoryAllowSprint();
 }
 
 bool CActor::CanJump(float weight)
 {
-    bool can_Jump = /*!IsLimping() &&*/
-        !character_physics_support()->movement()->PHCapture() && ((mstate_real & mcJump) == 0) && (m_fJumpTime <= 0.f) &&
-        (!m_hit_slowmo_jump || (fis_zero(hit_slowmo) && m_time_lock_accel < Device.dwTimeGlobal)) && !m_bJumpKeyPressed // && ((mstate_real&mcCrouch)==0);
-        && !conditions().IsCantJump(weight);
-
-    return can_Jump;
+    return !character_physics_support()->movement()->PHCapture() && ((mstate_real & mcJump) == 0) && (m_fJumpTime <= 0.f) && (!m_hit_slowmo_jump || (fis_zero(hit_slowmo) && m_time_lock_accel < Device.dwTimeGlobal)) && !m_bJumpKeyPressed && !conditions().IsCantJump(weight);
 }
 
 bool CActor::CanMove()
